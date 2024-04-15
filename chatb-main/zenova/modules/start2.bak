@@ -1,0 +1,142 @@
+from pyrogram import Client, filters, types
+from zenova import zenova, language_collection, gender_collection, age_group_collection, interests_collection
+from helpers.helper import get_gender, get_age_group, get_interests, user_registered
+from langdb import English, Russian, Ajerbejani
+
+
+async def add_user_id_to_collection(collection, document_id, user_id):
+    update_query = {"$push": {document_id: user_id}}
+    collection.update_one({}, update_query, upsert=True)
+
+async def get_language(user_id):
+    user_languages = language_collection.find_one({})
+    for lang, users in user_languages.items():
+        if isinstance(users, list) and user_id in users:
+            return lang
+    return "English"  # Default language if not found
+
+@zenova.on_message(filters.command("start"))
+async def start(bot, message):
+    # Check if user exists in any language list
+    user_id = message.from_user.id
+    lang = await get_language(user_id)
+    if lang:
+        gender = get_gender(user_id)
+        age_group = get_age_group(user_id)
+        interests = get_interests(user_id)
+        if user_registered(user_id):
+            await message.reply_text("Welcome back! You are already registered.")
+            return
+        else:
+            # Proceed with the missing user information
+            await proceed_with_missing_info(bot, message, lang, gender, age_group, interests)
+            return
+
+    # Prompt user to choose preferred language
+    markup = types.InlineKeyboardMarkup([
+        [types.InlineKeyboardButton("English", callback_data="English"),
+         types.InlineKeyboardButton("Русский", callback_data="Russian"),
+         types.InlineKeyboardButton("Azərbaycan", callback_data="Ajerbejani")]
+    ])
+    await message.reply_text("Please choose your preferred language \nПожалуйста, выберите предпочитаемый язык \nScegli la tua lingua preferita", reply_markup=markup)
+
+# Function to proceed with missing user information
+async def proceed_with_missing_info(bot, message, lang, gender, age_group, interests):
+    user_id = message.from_user.id
+    if not gender:
+        await ask_gender(bot, user_id, lang)
+    elif not age_group:
+        await ask_age_group(bot, user_id, lang)
+    elif not interests:
+        await ask_interests(bot, user_id, lang)
+
+async def ask_gender(bot, user_id, lang):
+    if lang == "English":
+        gender_choose = "Please select your gender:"
+    elif lang == "Russian":
+        gender_choose = "Пожалуйста, выберите ваш пол:"
+    elif lang == "Ajerbejani":
+        gender_choose = "Zəhmət olmasa, cinsiniz seçin:"
+    
+    await bot.send_message(user_id, gender_choose, reply_markup=types.InlineKeyboardMarkup([
+        [types.InlineKeyboardButton("Male", callback_data="Male"),
+         types.InlineKeyboardButton("Female", callback_data="Female")]
+    ]))
+
+async def ask_age_group(bot, user_id, lang):
+    if lang == "English":
+        age_choose = "Please select your age group:"
+    elif lang == "Russian":
+        age_choose = "Пожалуйста, выберите ваш возрастной диапазон:"
+    elif lang == "Ajerbejani":
+        age_choose = "Zəhmət olmasa, yaş qrupunuzu seçin:"
+    
+    await bot.send_message(user_id, age_choose, reply_markup=types.InlineKeyboardMarkup([
+        [types.InlineKeyboardButton("Below 18", callback_data="Below 18")],
+        [types.InlineKeyboardButton("18 - 25", callback_data="18-25")],
+        [types.InlineKeyboardButton("26 - 35", callback_data="26-35")],
+        [types.InlineKeyboardButton("35 +", callback_data="Above 35")]
+    ]))
+
+async def ask_interests(bot, user_id, lang):
+    if lang == "English":
+        interest_choose = "Please select your interests:"
+    elif lang == "Russian":
+        interest_choose = "Пожалуйста, выберите ваши интересы:"
+    elif lang == "Ajerbejani":
+        interest_choose = "Zəhmət olmasa, maraqlarınızı seçin:"
+    
+    await bot.send_message(user_id, interest_choose, reply_markup=types.InlineKeyboardMarkup([
+        [types.InlineKeyboardButton("👁‍🗨 Communication", callback_data="communication")],
+        [types.InlineKeyboardButton("🔞 Intimacy (18+)", callback_data="intimacy")],
+        [types.InlineKeyboardButton("🚼 Selling sex (18+)", callback_data="selling")]
+    ]))
+
+# Callback Query Handler for Language Selection
+@zenova.on_callback_query(filters.regex(r"^(English|Russian|Ajerbejani)$"))
+async def language_selection(bot, callback_query):
+    language = callback_query.data.lower()
+    user_id = callback_query.from_user.id
+
+    # Append user ID to the respective language list
+    await add_user_id_to_collection(language_collection, language, user_id)
+
+    # Message to show the selected language
+    await callback_query.message.edit_text(f"You have selected {language.capitalize()} as your preferred language!")
+    # Proceed with asking for other user information
+    await proceed_with_missing_info(bot, callback_query.message, language, None, None, None)
+
+# Callback Query Handler for Gender Selection
+@zenova.on_callback_query(filters.regex(r"^(Male|Female)$"))
+async def gender_selection(bot, callback_query):
+    gender = callback_query.data
+    user_id = callback_query.from_user.id
+
+    # Append user ID to the respective gender list
+    await add_user_id_to_collection(gender_collection, gender.lower(), user_id)
+
+    # Now ask for age group
+    await ask_age_group(bot, user_id, await get_language(user_id))
+
+# Callback Query Handler for Age Group Selection
+@zenova.on_callback_query(filters.regex(r"^(Below 18|18-25|26-35|Above 35)$"))
+async def age_group_selection(bot, callback_query):
+    age_group = callback_query.data
+    user_id = callback_query.from_user.id
+
+    # Append user ID to the respective age group list
+    await add_user_id_to_collection(age_group_collection, age_group.lower(), user_id)
+
+    # Now ask for user interests
+    await ask_interests(bot, user_id, await get_language(user_id))
+
+# Callback Query Handler for Interests Selection
+@zenova.on_callback_query(filters.regex(r"^(communication|intimacy|selling)$"))
+async def interests_selection(bot, callback_query):
+    interests = callback_query.data
+    user_id = callback_query.from_user.id
+
+    # Append user ID to the respective interests list
+    await add_user_id_to_collection(interests_collection, interests.lower(), user_id)
+
+    await callback_query.message.edit_text("Registration completed successfully! You are now ready to use the bot.", reply_markup=types.InlineKeyboardMarkup([]))
