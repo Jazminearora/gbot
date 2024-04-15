@@ -13,7 +13,7 @@
     ─「 ᴅᴇᴩʟᴏʏ ᴏɴ ʜᴇʀᴏᴋᴜ 」─
 </h3>
 
-<p align="center"><a href="https://dashboard.heroku.com/new?template=https://github.com/Xytra-zn/chatb"> <img src="https://img.shields.io/badge/ᴅᴇᴩʟᴏʏ ᴏɴ ʜᴇʀᴏᴋᴜ-black?style=for-the-badge&logo=heroku" width="320" height="138.45"/></a></p>
+<p align="center"><a href="https://dashboard.heroku.com/new?template=https://github.com/RadiuxSource/g-bot.git"> <img src="https://img.shields.io/badge/ᴅᴇᴩʟᴏʏ ᴏɴ ʜᴇʀᴏᴋᴜ-black?style=for-the-badge&logo=heroku" width="320" height="138.45"/></a></p>
 
 
 
