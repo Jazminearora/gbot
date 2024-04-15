@@ -32,17 +32,17 @@ def find_field(user_id, language, *fields):
 def get_gender(user_id):
     try:
         language = find_language(user_id)
-        gender_field = find_field(user_id, language, "male", "female")
-        print("gender field:", gender_field, f"\nLangu:", language)
-        if gender_field == "male":
-            return "male"
-        elif gender_field == "female":
-            return "female"
-        else:
-            return None
+        if language:
+            stored_data = collection.find_one({key: {"$exists": True}})
+            if stored_data and language in stored_data[key]:
+                lang_data = stored_data[key][language]
+                if "male" in lang_data and user_id in lang_data["male"]:
+                    return "male"
+                elif "female" in lang_data and user_id in lang_data["female"]:
+                    return "female"
     except Exception as e:
-        print('Exception occured in get gender:', e)
-        return None
+        print('Exception occurred in get_gender:', e)
+    return None
 
 def get_age_group(user_id):
     language = find_language(user_id)
