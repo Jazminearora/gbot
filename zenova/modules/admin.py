@@ -16,7 +16,7 @@ async def get_language(user_id):
             return lang
     return "English"  # Default language if not found
 
-@Client.on_message(filters.command("admin") & filters.user(ADMIN_IDS)) 
+@Client.on_message(filters.command("admin")) 
 async def admin_panel(_, message):
     buttons = [
         [
