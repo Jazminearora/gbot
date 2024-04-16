@@ -177,22 +177,22 @@ def change_language(client, callback_query):
         # Define the buttons for available languages excluding the old language
         if old_lang == "English":
             reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("Русский 🇷🇺", callback_data="set_language_russian")],
-                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_azerbaijani")],
+                [InlineKeyboardButton("Русский 🇷🇺", callback_data="set_language_Russian")],
+                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_Azerbaijani")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
             caption = "Choose your new language 🌐"
         elif old_lang == "Russian":
             reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("English 🇺🇸", callback_data="set_language_english")],
-                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_azerbaijani")],
+                [InlineKeyboardButton("English 🇺🇸", callback_data="set_language_English")],
+                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_Azerbaijani")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
             caption = "Выберите новый язык 🌐"
         elif old_lang == "Azerbejani":
             reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("English 🇺🇸", callback_data="set_language_english")],
-                [InlineKeyboardButton("Русский 🇷🇺", callback_data="set_language_russian")],
+                [InlineKeyboardButton("English 🇺🇸", callback_data="set_language_English")],
+                [InlineKeyboardButton("Русский 🇷🇺", callback_data="set_language_Russian")],
                 [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
             ])
             caption = "Yeni dilinizi seçin 🌐"
@@ -210,7 +210,8 @@ def change_language(client, callback_query):
 def set_language(client, callback_query):
     try:
         # Extract the new language from the callback data
-        new_lang = callback_query.data.split("_")[-1]
+        new_lang = callback_query.data.split("_")[2]
+        print("new language:", new_lang)
 
         # Get the user ID and old language
         user_id = callback_query.from_user.id
