@@ -14,7 +14,9 @@ def add_user_id(language, user_id, field):
 def remove_user_id(language, user_id, field):
     try:
         # Remove user ID from the specified field and language
-        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
+        muks = collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
+        if muks:
+            print("Success removal")
     except Exception as e:
         print(f"Error in removing user ID from {field}:", e)
 
@@ -135,18 +137,24 @@ def edit_language(user_id, old_lang, new_lang):
 
         try:
             # Remove user ID from fields of the old language
-            remove_user_id(old_lang, user_id, "users")
-            remove_user_id(old_lang, user_id, gender)
-            remove_user_id(old_lang, user_id, age_group.replace(" ", "_"))
-            remove_user_id(old_lang, user_id, interest)
+            scar = remove_user_id(old_lang, user_id, "users")
+            if scar:
+                print("1 success")
+            ak = remove_user_id(old_lang, user_id, gender)
+            if ak:
+                print("2 success")
+            ump = remove_user_id(old_lang, user_id, age_group.replace(" ", "_"))
+            if ump:
+                print("3 success")
+            mpt = remove_user_id(old_lang, user_id, interest)
+            if mpt:
+                print("4 success")
         except Exception as e:
             print(f"Error caught while removing user id: {e}")
 
         try:
             # Store user ID in the users field of the new language
-            star = add_user_id(new_lang, user_id, "users")
-            if star:
-                print("success")
+            add_user_id(new_lang, user_id, "users")
         except Exception as e:
             print(f"Error caught while adding user id: {e}")
 
