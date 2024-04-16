@@ -1,22 +1,8 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from zenova import zenova, language_collection, gender_collection, age_group_collection, interests_collection
-from helpers.helper import get_gender, get_age_group, get_interests, user_registered
-from langdb import English, Russian, Ajerbejani
 from config import ADMIN_IDS
 
-async def add_user_id_to_collection(collection, document_id, user_id):
-    update_query = {"$push": {document_id: user_id}}
-    collection.update_one({}, update_query, upsert=True)
-
-async def get_language(user_id):
-    user_languages = language_collection.find_one({})
-    for lang, users in user_languages.items():
-        if isinstance(users, list) and user_id in users:
-            return lang
-    return "English"  # Default language if not found
-
-@Client.on_message(filters.command("admin") & filters.user(ADMIN_IDS)) 
+@Client.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
 async def admin_panel(_, message):
     buttons = [
         [
