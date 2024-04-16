@@ -29,23 +29,3 @@ async def admin_panel(_, message):
     reply_markup = InlineKeyboardMarkup(buttons)
     await message.reply_text('Please choose an option:', reply_markup=reply_markup)
 
-@Client.on_callback_query()
-async def button_click(_, query):
-    if query.data == 'newsletter':
-        await query.message.edit_text(text="You selected Newsletter.")
-    elif query.data == 'subscriptions':
-        await query.message.edit_text(text="You selected Subscriptions.")
-    elif query.data == 'impressions':
-        await query.message.edit_text(text="You selected Impressions.")
-    elif query.data == 'statistics':
-        await query.message.edit_text(text="You selected Statistics.")
-    elif query.data == 'referral':
-        await query.message.edit_text(text="You selected Referral link.")
-    elif query.data == 'vip_users':
-        await query.message.edit_text(text="You selected VIP Users.")
-    elif query.data == 'list_users':
-        await query.message.edit_text(text="You selected List of users.")
-    elif query.data == 'delete_inactive':
-        await query.message.edit_text(text="You selected Delete inactive.")
-    elif query.data == 'cancel':
-        await query.message.edit_text(text="You canceled the operation.")
