@@ -71,7 +71,11 @@ async def register_user(client, message):
                 caption, reply_markup = get_registration_text(language, "gender")
                 await message.reply_text(caption, reply_markup=reply_markup)
         else:
-            caption, reply_markup = get_registration_text(language, "language")
+            caption= f"Choose your language\nВыберите ваш язык\ndilinizi seçin:"
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("English", callback_data="register_language_English")],
+                [InlineKeyboardButton("Русский", callback_data="register_language_Russian")],
+                [InlineKeyboardButton("Azərbaycan", callback_data="register_language_Azerbejani")]])
             await message.reply_text(caption, reply_markup=reply_markup)
     except Exception as e:
         print("Error in register_user:", e)
