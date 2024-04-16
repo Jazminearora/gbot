@@ -3,6 +3,7 @@ import importlib
 from pyrogram import idle
 from zenova import zenova, mongodb
 from zenova.modules import ALL_MODULES
+from config import key
 
 loop = asyncio.get_event_loop()
 
@@ -45,7 +46,6 @@ data = {
     }
 }
 
-key = "aditya"
 #Store data in the collection
 inserted_id = mongodb.insert_one({key: data}).inserted_id
 print("Data stored successfully with id:", inserted_id)
@@ -53,7 +53,7 @@ print("Data stored successfully with id:", inserted_id)
 async def zenova_boot():
     for all_module in ALL_MODULES:
         importlib.import_module("zenova.modules." + all_module)
-    print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎𝗅 𝗌𝗍𝖺𝗋𝗍")
+    print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
     await idle()
     print("Caught an unknown error")
 

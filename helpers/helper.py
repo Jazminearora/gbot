@@ -1,7 +1,6 @@
 from zenova import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
-
-key = "aditya"
+from config import key
 
 def add_user_id(language, user_id, field):
     try:
