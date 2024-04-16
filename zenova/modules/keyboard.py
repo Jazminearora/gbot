@@ -167,7 +167,7 @@ def edit_profile(client, callback_query):
         print("Error in edit_profile:", e)
 
     
-@zenova.on_callback_query(filters.regex("^change_language_"))
+@zenova.on_callback_query(filters.regex("^change_language"))
 def change_language(client, callback_query):
     try:
         # Get the user ID and old language
@@ -206,7 +206,7 @@ def change_language(client, callback_query):
 
 
 # Callback function for setting the language
-@zenova.on_callback_query(filters.regex("^set_language_"))
+@zenova.on_callback_query(filters.regex("^set_language"))
 def set_language(client, callback_query):
     try:
         # Extract the new language from the callback data
