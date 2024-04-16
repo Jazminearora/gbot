@@ -10,18 +10,13 @@ def add_user_id(language, user_id, field):
     except Exception as e:
         print("Error in adding user ID:", e)
 
-def remove_user_id(language, user_id, gender, age_group, interest):
+def remove_user_id(language, user_id, field):
     try:
-        # Remove user ID from fields of the old language
-        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.users": user_id}})
-        if gender:
-            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{gender}": user_id}})
-        if age_group:
-            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{age_group}": user_id}})
-        if interest:
-            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{interest}": user_id}})
+        # Remove user ID from the specified field and language
+        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
     except Exception as e:
-        print("Error in remove_user_id:", e)
+        print(f"Error in removing user ID from {field}:", e)
+
         
 def find_language(user_id):
     stored_data = collection.find_one({key: {"$exists": True}})
@@ -129,16 +124,22 @@ def get_profile(user_id, language):
         return "An error occurred while fetching the profile.", None
 
 
-
 def edit_language(user_id, old_lang, new_lang):
     try:
         # Extract information from the old language
         gender = get_gender(user_id, old_lang)
         age_group = get_age_group(user_id, old_lang)
         interest = get_interest(user_id, old_lang)
+
         try:
             # Remove user ID from fields of the old language
-            remove_user_id(old_lang, user_id, gender, age_group, interest)
+            remove_user_id(old_lang, user_id, "users")
+            if gender:
+                remove_user_id(old_lang, user_id, gender)
+            if age_group:
+                remove_user_id(old_lang, user_id, age_group.replace(" ", "_").lower())
+            if interest:
+                remove_user_id(old_lang, user_id, interest.lower())
         except Exception as e:
             print(f"Error caught while removing user id: {e}")
 
@@ -150,13 +151,14 @@ def edit_language(user_id, old_lang, new_lang):
 
         try:
             # Update gender, age group, and interest fields in the new language
-            add_user_id(new_lang, user_id, gender)
-            add_user_id(new_lang, user_id, age_group.replace(" ", "_").lower())
-            add_user_id(new_lang, user_id, interest.lower())
+            if gender:
+                add_user_id(new_lang, user_id, gender)
+            if age_group:
+                add_user_id(new_lang, user_id, age_group.replace(" ", "_").lower())
+            if interest:
+                add_user_id(new_lang, user_id, interest.lower())
         except Exception as e:
             print(f"Error caught while adding user id: {e}")
     except Exception as e:
         print("Error in change_language:", e)
         return False
-
-
