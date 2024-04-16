@@ -59,7 +59,7 @@ async def statistics_handler(_, query):
 
     # Format the statistics text using string formatting
     stats_text = (
-        f"--Total stats of Bot--\n"
+        "--Total stats of Bot--\n"
         f"Total users: {user_stats['total_users']}\n"
         f"English users: {user_stats['eng_users']}\n"
         f"Russian users: {user_stats['russian_users']}\n"
@@ -67,8 +67,7 @@ async def statistics_handler(_, query):
     )
 
     # Edit the message to display the statistics
-    await query.message.edit_text(text=stats_text, parse_mode="Markdown")
-
+    await query.message.edit_text(text=stats_text)
 
     
 @zenova.on_callback_query(filters.regex(r'^referral$'))
