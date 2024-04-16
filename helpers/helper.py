@@ -117,7 +117,7 @@ def get_profile(user_id, language):
 
 
 
-def change_language(user_id, old_lang, new_lang):
+def edit_language(user_id, old_lang, new_lang):
     try:
         # Extract information from the old language
         gender = get_gender(user_id, old_lang)
