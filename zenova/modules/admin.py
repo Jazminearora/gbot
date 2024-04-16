@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from zenova import zenova, language_collection, gender_collection, age_group_collection, interests_collection
-from helpers.helper import get_gender, get_age_group, get_interest, user_registered
+from helpers.helper import get_gender, get_age_group, get_interest, is_user_registered
 from langdb import English, Russian, Ajerbejani
 from config import ADMIN_IDS
 
