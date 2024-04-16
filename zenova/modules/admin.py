@@ -49,23 +49,27 @@ async def impressions_handler(_, query):
 
 @zenova.on_callback_query(filters.regex(r'^statistics$'))
 async def statistics_handler(_, query):
-    # Example data, replace with your actual data retrieval logic
-    total_users = 1000
-    eng_users = 700
-    russian_users = 200
-    azerbejani_users = 100
+    # Assuming you have a dictionary named user_stats with the user statistics
+    user_stats = {
+        "total_users": 1000,
+        "eng_users": 700,
+        "russian_users": 200,
+        "azerbejani_users": 100
+    }
 
-    # Format the statistics
+    # Format the statistics text using string formatting
     stats_text = (
-        f"<b>Total stats of Bot</b>\n"
-        f"Total users: {total_users}\n"
-        f"English users: {eng_users}\n"
-        f"Russian users: {russian_users}\n"
-        f"Azerbejani users: {azerbejani_users}"
+        f"--Total stats of Bot--\n"
+        f"Total users: {user_stats['total_users']}\n"
+        f"English users: {user_stats['eng_users']}\n"
+        f"Russian users: {user_stats['russian_users']}\n"
+        f"Azerbejani users: {user_stats['azerbejani_users']}"
     )
 
     # Edit the message to display the statistics
     await query.message.edit_text(text=stats_text, parse_mode="HTML")
+
+
     
 @zenova.on_callback_query(filters.regex(r'^referral$'))
 async def referral_handler(_, query):
@@ -77,7 +81,7 @@ async def vip_users_handler(_, query):
 
 import os
 from pyrogram.types import InputMediaDocument
-
+from zenova import mongodb as collection
 
 def get_user_data():
     # Assuming you have a method to fetch user data from your database
