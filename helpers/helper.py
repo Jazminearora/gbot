@@ -158,6 +158,7 @@ def edit_language(user_id, old_lang, new_lang):
             print(age_group.replace("-", "_").lower(), interest.lower() )
         except Exception as e:
             print(f"Error caught while adding user id: {e}")
+            return True
     except Exception as e:
         print("Error in change_language:", e)
         return False
