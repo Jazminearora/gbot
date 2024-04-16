@@ -217,8 +217,14 @@ def set_language(client, callback_query):
         user_id = callback_query.from_user.id
         old_lang = find_language(user_id)
 
+        edit_lang = edit_language(user_id, old_lang, new_lang)
+
         # Attempt to change the language
-        if edit_language(user_id, old_lang, new_lang):
+        if not edit_lang:
+            # If language change fails, inform the user
+            callback_query.answer("Failed to change language.", show_alert=True)
+        
+        else:
             # If language change is successful, inform the user
             callback_query.answer(f"Language changed to {new_lang} successfully!", show_alert=True)
             # Edit the message to display the success message in the new language
@@ -228,12 +234,6 @@ def set_language(client, callback_query):
                 success_message = "Язык успешно изменен! 🇷🇺"
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
-            else:
-                return
-            callback_query.message.edit_text(success_message)
-        else:
-            # If language change fails, inform the user
-            callback_query.answer("Failed to change language.", show_alert=True)
 
         # Delete the callback message
         callback_query.message.delete()
