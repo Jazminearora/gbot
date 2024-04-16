@@ -67,7 +67,7 @@ async def statistics_handler(_, query):
     )
 
     # Edit the message to display the statistics
-    await query.message.edit_text(text=stats_text, parse_mode="HTML")
+    await query.message.edit_text(text=stats_text, parse_mode="Markdown")
 
 
     
@@ -83,12 +83,13 @@ import os
 from pyrogram.types import InputMediaDocument
 from zenova import mongodb as collection
 
-def get_user_data():
+def get_user_data(key="language"):
     # Assuming you have a method to fetch user data from your database
     # Replace this with your actual database query logic
     document = collection.find_one({key: {"$exists": True}})
     users_data = document.get(key, {})
     return users_data
+
 
 # Function to write user data to a file
 def write_user_data_to_file(users_data):
