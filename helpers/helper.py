@@ -7,6 +7,7 @@ def add_user_id(language, user_id, field):
     try:
         # Update the stored document
         collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{language}.{field}": user_id}})
+        print("success lang:", language)
     except Exception as e:
         print("Error in adding user ID:", e)
 
@@ -145,7 +146,9 @@ def edit_language(user_id, old_lang, new_lang):
 
         try:
             # Store user ID in the users field of the new language
-            add_user_id(new_lang, user_id, "users")
+            star = add_user_id(new_lang, user_id, "users")
+            if star:
+                print("success")
         except Exception as e:
             print(f"Error caught while adding user id: {e}")
 
@@ -153,6 +156,7 @@ def edit_language(user_id, old_lang, new_lang):
             # Update gender, age group, and interest fields in the new language
             if gender:
                 add_user_id(new_lang, user_id, gender)
+                print ("True")
             if age_group:
                 add_user_id(new_lang, user_id, age_group.replace(" ", "_").lower())
             if interest:
