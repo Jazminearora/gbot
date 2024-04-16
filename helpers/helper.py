@@ -163,7 +163,8 @@ def edit_language(user_id, old_lang, new_lang):
             add_user_id(new_lang, user_id, gender)
             add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
             add_user_id(new_lang, user_id, interest.lower())
-            print(age_group.replace("-", "_").lower(), interest.lower() )
+            language = find_language(user_id)
+            print(age_group.replace("-", "_").lower(), interest.lower(), language )
         except Exception as e:
             print(f"Error caught while adding user id: {e}")
             return True
