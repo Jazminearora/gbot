@@ -81,30 +81,45 @@ async def vip_users_handler(_, query):
 
 import os
 from pyrogram.types import InputMediaDocument
-from zenova import mongodb as collection
+from zenova import mongodb as database
+from zenova import language_collection, gender_collection, age_group_collection, interests_collection
 
-def get_user_data(key="language"):
-    # Assuming you have a method to fetch user data from your database
-    # Replace this with your actual database query logic
-    document = collection.find_one({key: {"$exists": True}})
-    users_data = document.get(key, {})
-    return users_data
 
+# Function to fetch user data from MongoDB
+def get_user_data(collection):
+    document = collection.find_one({})
+    if document:
+        return document
+    else:
+        return {}
 
 # Function to write user data to a file
 def write_user_data_to_file(users_data):
     with open("user_data.txt", "w") as file:
-        for language, users in users_data.items():
-            file.write(f"{language}:\n")
-            for user in users:
+        for key, value in users_data.items():
+            file.write(f"{key}:\n")
+            for user in value:
                 file.write(f"- {user}\n")
-
 
 # Callback handler for 'List of users' option
 @zenova.on_callback_query(filters.regex(r'^list_users$'))
 async def list_users_handler(_, query):
-    users_data = get_user_data()  # Retrieve user data from the database
-    write_user_data_to_file(users_data)  # Write user data to a file
+    # Retrieve user data from MongoDB collections
+    language_data = get_user_data(language_collection)
+    gender_data = get_user_data(gender_collection)
+    age_group_data = get_user_data(age_group_collection)
+    interests_data = get_user_data(interests_collection)
+
+    # Combine user data from different collections
+    users_data = {
+        "Language": language_data,
+        "Gender": gender_data,
+        "Age Group": age_group_data,
+        "Interests": interests_data
+    }
+
+    # Write user data to a file
+    write_user_data_to_file(users_data)
 
     # Send the file to the admin
     await query.message.reply_document(
@@ -114,6 +129,7 @@ async def list_users_handler(_, query):
 
     # Remove the file after sending it
     os.remove("user_data.txt")
+
 
 @zenova.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
