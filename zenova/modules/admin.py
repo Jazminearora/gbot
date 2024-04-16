@@ -1,8 +1,23 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from zenova import zenova, language_collection, gender_collection, age_group_collection, interests_collection
+from helpers.helper import get_gender, get_age_group, get_interests, user_registered
+from langdb import English, Russian, Ajerbejani
+from config import ADMIN_IDS
 
+async def add_user_id_to_collection(collection, document_id, user_id):
+    update_query = {"$push": {document_id: user_id}}
+    collection.update_one({}, update_query, upsert=True)
 
-def admin(update, context):
+async def get_language(user_id):
+    user_languages = language_collection.find_one({})
+    for lang, users in user_languages.items():
+        if isinstance(users, list) and user_id in users:
+            return lang
+    return "English"  # Default language if not found
+
+@Client.on_message(filters.command("admin") & filters.user(ADMIN_IDS)) 
+async def admin_panel(_, message):
     buttons = [
         [
             InlineKeyboardButton("📥 Newsletter", callback_data='newsletter'),
@@ -26,40 +41,29 @@ def admin(update, context):
     ]
 
     reply_markup = InlineKeyboardMarkup(buttons)
-    update.message.reply_text('Please choose an option:', reply_markup=reply_markup)
+    await message.reply_text('Please choose an option:', reply_markup=reply_markup)
 
-def button_click(update, context):
-    query = update.callback_query
-    query.answer()
-
+@Client.on_callback_query()
+async def button_click(_, query):
     if query.data == 'newsletter':
-        query.edit_message_text(text="You selected Newsletter.")
+        await query.message.edit_text(text="You selected Newsletter.")
     elif query.data == 'subscriptions':
-        query.edit_message_text(text="You selected Subscriptions.")
+        await query.message.edit_text(text="You selected Subscriptions.")
     elif query.data == 'impressions':
-        query.edit_message_text(text="You selected Impressions.")
+        await query.message.edit_text(text="You selected Impressions.")
     elif query.data == 'statistics':
-        query.edit_message_text(text="You selected Statistics.")
+        await query.message.edit_text(text="You selected Statistics.")
     elif query.data == 'referral':
-        query.edit_message_text(text="You selected Referral link.")
+        await query.message.edit_text(text="You selected Referral link.")
     elif query.data == 'vip_users':
-        query.edit_message_text(text="You selected VIP Users.")
+        await query.message.edit_text(text="You selected VIP Users.")
     elif query.data == 'list_users':
-        query.edit_message_text(text="You selected List of users.")
+        await query.message.edit_text(text="You selected List of users.")
     elif query.data == 'delete_inactive':
-        query.edit_message_text(text="You selected Delete inactive.")
+        await query.message.edit_text(text="You selected Delete inactive.")
     elif query.data == 'cancel':
-        query.edit_message_text(text="You canceled the operation.")
+        await query.message.edit_text(text="You canceled the operation.")
 
-def main():
-    updater = Updater("YOUR_TELEGRAM_BOT_TOKEN", use_context=True)
+# Initialize your Pyrogram client and add appropriate filters...
 
-    updater.dispatcher.add_handler(CommandHandler("start", start))
-    updater.dispatcher.add_handler(CommandHandler("admin", admin))
-    updater.dispatcher.add_handler(CallbackQueryHandler(button_click))
-
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
+# Start the client

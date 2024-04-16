@@ -9,6 +9,7 @@ LOGGER_ID = int(os.environ.get("LOGGER_ID"))
 MONGO_URI = os.environ.get("MONGO_URI")
 key = "booomba"
 DEV_USER = []
+ADMIN_IDS =[5847188221]
 SUDO_USERS = os.environ.get("SUDO_USERS")
 CHANNEL_USERNAME = '@Equinoxlogs'
 SUPPORTING = '@Equinox_Chats'
