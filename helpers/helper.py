@@ -1,6 +1,7 @@
 from zenova import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
 from config import key
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def add_user_id(language, user_id, field):
     try:
@@ -88,14 +89,65 @@ def get_profile(user_id, language):
         interest = get_interest(user_id, language)
         
         if language == "English":
-            return text_1.format(gender=gender, age_group=age_group, interest=interest)
+            message = text_1.format(gender=gender, age_group=age_group, interest=interest)
+            edit_button_text = "Edit ✏️"
+            close_button_text = "Close ❌"
         elif language == "Russian":
-            return text_2.format(gender=gender, age_group=age_group, interest=interest)
+            message = text_2.format(gender=gender, age_group=age_group, interest=interest)
+            edit_button_text = "Редактировать ✏️"
+            close_button_text = "Закрыть ❌"
         elif language == "Azerbejani":
-            return text_3.format(gender=gender, age_group=age_group, interest=interest)
+            message = text_3.format(gender=gender, age_group=age_group, interest=interest)
+            edit_button_text = "Redaktə et ✏️"
+            close_button_text = "Bağla ❌"
         else:
             return "Invalid language specified."
+        
+        # Creating reply markup with two buttons
+        reply_markup = InlineKeyboardMarkup(
+            [
+               [ InlineKeyboardButton(text = edit_button_text, callback_data = "edit_profile"), InlineKeyboardButton(text = close_button_text, callback_data = "close_profile")]
+            ]
+        )
+        
+        return message, reply_markup
     except Exception as e:
         print("Error in get_profile:", e)
-        return "An error occurred while fetching the profile."
+        return "An error occurred while fetching the profile.", None
+
+
+
+def change_language(user_id, old_lang, new_lang):
+    try:
+        # Extract information from the old language
+        gender = get_gender(user_id, old_lang)
+        age_group = get_age_group(user_id, old_lang)
+        interest = get_interest(user_id, old_lang)
+        
+        # Remove user ID from fields of the old language
+        if old_lang:
+            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.users": str(user_id)}})
+            if gender:
+                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.{gender}": str(user_id)}})
+            if age_group:
+                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.{age_group.lower()}": str(user_id)}})
+            if interest:
+                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.{interest.lower()}": str(user_id)}})
+        
+        # Store user ID in the users field of the new language
+        collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.users": str(user_id)}})
+        
+        # Update gender, age group, and interest fields in the new language
+        if gender:
+            collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.{gender}": str(user_id)}})
+        if age_group:
+            collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.{age_group.lower()}": str(user_id)}})
+        if interest:
+            collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.{interest.lower()}": str(user_id)}})
+        
+        return True
+    except Exception as e:
+        print("Error in change_language:", e)
+        return False
+
 

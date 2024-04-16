@@ -1,22 +1,25 @@
 # messages for profile
-
 text_1 = """
-Language: English
-Gender: {gender}
-Age Group: {age_group}
-Interest: {interest}
+🌟 **User Profile** 🌟\n
+🗣 **Language:** English
+👦 **Gender:** {gender}
+👨‍🦳 **Age Group:** {age_group}
+💡 **Interest:** {interest}
 """
 
 text_2 = """
-Язык: Русский
-Пол: {gender}
-Возрастная группа: {age_group}
-Интерес: {interest}
+🌟 **Frofile Ma'lumoti** 🌟\n
+🗣 **Til:** Русский
+👦 **Jins:** {gender}
+👨‍🦳 **Yosh Guruhi:** {age_group}
+💡 **Qiziqish:** {interest}
 """
 
 text_3 = """
-Dil: Azərbaycanca
-Cinsi: {gender}
-Yaş qrupu: {age_group}
-Marag: {interest}
+🌟 **İstifadəçi Profili** 🌟\n
+🗣 **Dil:** Azərbaycanca
+👦 **Cinsi:** {gender}
+👨‍🦳 **Yaş Qrupu:** {age_group}
+💡 **Marag:** {interest}
 """
+

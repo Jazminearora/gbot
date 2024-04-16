@@ -2,6 +2,8 @@ from pyrogram import filters, types
 from zenova import zenova
 from helpers.helper import get_profile, find_language
 import re
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.enums import ParseMode
 
 # Function to get reply markup with buttons in the user's selected language
 def get_reply_markup(language):
@@ -105,8 +107,8 @@ async def handle_keyboard_response(client, message):
         try:
             user_id = message.from_user.id
             language = find_language(user_id)
-            profile_text = get_profile(user_id, language)
-            await wait_message.edit_text(profile_text)
+            profile_text, reply_markup = get_profile(user_id, language)
+            await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
         except Exception as e:
             await wait_message.edit_text(f"An error occurred: {str(e)}")
     elif "Top" in text or "Лучшие" in text or "Ən yuxarı" in text:
