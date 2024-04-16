@@ -8,21 +8,21 @@ from helpers.helper import find_language, add_user_id, get_gender, get_age_group
 @zenova.on_message(filters.command(["register"]) & filters.private)
 async def register_user(client, message):
     try:
-        if is_user_registered(message.from_user.id):
-            await message.reply_text("You are already registered.")
-            return
+        #if is_user_registered(message.from_user.id):
+          #  await message.reply_text("You are already registered.")
+          #  return
         # Get user ID
         user_id = message.from_user.id
         print("user_id:", user_id)
         language = find_language(user_id)
         # Check if user ID is already registered
         if language:
-            gens= get_gender(user_id)
+            gens= get_gender(user_id, language)
             print("gens:", gens)
-            if get_gender(message.from_user.id):
-                age = get_age_group(user_id)
+            if gens:
+                age = get_age_group(user_id, language)
                 if age:
-                    interest = get_interest(user_id)
+                    interest = get_interest(user_id, language)
                     if interest:
                         await message.reply_text("You are already registered.")
                     else:
@@ -87,7 +87,7 @@ async def register_gender_callback(client, callback_query):
         print('query id:', user_id)
         
         # Check if user ID is already registered for gender
-        if not get_gender(user_id):
+        if not get_gender(user_id, language):
             # Store user ID in chosen gender's field in the chosen language in MongoDB
             add_user_id(language, user_id, gender)
             
@@ -115,7 +115,7 @@ async def register_age_callback(client, callback_query):
         user_id = str(callback_query.from_user.id)
         
         # Check if user ID is already registered for age group
-        if not get_age_group(user_id):
+        if not get_age_group(user_id, language):
             # Store user ID in chosen age group's field in the chosen language in MongoDB
             add_user_id(language, user_id, age_group)
             
@@ -142,7 +142,7 @@ async def register_interest_callback(client, callback_query):
         user_id = str(callback_query.from_user.id)
         
         # Check if user ID is already registered for interest
-        if not get_interest(user_id):
+        if not get_interest(user_id,language):
             # Store user ID in chosen interest's field in the chosen language in MongoDB
             add_user_id(language, user_id, interest)
             

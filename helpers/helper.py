@@ -29,7 +29,7 @@ def find_field(user_id, language, *fields):
                 return field
     return None
 
-def get_gender(language, user_id):
+def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
         if document and language in document[key]:
@@ -42,7 +42,7 @@ def get_gender(language, user_id):
         print('Exception occurred in get_gender:', e)
     return None
 
-def get_age_group(language, user_id):
+def get_age_group(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
         if document and language in document[key]:
@@ -54,7 +54,7 @@ def get_age_group(language, user_id):
         print('Exception occurred in get_age_group:', e)
     return None
 
-def get_interest(language, user_id):
+def get_interest(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
         if document and language in document[key]:
@@ -70,9 +70,9 @@ def is_user_registered(user_id):
     print("funcs called:", user_id)
     language = find_language(user_id)
     if language:
-        gender = get_gender(user_id)
-        age_group = get_age_group(user_id)
-        interest = get_interest(user_id)
+        gender = get_gender(user_id, language)
+        age_group = get_age_group(user_id, language)
+        interest = get_interest(user_id, language)
         print(gender, age_group, interest)
         if gender and age_group and interest:
             return True
@@ -84,9 +84,9 @@ def is_user_registered(user_id):
 
 def get_profile(user_id, language):
     try:
-        gender = get_gender(user_id)
-        age_group = get_age_group(user_id)
-        interest = get_interest(user_id)
+        gender = get_gender(user_id, language)
+        age_group = get_age_group(user_id, language)
+        interest = get_interest(user_id, language)
         
         if language == "English":
             return text_1.format(gender=gender, age_group=age_group, interest=interest)
