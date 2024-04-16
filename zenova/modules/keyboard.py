@@ -178,14 +178,14 @@ def change_language(client, callback_query):
         if old_lang == "English":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Русский 🇷🇺", callback_data="set_language_Russian")],
-                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_Azerbaijani")],
+                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_Azerbejani")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
             caption = "Choose your new language 🌐"
         elif old_lang == "Russian":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("English 🇺🇸", callback_data="set_language_English")],
-                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_Azerbaijani")],
+                [InlineKeyboardButton("Azərbaycan 🇦🇿", callback_data="set_language_Azerbejani")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
             caption = "Выберите новый язык 🌐"

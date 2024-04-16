@@ -58,7 +58,7 @@ def get_age_group(user_id, language):
             lang_data = document[key][language]
             for age_group in ["below_18", "18_24", "25_34", "above_35"]:
                 if str(user_id) in lang_data.get(age_group, []):
-                    return age_group.replace("_", " ").capitalize()
+                    return age_group.replace("_", "-").capitalize()
     except Exception as e:
         print('Exception occurred in get_age_group:', e)
     return None
@@ -136,12 +136,9 @@ def edit_language(user_id, old_lang, new_lang):
         try:
             # Remove user ID from fields of the old language
             remove_user_id(old_lang, user_id, "users")
-            if gender:
-                remove_user_id(old_lang, user_id, gender)
-            if age_group:
-                remove_user_id(old_lang, user_id, age_group.replace(" ", "_").lower())
-            if interest:
-                remove_user_id(old_lang, user_id, interest.lower())
+            remove_user_id(old_lang, user_id, gender)
+            remove_user_id(old_lang, user_id, age_group.replace(" ", "_"))
+            remove_user_id(old_lang, user_id, interest)
         except Exception as e:
             print(f"Error caught while removing user id: {e}")
 
