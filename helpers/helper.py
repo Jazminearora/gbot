@@ -29,42 +29,42 @@ def find_field(user_id, language, *fields):
                 return field
     return None
 
-def get_gender(user_id):
+def get_gender(language, user_id):
     try:
-        language = find_language(user_id)
-        if language:
-            stored_data = collection.find_one({key: {"$exists": True}})
-            if stored_data and language in stored_data[key]:
-                lang_data = stored_data[key][language]
-                if "male" in lang_data and user_id in lang_data["male"]:
-                    return "male"
-                elif "female" in lang_data and user_id in lang_data["female"]:
-                    return "female"
+        document = collection.find_one({key: {"$exists": True}})
+        if document and language in document[key]:
+            lang_data = document[key][language]
+            if "male" in lang_data and str(user_id) in lang_data["male"]:
+                return "male"
+            elif "female" in lang_data and str(user_id) in lang_data["female"]:
+                return "female"
     except Exception as e:
         print('Exception occurred in get_gender:', e)
     return None
 
-def get_age_group(user_id):
-    language = find_language(user_id)
-    age_group_field = find_field(user_id, language, "below_18", "18_24", "25_34", "above_35")
-    if age_group_field == "below_18":
-        return "Below 18"
-    elif age_group_field == "18_24":
-        return "18-24"
-    elif age_group_field == "25_34":
-        return "25-34"
-    elif age_group_field == "above_35":
-        return "Above 35"
-    else:
-        return None
+def get_age_group(language, user_id):
+    try:
+        document = collection.find_one({key: {"$exists": True}})
+        if document and language in document[key]:
+            lang_data = document[key][language]
+            for age_group in ["below_18", "18_24", "25_34", "above_35"]:
+                if str(user_id) in lang_data.get(age_group, []):
+                    return age_group.replace("_", " ").capitalize()
+    except Exception as e:
+        print('Exception occurred in get_age_group:', e)
+    return None
 
-def get_interest(user_id):
-    language = find_language(user_id)
-    interest_field = find_field(user_id, language, "communication", "intimacy", "selling")
-    if interest_field:
-        return interest_field.capitalize()
-    else:
-        return None
+def get_interest(language, user_id):
+    try:
+        document = collection.find_one({key: {"$exists": True}})
+        if document and language in document[key]:
+            lang_data = document[key][language]
+            for interest in ["communication", "intimacy", "selling"]:
+                if str(user_id) in lang_data.get(interest, []):
+                    return interest.capitalize()
+    except Exception as e:
+        print('Exception occurred in get_interest:', e)
+    return None
     
 def is_user_registered(user_id):
     print("funcs called:", user_id)
