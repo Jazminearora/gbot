@@ -9,6 +9,19 @@ def add_user_id(language, user_id, field):
         collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{language}.{field}": user_id}})
     except Exception as e:
         print("Error in adding user ID:", e)
+
+def remove_user_id(language, user_id, gender, age_group, interest):
+    try:
+        # Remove user ID from fields of the old language
+        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.users": user_id}})
+        if gender:
+            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{gender}": user_id}})
+        if age_group:
+            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{age_group}": user_id}})
+        if interest:
+            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{interest}": user_id}})
+    except Exception as e:
+        print("Error in remove_user_id:", e)
         
 def find_language(user_id):
     stored_data = collection.find_one({key: {"$exists": True}})
@@ -123,29 +136,25 @@ def edit_language(user_id, old_lang, new_lang):
         gender = get_gender(user_id, old_lang)
         age_group = get_age_group(user_id, old_lang)
         interest = get_interest(user_id, old_lang)
-        
-        # Remove user ID from fields of the old language
-        if old_lang:
-            collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.users": str(user_id)}})
-            if gender:
-                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.{gender}": str(user_id)}})
-            if age_group:
-                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.{age_group.lower()}": str(user_id)}})
-            if interest:
-                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{old_lang}.{interest.lower()}": str(user_id)}})
-        
-        # Store user ID in the users field of the new language
-        collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.users": str(user_id)}})
-        
-        # Update gender, age group, and interest fields in the new language
-        if gender:
-            collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.{gender}": str(user_id)}})
-        if age_group:
-            collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.{age_group.lower()}": str(user_id)}})
-        if interest:
-            collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{new_lang}.{interest.lower()}": str(user_id)}})
-        
-        return True
+        try:
+            # Remove user ID from fields of the old language
+            remove_user_id(old_lang, user_id, gender, age_group, interest)
+        except Exception as e:
+            print(f"Error caught while removing user id: {e}")
+
+        try:
+            # Store user ID in the users field of the new language
+            add_user_id(new_lang, user_id, "users")
+        except Exception as e:
+            print(f"Error caught while adding user id: {e}")
+
+        try:
+            # Update gender, age group, and interest fields in the new language
+            add_user_id(new_lang, user_id, gender)
+            add_user_id(new_lang, user_id, age_group.replace(" ", "_").lower())
+            add_user_id(new_lang, user_id, interest.lower())
+        except Exception as e:
+            print(f"Error caught while adding user id: {e}")
     except Exception as e:
         print("Error in change_language:", e)
         return False
