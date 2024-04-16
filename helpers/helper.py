@@ -152,13 +152,10 @@ def edit_language(user_id, old_lang, new_lang):
 
         try:
             # Update gender, age group, and interest fields in the new language
-            if gender:
-                add_user_id(new_lang, user_id, gender)
-                print ("True")
-            if age_group:
-                add_user_id(new_lang, user_id, age_group.replace(" ", "_").lower())
-            if interest:
-                add_user_id(new_lang, user_id, interest.lower())
+            add_user_id(new_lang, user_id, gender)
+            add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
+            add_user_id(new_lang, user_id, interest.lower())
+            print(age_group.replace("-", "_").lower(), interest.lower() )
         except Exception as e:
             print(f"Error caught while adding user id: {e}")
     except Exception as e:
