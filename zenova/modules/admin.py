@@ -1,8 +1,9 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from config import ADMIN_IDS 
+from zenova import zenova
 
-@Client.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
+@zenova.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
 async def admin_panel(_, message):
     buttons = [
         [
