@@ -109,6 +109,31 @@ def get_user_data(collection):
     else:
         return {}
 
+def process_data(data, key_field='_id'):
+    processed_data = {}
+    for item in data:
+        if key_field not in item:
+            raise ValueError(f"Key field '{key_field}' not found in item {item}")
+        key = str(item[key_field])
+        if key not in processed_data:
+            processed_data[key] = {}
+        for field, value in item.items():
+            if field == key_field:
+                continue
+            if field not in processed_data[key]:
+                processed_data[key][field] = {}
+            if isinstance(value, list):
+                for i, item in enumerate(value):
+                    if i not in processed_data[key][field]:
+                        processed_data[key][field][i] = {}
+                    for subfield, subvalue in item.items():
+                        if subfield not in processed_data[key][field][i]:
+                            processed_data[key][field][i][subfield] = []
+                        processed_data[key][field][i][subfield].append(subvalue)
+            else:
+                processed_data[key][field][field] = value
+    return processed_data
+
 # Function to write user data to a file
 def write_user_data_to_file(users_data):
     with open("Users_Data.txt", "w") as file:
@@ -119,9 +144,9 @@ def write_user_data_to_file(users_data):
 async def list_users_handler(_, query):
     # Retrieve user data from MongoDB collections
     raw_data = collection.find_one({key: {"$exists": True}})
-
+    processed_data = process_data(raw_data)
     # Write user data to a file
-    write_user_data_to_file(raw_data)
+    write_user_data_to_file(processed_data)
 
     # Send the file to the admin
     await query.message.reply_document(
