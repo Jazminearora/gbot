@@ -109,42 +109,22 @@ def get_user_data(collection):
     else:
         return {}
 
-def process_data(data, key_field='_id'):
-    processed_data = {}
-    for item in data:
-        if not isinstance(item, dict):
-            continue
-            # raise ValueError(f"Item {item} is not a dictionary")
-        if key_field not in item:
-            raise ValueError(f"Key field '{key_field}' not found in item {item}")
-        key = str(item[key_field])
-        if key not in processed_data:
-            processed_data[key] = {}
-        for field, value in item.items():
-            if field == key_field:
-                continue
-            if field not in processed_data[key]:
-                processed_data[key][field] = {}
-            if isinstance(value, dict):
-                processed_data[key][field] = process_data(value, key_field)
-            elif isinstance(value, list):
-                for i, item in enumerate(value):
-                    if not isinstance(item, dict):
-                        raise ValueError(f"Item {item} in list is not a dictionary")
-                    if i not in processed_data[key][field]:
-                        processed_data[key][field][i] = {}
-                    for subfield, subvalue in item.items():
-                        if subfield not in processed_data[key][field][i]:
-                            processed_data[key][field][i][subfield] = []
-                        processed_data[key][field][i][subfield].append(subvalue)
-            else:
-                processed_data[key][field][field] = value
-    return processed_data
+def process_data(data, key):
+    readable_data = {}
+    for language, details in data[key].items():
+        readable_data[language] = {}
+        for field, users in details.items():
+            readable_data[language][field] = ', '.join(map(str, users))
+    return readable_data
 
 # Function to write user data to a file
-def write_user_data_to_file(users_data):
-    with open("Users_Data.txt", "w") as file:
-        file.write(str(users_data))
+def save_to_file(data, filename):
+    with open(filename, 'w') as file:
+        for language, details in data.items():
+            file.write(f'Language: {language}\n')
+            for field, users in details.items():
+                file.write(f'  {field}: {users}\n')
+            file.write('\n')
 
 # Callback handler for 'List of users' option
 @zenova.on_callback_query(filters.regex(r'^list_users$'))
@@ -152,18 +132,18 @@ async def list_users_handler(_, query):
     # Retrieve user data from MongoDB collections
     raw_data = collection.find_one({key: {"$exists": True}})
     print(raw_data)
-    processed_data = process_data(raw_data)
+    processed_data = process_data(raw_data, key)
     # Write user data to a file
-    write_user_data_to_file(processed_data)
+    save_to_file(processed_data, filename="Users_Data.json")
 
     # Send the file to the admin
     await query.message.reply_document(
-        document="Users_Data.txt",
+        document="Users_Data.json",
         caption="Here is the detailed list of users!"
     )
 
     # Remove the file after sending it
-    os.remove("Users_Data.txt")
+    os.remove("Users_Data.json")
 @zenova.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
     await query.message.edit_text(text="You selected Delete inactive.")
