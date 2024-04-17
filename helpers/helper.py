@@ -13,12 +13,21 @@ def add_user_id(language, user_id, field):
 
 def remove_user_id(language, user_id, field):
     try:
-        # Remove user ID from the specified field and language
-        muks = collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
-        if muks:
-            print("Success removal")
+        # Retrieve the document
+        document = collection.find_one({key: {"$exists": True}})
+        if document and language in document[key]:
+            lang_data = document[key][language]
+            if field in lang_data:
+                # Store the field's data in a temporary variable
+                field_data = lang_data[field]
+                # Remove the user ID from the field's data
+                field_data.remove(user_id)
+                # Update the document with the modified field data
+                collection.update_one({key: {"$exists": True}}, {"$set": {f"{key}.{language}.{field}": field_data}})
+                print(f"Successfully removed user ID {user_id} from {field}")
     except Exception as e:
         print(f"Error in removing user ID from {field}:", e)
+
 
         
 def find_language(user_id):

@@ -1,7 +1,6 @@
 import os
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-import json
 
 from config import ADMIN_IDS
 from zenova import zenova
@@ -134,16 +133,16 @@ async def list_users_handler(_, query):
     print(raw_data)
     processed_data = process_data(raw_data, key)
     # Write user data to a file
-    save_to_file(processed_data, filename="Users_Data.json")
+    save_to_file(processed_data, filename="Users_Data.txt")
 
     # Send the file to the admin
     await query.message.reply_document(
-        document="Users_Data.json",
+        document="Users_Data.txt",
         caption="Here is the detailed list of users!"
     )
 
     # Remove the file after sending it
-    os.remove("Users_Data.json")
+    os.remove("Users_Data.txt")
 @zenova.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
     await query.message.edit_text(text="You selected Delete inactive.")
