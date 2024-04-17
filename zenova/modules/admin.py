@@ -5,6 +5,8 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 # Assuming you have ADMIN_IDS defined in your config module
 from config import ADMIN_IDS
 from zenova import zenova
+from zenova import mongodb as collection
+from config import key
 from helpers.helper import get_total_users, find_language
 
 
@@ -95,7 +97,7 @@ async def vip_users_handler(_, query):
 async def close_page(_, query):
     try:
         # Delete the callback message
-        query.message.delete()
+        await query.message.delete()
     except Exception as e:
         print("Error in close_profile:", e)
 
@@ -123,7 +125,7 @@ def get_user_data(collection):
 
 # Function to write user data to a file
 def write_user_data_to_file(users_data):
-    with open("user_data.txt", "w") as file:
+    with open("Users_Data.txt", "w") as file:
         for key, value in users_data.items():
             file.write(f"{key}:\n")
             for user in value:
@@ -133,21 +135,10 @@ def write_user_data_to_file(users_data):
 @zenova.on_callback_query(filters.regex(r'^list_users$'))
 async def list_users_handler(_, query):
     # Retrieve user data from MongoDB collections
-    language_data = get_user_data(language_collection)
-    gender_data = get_user_data(gender_collection)
-    age_group_data = get_user_data(age_group_collection)
-    interests_data = get_user_data(interests_collection)
-
-    # Combine user data from different collections
-    users_data = {
-        "Language": language_data,
-        "Gender": gender_data,
-        "Age Group": age_group_data,
-        "Interests": interests_data
-    }
+    raw_data = collection.find_one({key: {"$exists": True}})
 
     # Write user data to a file
-    write_user_data_to_file(users_data)
+    write_user_data_to_file(raw_data)
 
     # Send the file to the admin
     await query.message.reply_document(
@@ -156,7 +147,7 @@ async def list_users_handler(_, query):
     )
 
     # Remove the file after sending it
-    os.remove("user_data.txt")
+    os.remove("Users_Data.txt")
 
 
 @zenova.on_callback_query(filters.regex(r'^delete_inactive$'))
