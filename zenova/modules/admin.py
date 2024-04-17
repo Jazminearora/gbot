@@ -125,7 +125,9 @@ def process_data(data, key_field='_id'):
                 continue
             if field not in processed_data[key]:
                 processed_data[key][field] = {}
-            if isinstance(value, list):
+            if isinstance(value, dict):
+                processed_data[key][field] = process_data(value, key_field)
+            elif isinstance(value, list):
                 for i, item in enumerate(value):
                     if not isinstance(item, dict):
                         raise ValueError(f"Item {item} in list is not a dictionary")
