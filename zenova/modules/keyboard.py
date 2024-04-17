@@ -1,6 +1,6 @@
 from pyrogram import filters, types
 from zenova import zenova
-from helpers.helper import get_profile, find_language, edit_language
+from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_age_group, get_gender, get_interest
 import re
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
@@ -216,15 +216,18 @@ def set_language(client, callback_query):
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_lang = find_language(user_id)
+        gender = get_gender(user_id, old_lang)
+        age_group = get_age_group(user_id, old_lang)
+        interest = get_interest(user_id, old_lang)
+        scar = remove_user_id(user_id)
 
-        edit_lang = edit_language(user_id, old_lang, new_lang)
+        add_user_id(new_lang, user_id, "users")
+        add_user_id(new_lang, user_id, gender)
+        add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
+        add_user_id(new_lang, user_id, interest.lower())
 
-        # Attempt to change the language
-        if not edit_lang:
-            # If language change fails, inform the user
-            callback_query.answer("Failed to change language.", show_alert=True)
-        
-        else:
+
+        try:
             # If language change is successful, inform the user
             callback_query.answer(f"Language changed to {new_lang} successfully!", show_alert=True)
             # Edit the message to display the success message in the new language
@@ -234,8 +237,9 @@ def set_language(client, callback_query):
                 success_message = "Язык успешно изменен! 🇷🇺"
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
+            callback_query.message.edit_caption(success_message)
+        except Exception as e:
+            print("Error in changing language:", e)
 
-        # Delete the callback message
-        callback_query.message.delete()
     except Exception as e:
         print("Error in set_language:", e)
