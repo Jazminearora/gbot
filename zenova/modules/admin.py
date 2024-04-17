@@ -112,7 +112,7 @@ def get_user_data(collection):
 # Function to write user data to a file
 def write_user_data_to_file(users_data):
     with open("Users_Data.txt", "w") as file:
-        json.dump(users_data, file, indent=4)
+        file.write(str(users_data))
 
 # Callback handler for 'List of users' option
 @zenova.on_callback_query(filters.regex(r'^list_users$'))
