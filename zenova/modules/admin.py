@@ -1,8 +1,8 @@
-import re
+import os
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import json
 
-# Assuming you have ADMIN_IDS defined in your config module
 from config import ADMIN_IDS
 from zenova import zenova
 from zenova import mongodb as collection
@@ -65,14 +65,6 @@ async def statistics_handler(_, query):
     azerbejani_users = get_total_users("Azerbejani") or 0
     total_users = eng_users + russian_users + azerbejani_users
 
-    # Update the user_stats dictionary
-    user_stats = {
-        "eng_users": eng_users,
-        "russian_users": russian_users,
-        "azerbejani_users": azerbejani_users,
-        "total_users": total_users
-    }
-
     # Format the statistics text using string formatting
     stats_text = (
         "--Total stats of Bot--\n"
@@ -109,12 +101,6 @@ async def back_page(_, query):
     except Exception as e:
         print("Error in close_profile:", e)
 
-import os
-from pyrogram.types import InputMediaDocument
-from zenova import mongodb as database
-from zenova import language_collection, gender_collection, age_group_collection, interests_collection
-
-
 # Function to fetch user data from MongoDB
 def get_user_data(collection):
     document = collection.find_one({})
@@ -126,10 +112,7 @@ def get_user_data(collection):
 # Function to write user data to a file
 def write_user_data_to_file(users_data):
     with open("Users_Data.txt", "w") as file:
-        for key, value in users_data.items():
-            file.write(f"{key}:\n")
-            for user in value:
-                file.write(f"- {user}\n")
+        json.dump(users_data, file, indent=4)
 
 # Callback handler for 'List of users' option
 @zenova.on_callback_query(filters.regex(r'^list_users$'))
@@ -143,7 +126,7 @@ async def list_users_handler(_, query):
     # Send the file to the admin
     await query.message.reply_document(
         document="user_data.txt",
-        caption="Here is the list of users."
+        caption="Here is the detailed list of users!"
     )
 
     # Remove the file after sending it
