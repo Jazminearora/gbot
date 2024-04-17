@@ -113,7 +113,8 @@ def process_data(data, key_field='_id'):
     processed_data = {}
     for item in data:
         if not isinstance(item, dict):
-            raise ValueError(f"Item {item} is not a dictionary")
+            continue
+            # raise ValueError(f"Item {item} is not a dictionary")
         if key_field not in item:
             raise ValueError(f"Key field '{key_field}' not found in item {item}")
         key = str(item[key_field])
