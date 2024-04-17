@@ -11,22 +11,14 @@ def add_user_id(language, user_id, field):
     except Exception as e:
         print("Error in adding user ID:", e)
 
-def remove_user_id(language, user_id, field):
+def remove_user_id(user_id):
     try:
-        # Retrieve the document
-        document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]:
-            lang_data = document[key][language]
-            if field in lang_data:
-                # Store the field's data in a temporary variable
-                field_data = lang_data[field]
-                # Remove the user ID from the field's data
-                field_data.remove(user_id)
-                # Update the document with the modified field data
-                collection.update_one({key: {"$exists": True}}, {"$set": {f"{key}.{language}.{field}": field_data}})
-                print(f"Successfully removed user ID {user_id} from {field}")
+        # Remove user ID from all fields and languages
+        muks = collection.update_many({}, {"$pull": {"key": {"$exists": True, "value": {"$elemMatch": {"language": {"$exists": True, "field": {"$exists": True}, "user_id": user_id}}}}}})
+        if muks:
+            print("Success removal")
     except Exception as e:
-        print(f"Error in removing user ID from {field}:", e)
+        print(f"Error in removing user ID:", e)
 
 
         
@@ -161,18 +153,9 @@ def edit_language(user_id, old_lang, new_lang):
 
         try:
             # Remove user ID from fields of the old language
-            scar = remove_user_id(old_lang, user_id, "users")
+            scar = remove_user_id(user_id)
             if scar:
                 print("1 success")
-            ak = remove_user_id(old_lang, user_id, gender)
-            if ak:
-                print("2 success")
-            ump = remove_user_id(old_lang, user_id, age_group.replace(" ", "_"))
-            if ump:
-                print("3 success")
-            mpt = remove_user_id(old_lang, user_id, interest)
-            if mpt:
-                print("4 success")
         except Exception as e:
             print(f"Error caught while removing user id: {e}")
 
