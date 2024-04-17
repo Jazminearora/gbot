@@ -1,15 +1,14 @@
 import re
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Assuming you have ADMIN_IDS defined in your config module
 from config import ADMIN_IDS
 from zenova import zenova
+from helpers.helper import get_total_users, find_language
 
-# Command handler for /admin
-@zenova.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
-async def admin_panel(_, message):
-    buttons = [
+
+buttons = [
         [
             InlineKeyboardButton("📥 Newsletter", callback_data='newsletter'),
             InlineKeyboardButton("✏️ Subscriptions", callback_data='subscriptions')
@@ -31,6 +30,15 @@ async def admin_panel(_, message):
         ]
     ]
 
+home_btn = InlineKeyboardMarkup([
+        [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
+        InlineKeyboardButton(text="Close ❌", callback_data="st_close")]])
+
+
+# Command handler for /admin
+@zenova.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
+async def admin_panel(_, message):
+
     reply_markup = InlineKeyboardMarkup(buttons)
     await message.reply_text('Please choose an option:', reply_markup=reply_markup)
 
@@ -49,25 +57,30 @@ async def impressions_handler(_, query):
 
 @zenova.on_callback_query(filters.regex(r'^statistics$'))
 async def statistics_handler(_, query):
-    # Assuming you have a dictionary named user_stats with the user statistics
+    # Get the user counts for each language
+    eng_users = get_total_users("English") or 0
+    russian_users = get_total_users("Russian") or 0
+    azerbejani_users = get_total_users("Azerbejani") or 0
+    total_users = eng_users + russian_users + azerbejani_users
+
+    # Update the user_stats dictionary
     user_stats = {
-        "total_users": 1000,
-        "eng_users": 700,
-        "russian_users": 200,
-        "azerbejani_users": 100
+        "eng_users": eng_users,
+        "russian_users": russian_users,
+        "azerbejani_users": azerbejani_users,
+        "total_users": total_users
     }
 
     # Format the statistics text using string formatting
     stats_text = (
         "--Total stats of Bot--\n"
-        f"Total users: {user_stats['total_users']}\n"
-        f"English users: {user_stats['eng_users']}\n"
-        f"Russian users: {user_stats['russian_users']}\n"
-        f"Azerbejani users: {user_stats['azerbejani_users']}"
+        f"Total users: {total_users} \n"
+        f"English users: {eng_users}\n"
+        f"Russian users: {russian_users}\n"
+        f"Azerbejani users: {azerbejani_users}"
     )
-
     # Edit the message to display the statistics
-    await query.message.edit_text(text=stats_text)
+    await query.message.edit_text(text=stats_text, reply_markup = home_btn)
 
     
 @zenova.on_callback_query(filters.regex(r'^referral$'))
