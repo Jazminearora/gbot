@@ -112,6 +112,8 @@ def get_user_data(collection):
 def process_data(data, key_field='_id'):
     processed_data = {}
     for item in data:
+        if not isinstance(item, dict):
+            raise ValueError(f"Item {item} is not a dictionary")
         if key_field not in item:
             raise ValueError(f"Key field '{key_field}' not found in item {item}")
         key = str(item[key_field])
@@ -124,6 +126,8 @@ def process_data(data, key_field='_id'):
                 processed_data[key][field] = {}
             if isinstance(value, list):
                 for i, item in enumerate(value):
+                    if not isinstance(item, dict):
+                        raise ValueError(f"Item {item} in list is not a dictionary")
                     if i not in processed_data[key][field]:
                         processed_data[key][field][i] = {}
                     for subfield, subvalue in item.items():
@@ -156,8 +160,6 @@ async def list_users_handler(_, query):
 
     # Remove the file after sending it
     os.remove("Users_Data.txt")
-
-
 @zenova.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
     await query.message.edit_text(text="You selected Delete inactive.")
