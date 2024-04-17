@@ -148,6 +148,7 @@ def write_user_data_to_file(users_data):
 async def list_users_handler(_, query):
     # Retrieve user data from MongoDB collections
     raw_data = collection.find_one({key: {"$exists": True}})
+    print(raw_data)
     processed_data = process_data(raw_data)
     # Write user data to a file
     write_user_data_to_file(processed_data)
