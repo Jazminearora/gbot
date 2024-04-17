@@ -91,6 +91,22 @@ async def referral_handler(_, query):
 async def vip_users_handler(_, query):
     await query.message.edit_text(text="You selected VIP Users.")
 
+@zenova.on_callback_query(filters.regex(r'^st_close$'))
+async def close_page(_, query):
+    try:
+        # Delete the callback message
+        query.message.delete()
+    except Exception as e:
+        print("Error in close_profile:", e)
+
+@zenova.on_callback_query(filters.regex(r'^st_back$'))
+async def back_page(_, query):
+    try:
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit_text('Please choose an option:', reply_markup=reply_markup)
+    except Exception as e:
+        print("Error in close_profile:", e)
+
 import os
 from pyrogram.types import InputMediaDocument
 from zenova import mongodb as database
@@ -150,3 +166,19 @@ async def delete_inactive_handler(_, query):
 @zenova.on_callback_query(filters.regex(r'^cancel$'))
 async def cancel_handler(_, query):
     await query.message.edit_text(text="You canceled the operation.")
+
+@zenova.on_callback_query(filters.regex(r'^st_close$'))
+async def close_menu(client, callback_query):
+    try:
+        # Delete the callback message
+        await callback_query.message.delete()
+    except Exception as e:
+        print("Error in close_profile:", e)
+
+@zenova.on_callback_query(filters.regex(r'^st_back$'))
+async def back_menu(_, query):
+    try:
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit_text('Please choose an option:', reply_markup=reply_markup)  
+    except Exception as e:
+        print("Error in back_profile:", e)
