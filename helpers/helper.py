@@ -11,14 +11,32 @@ def add_user_id(language, user_id, field):
     except Exception as e:
         print("Error in adding user ID:", e)
 
-def remove_user_id(language, user_id, field):
+def remove_user_id(language, user_id, shield):
     try:
-        # Remove user ID from all fields and languages
-        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
-        print(f"Success removal of {user_id} from {field} inside {language}.")
-    except Exception as e:
-        print(f"Error in removing user ID:", e)
+        doc = collection.find_one({key: {"$exists": True}})
 
+        if doc:
+            # Find all occurrences of the user ID in the document
+            occurrences = []
+            for lang, lang_data in doc[key].items():
+                for field, field_data in lang_data.items():
+                    if isinstance(field_data, list) and user_id in field_data:
+                        occurrences.append((lang, field))
+
+            # Print all occurrences of the user ID
+            print("Occurrences:", occurrences)
+
+            # Remove the user ID from all occurrences
+            for lang, field in occurrences:
+                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{lang}.{field}": user_id}})
+
+            # Print the updated document
+            print("Updated document:")
+            print(collection.find_one({key: {"$exists": True}}))
+        else:
+            print("Document not found")
+    except Exception as e:
+        print("Error:", e)
 
         
 def find_language(user_id):
