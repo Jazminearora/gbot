@@ -15,7 +15,7 @@ def remove_user_id(language, user_id, field):
     try:
         # Remove user ID from all fields and languages
         collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
-        print("Success removal")
+        print(f"Success removal of {user_id} from {field} inside {language}.")
     except Exception as e:
         print(f"Error in removing user ID:", e)
 
@@ -60,6 +60,7 @@ def get_gender(user_id, language):
         document = collection.find_one({key: {"$exists": True}})
         if document and language in document[key]:
             lang_data = document[key][language]
+            print(lang_data)
             if "male" in lang_data and str(user_id) in lang_data["male"]:
                 return "male"
             elif "female" in lang_data and str(user_id) in lang_data["female"]:
