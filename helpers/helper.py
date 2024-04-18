@@ -11,12 +11,11 @@ def add_user_id(language, user_id, field):
     except Exception as e:
         print("Error in adding user ID:", e)
 
-def remove_user_id(user_id):
+def remove_user_id(language, user_id, field):
     try:
         # Remove user ID from all fields and languages
-        muks = collection.update_many({}, {"$pull": {"key": {"$exists": True, "value": {"$elemMatch": {"language": {"$exists": True, "field": {"$exists": True}, "user_id": user_id}}}}}})
-        if muks:
-            print("Success removal")
+        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{language}.{field}": user_id}})
+        print("Success removal")
     except Exception as e:
         print(f"Error in removing user ID:", e)
 

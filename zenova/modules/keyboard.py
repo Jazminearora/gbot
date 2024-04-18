@@ -4,6 +4,7 @@ from helpers.helper import get_profile, find_language, remove_user_id, add_user_
 import re
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
+import time
 
 # Function to get reply markup with buttons in the user's selected language
 def get_reply_markup(language):
@@ -212,19 +213,29 @@ def set_language(client, callback_query):
         # Extract the new language from the callback data
         new_lang = callback_query.data.split("_")[2]
         print("new language:", new_lang)
-
+        muks = callback_query.message.edit_caption("🔍")
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_lang = find_language(user_id)
         gender = get_gender(user_id, old_lang)
         age_group = get_age_group(user_id, old_lang)
         interest = get_interest(user_id, old_lang)
-        scar = remove_user_id(user_id)
+        suks = muks.edit_caption("✅")
+        # Remove user from old language
+        remove_user_id(old_lang, user_id, "users")
+        remove_user_id(old_lang, user_id, gender)
+        huks = suks.edit_caption("⏳")
+        remove_user_id(old_lang, user_id, age_group.replace("-", "_").lower())
+        remove_user_id(old_lang, user_id, interest.lower())
+        ruks = huks.edit_caption("⌛")
 
+        # Add user id to new language
         add_user_id(new_lang, user_id, "users")
         add_user_id(new_lang, user_id, gender)
+        amdi = ruks.edit_caption("📡")
         add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
         add_user_id(new_lang, user_id, interest.lower())
+        trumk = amdi.edit_caption("🤖")
 
 
         try:
@@ -237,7 +248,7 @@ def set_language(client, callback_query):
                 success_message = "Язык успешно изменен! 🇷🇺"
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
-            callback_query.message.edit_caption(success_message)
+            trumk.edit_caption(success_message)
         except Exception as e:
             print("Error in changing language:", e)
 
