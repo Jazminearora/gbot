@@ -225,26 +225,24 @@ def set_language(client, callback_query):
         # Remove user from old language
         remove_user_id(old_lang, user_id, "users")
         time.sleep(1.5)
+        add_user_id(new_lang, user_id, "users")
+        time.sleep(1.5)
         remove_user_id(old_lang, user_id, gender)
+        time.sleep(1.5)
+        add_user_id(new_lang, user_id, gender)
         time.sleep(1.5)
         huks = suks.edit_caption("⏳")
         remove_user_id(old_lang, user_id, age_group.replace("-", "_").lower())
         time.sleep(1.5)
-        remove_user_id(old_lang, user_id, interest.lower())
-        time.sleep(1.5)
-        ruks = huks.edit_caption("⌛")
-
-        # Add user id to new language
-        add_user_id(new_lang, user_id, "users")
-        time.sleep(1.5)
-        add_user_id(new_lang, user_id, gender)
-        time.sleep(1.5)
-        amdi = ruks.edit_caption("📡")
+        amdi = huks.edit_caption("📡")
         add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
         time.sleep(1.5)
+        remove_user_id(old_lang, user_id, interest.lower())
+        time.sleep(1.5)
+        ruks = amdi.edit_caption("⌛")
         add_user_id(new_lang, user_id, interest.lower())
         time.sleep(1.5)
-        trumk = amdi.edit_caption("🤖")
+        trumk = ruks.edit_caption("🤖")
 
 
         try:
@@ -257,6 +255,7 @@ def set_language(client, callback_query):
                 success_message = "Язык успешно изменен! 🇷🇺"
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
+            print(success_message)
             trumk.edit_caption(success_message)
         except Exception as e:
             print("Error in changing language:", e)
