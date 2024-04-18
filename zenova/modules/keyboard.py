@@ -220,6 +220,7 @@ def set_language(client, callback_query):
         gender = get_gender(user_id, old_lang)
         age_group = get_age_group(user_id, old_lang)
         interest = get_interest(user_id, old_lang)
+        print("see my details sur", gender, age_group, interest)
         suks = muks.edit_caption("✅")
         # Remove user from old language
         remove_user_id(old_lang, user_id, "users")
@@ -235,14 +236,14 @@ def set_language(client, callback_query):
 
         # Add user id to new language
         add_user_id(new_lang, user_id, "users")
-        time.sleep(0.1)
+        time.sleep(1.5)
         add_user_id(new_lang, user_id, gender)
-        time.sleep(0.1)
+        time.sleep(1.5)
         amdi = ruks.edit_caption("📡")
         add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
-        time.sleep(0.1)
+        time.sleep(1.5)
         add_user_id(new_lang, user_id, interest.lower())
-        time.sleep(0.1)
+        time.sleep(1.5)
         trumk = amdi.edit_caption("🤖")
 
 
