@@ -224,14 +224,14 @@ def set_language(client, callback_query):
         suks = muks.edit_caption("✅")
         # Remove user from old language
         remove_user_id(old_lang, user_id, "users")
-        time.sleep(0.1)
+        time.sleep(1.5)
         remove_user_id(old_lang, user_id, gender)
-        time.sleep(0.1)
+        time.sleep(1.5)
         huks = suks.edit_caption("⏳")
         remove_user_id(old_lang, user_id, age_group.replace("-", "_").lower())
-        time.sleep(0.1)
+        time.sleep(1.5)
         remove_user_id(old_lang, user_id, interest.lower())
-        time.sleep(0.1)
+        time.sleep(1.5)
         ruks = huks.edit_caption("⌛")
 
         # Add user id to new language
