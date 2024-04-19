@@ -1,6 +1,7 @@
 from zenova import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
 from config import key
+from helpers.translator import translate_text
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def add_user_id(language, user_id, field):
@@ -107,11 +108,17 @@ def get_profile(user_id, language):
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":
-            message = text_2.format(gender=gender, age_group=age_group, interest=interest)
+            ru_gender = translate_text(gender, target_language="ru")
+            ru_age_group = translate_text(age_group, target_language="ru")
+            ru_interest = translate_text(interest, target_language="ru")
+            message = text_2.format(gender=ru_gender, age_group=ru_age_group, interest=ru_interest)
             edit_button_text = "Редактировать ✏️"
             close_button_text = "Закрыть ❌"
         elif language == "Azerbejani":
-            message = text_3.format(gender=gender, age_group=age_group, interest=interest)
+            az_gender = translate_text(gender, target_language="az")
+            az_age_group = translate_text(age_group, target_language="az")
+            az_interest = translate_text(interest, target_language="az")
+            message = text_3.format(gender=az_gender, age_group=az_age_group, interest=az_interest)
             edit_button_text = "Redaktə et ✏️"
             close_button_text = "Bağla ❌"
         else:
