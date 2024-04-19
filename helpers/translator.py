@@ -1,8 +1,8 @@
-from gpytranslate import Translator
+from gpytranslate import SyncTranslator
 
 def translate_text(text, target_language):
     try:
-        t = Translator()
+        t = SyncTranslator()
         translation = t.translate(text, targetlang=target_language)
         return translation.text
     except Exception as e:
