@@ -40,17 +40,13 @@ def get_total_users(language):
         return None
 
 def get_gender(user_id, language):
-    try:
-        document = collection.find_one({key: {"$exists": True}})
-        if document:
-            database = document[key].get("database", {})
-            for lang_data in database.values():
-                if user_id in lang_data.get("male", []):
-                    return "male"
-                elif user_id in lang_data.get("female", []):
-                    return "female"
-    except Exception as e:
-        print('Error in getting gender:', e)
+    stored_data = collection.find_one({key: {"$exists": True}})
+    print("stored_data:", stored_data)
+    if stored_data:
+        if 'male' in stored_data[key]["database"] and user_id in stored_data[key]["database"]["male"]:
+            return 'male'
+        elif 'female' in stored_data[key]["database"] and user_id in stored_data[key]["database"]["female"]:
+            return 'female'
     return None
 
 
