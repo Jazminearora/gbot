@@ -248,6 +248,7 @@ def edit_interest(client, callback_query):
         # Get the user ID and language
         user_id = callback_query.from_user.id
         language = find_language(user_id)
+        print(language)
 
         # Fetch current interest
         current_interest = get_interest(user_id, language)

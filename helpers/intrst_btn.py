@@ -1,21 +1,21 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 def get_interest_reply_markup(current_interest, language):
-    print("called")
+    print(current_interest)
     if language == "English":
-        if current_interest == "communication":
+        if current_interest == "Communication":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy")],
                 [InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
-        elif current_interest == "intimacy":
+        elif current_interest == "Intimacy":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
-        elif current_interest == "selling":
+        elif current_interest == "Selling":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy")],
@@ -23,19 +23,19 @@ def get_interest_reply_markup(current_interest, language):
             ])
         caption = "Choose your new interest ❤️"
     elif language == "Russian":
-        if current_interest == "communication":
+        if current_interest == "Communication":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy")],
                 [InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
-        elif current_interest == "intimacy":
+        elif current_interest == "Intimacy":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
-        elif current_interest == "selling":
+        elif current_interest == "Selling":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy")],
@@ -43,19 +43,19 @@ def get_interest_reply_markup(current_interest, language):
             ])
         caption = "Выберите новый интерес ❤️"
     elif language == "Azerbejani":
-        if current_interest == "communication":
+        if current_interest == "Communication":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy")],
                 [InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
                 [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
             ])
-        elif current_interest == "intimacy":
+        elif current_interest == "Intimacy":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Əlaqə 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
                 [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
             ])
-        elif current_interest == "selling":
+        elif current_interest == "Selling":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Əlaqə 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy")],
