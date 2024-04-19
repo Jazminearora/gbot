@@ -7,7 +7,7 @@ from config import key
 
 loop = asyncio.get_event_loop()
 
-data = {
+bkpdata = {
     "English": {
         "users": [],
         "male": [],
@@ -34,6 +34,23 @@ data = {
     },
     "Azerbejani": {
         "users": [],
+        "male": [],
+        "female": [],
+        "below_18": [],
+        "18_24": [],
+        "25_34": [],
+        "above_35": [],
+        "communication": [],
+        "intimacy": [],
+        "selling": []
+    }
+}
+
+data = {
+    "database": {
+        "English": [],
+        "Russian": [],
+        "Azerbejani": [],
         "male": [],
         "female": [],
         "below_18": [],

@@ -52,6 +52,7 @@ async def register_user(client, message):
         # Get user ID
         user_id = message.from_user.id
         language = find_language(user_id)
+        print("register.py language fetched:", language)
         # Check if user ID is already registered
         if language:
             gender = get_gender(user_id, language)

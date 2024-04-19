@@ -19,6 +19,7 @@ def remove_user_id(language, user_id, field):
 
 def find_language(user_id):
     stored_data = collection.find_one({key: {"$exists": True}})
+    print("stored_data:", stored_data)
     if stored_data:
         for language, lang_data in stored_data[key]["database"].items():
             if language in ["English", "Russian", "Azerbejani"] and user_id in lang_data:
