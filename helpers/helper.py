@@ -42,9 +42,9 @@ def get_total_users(language):
 def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {'$exists': True}})
-        print("get gender docs:", document)
+        print("get gender docs:", document[key])
         if document:
-            lang_data = document['database']
+            lang_data = document[key]['database']
             print("lang data in get gender:", lang_data)
             if "male" in lang_data and str(user_id) in lang_data["male"]:
                 print("male")
