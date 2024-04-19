@@ -42,11 +42,15 @@ def get_total_users(language):
 def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {'$exists': True}})
+        print("get gender docs:", document)
         if document:
             lang_data = document['database']
+            print("lang data in get gender:", lang_data)
             if "male" in lang_data and str(user_id) in lang_data["male"]:
+                print("male")
                 return "male"
             elif "female" in lang_data and str(user_id) in lang_data["female"]:
+                print("male")
                 return "female"
     except Exception as e:
         print('Exception occurred in get_gender:', e)
