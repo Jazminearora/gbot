@@ -1,6 +1,7 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 def get_interest_reply_markup(current_interest, language):
+    print("called")
     if language == "English":
         if current_interest == "communication":
             reply_markup = InlineKeyboardMarkup([

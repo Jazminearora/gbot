@@ -253,10 +253,10 @@ def edit_interest(client, callback_query):
         current_interest = get_interest(user_id, language)
 
         # Get reply markup and caption
-        reply_markup, caption = get_interest_reply_markup(current_interest, language)
+        reply_arkup, captoion = get_interest_reply_markup(current_interest, language)
 
         # Edit the message with the new interest options
-        callback_query.message.edit_caption(caption, reply_markup=reply_markup)
+        callback_query.message.edit_caption(captoion, reply_markup=reply_arkup)
 
     except Exception as e:
         print("Error in edit_interest:", e)
