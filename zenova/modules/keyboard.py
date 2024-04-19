@@ -1,10 +1,10 @@
 from pyrogram import filters, types
 from zenova import zenova
 from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_age_group, get_gender, get_interest
+from helpers.intrst_btn import get_interest_reply_markup
 import re
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
-import time
 
 # Function to get reply markup with buttons in the user's selected language
 def get_reply_markup(language):
@@ -109,7 +109,10 @@ async def handle_keyboard_response(client, message):
             user_id = message.from_user.id
             language = find_language(user_id)
             profile_text, reply_markup = get_profile(user_id, language)
-            await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+            try:
+                await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+            except Exception as e:
+                await wait_message.edit_text(f"An error occurred: {str(e)}")
         except Exception as e:
             await wait_message.edit_text(f"An error occurred: {str(e)}")
     elif "Top" in text or "Лучшие" in text or "Ən yuxarı" in text:
@@ -139,26 +142,23 @@ def edit_profile(client, callback_query):
         # Create the reply markup with the new buttons
         if language == "English":
             change_language_button = InlineKeyboardButton("Change language 🌐", callback_data="change_language")
-            gender_interest_buttons = [InlineKeyboardButton("Gender 👤", callback_data="edit_gender"), InlineKeyboardButton("Interest ❤️", callback_data="edit_interest")]
-            age_group_button = InlineKeyboardButton("Age group 🎂", callback_data="edit_age_group")
+            interest_button = InlineKeyboardButton("Change Interest ❤️", callback_data="edit_interest")
             back_close_buttons = [InlineKeyboardButton("Back 🔙", callback_data="back"), InlineKeyboardButton("Close ❌", callback_data="close_profile")]
         elif language == "Russian":
             change_language_button = InlineKeyboardButton("Изменить язык 🌐", callback_data="change_language")
-            gender_interest_buttons = [InlineKeyboardButton("Пол 👤", callback_data="edit_gender"), InlineKeyboardButton("Интерес ❤️", callback_data="edit_interest")]
-            age_group_button = InlineKeyboardButton("Возрастная группа 🎂", callback_data="edit_age_group")
+            interest_button = InlineKeyboardButton("Изменить интерес ❤️", callback_data="edit_interest")
             back_close_buttons = [InlineKeyboardButton("Назад 🔙", callback_data="back"), InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
         elif language == "Azerbejani":
             change_language_button = InlineKeyboardButton("Dili dəyiş 🌐", callback_data="change_language")
-            gender_interest_buttons = [InlineKeyboardButton("Cins 👤", callback_data="edit_gender"), InlineKeyboardButton("Marag ❤️", callback_data="edit_interest")]
-            age_group_button = InlineKeyboardButton("Yaş qrupu 🎂", callback_data="edit_age_group")
+            interest_button = InlineKeyboardButton("Maragı dəyiş ❤️", callback_data="edit_interest")
             back_close_buttons = [InlineKeyboardButton("Geri 🔙", callback_data="back"), InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
         else:
             return
 
+
         new_reply_markup = InlineKeyboardMarkup([
             [change_language_button],
-            gender_interest_buttons,
-            [age_group_button],
+            [interest_button],
             back_close_buttons
         ])
 
@@ -240,3 +240,23 @@ def set_language(client, callback_query):
 
     except Exception as e:
         print("Error in set_language:", e)
+
+
+@zenova.on_callback_query(filters.regex("^edit_interest$"))
+def edit_interest(client, callback_query):
+    try:
+        # Get the user ID and language
+        user_id = callback_query.from_user.id
+        language = find_language(user_id)
+
+        # Fetch current interest
+        current_interest = get_interest(user_id, language)
+
+        # Get reply markup and caption
+        reply_markup, caption = get_interest_reply_markup(current_interest, language)
+
+        # Edit the message with the new interest options
+        callback_query.message.edit_caption(caption, reply_markup=reply_markup)
+
+    except Exception as e:
+        print("Error in edit_interest:", e)
