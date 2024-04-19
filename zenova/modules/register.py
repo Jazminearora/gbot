@@ -91,7 +91,7 @@ async def register_language_callback(client, callback_query):
         lang_chk = find_language(user_id)
         if not lang_chk:
             # Store user ID in chosen language's 'users' field in MongoDB
-            add_user_id(language, user_id, "users")  
+            add_user_id(language, user_id, language)  
             caption, reply_markup = get_registration_text(language, "gender")
             await callback_query.message.edit_text(caption, reply_markup=reply_markup)    
         else:

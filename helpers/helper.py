@@ -5,93 +5,57 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def add_user_id(language, user_id, field):
     try:
-        # Update the stored document
-        collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.{language}.{field}": user_id}})
+        collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.database.{field}": user_id}})
         print("success lang:", language)
     except Exception as e:
         print("Error in adding user ID:", e)
 
-def remove_user_id(language, user_id, shield):
+def remove_user_id(language, user_id, field):
     try:
-        doc = collection.find_one({key: {"$exists": True}})
-
-        if doc:
-            # Find all occurrences of the user ID in the document
-            occurrences = []
-            for lang, lang_data in doc[key].items():
-                for field, field_data in lang_data.items():
-                    if isinstance(field_data, list) and user_id in field_data:
-                        occurrences.append((lang, field))
-
-            # Print all occurrences of the user ID
-            print("Occurrences:", occurrences)
-
-            # Remove the user ID from all occurrences
-            for lang, field in occurrences:
-                collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.{lang}.{field}": user_id}})
-
-            # Print the updated document
-            print("Updated document:")
-            print(collection.find_one({key: {"$exists": True}}))
-        else:
-            print("Document not found")
+        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
+        print("success removal:", language)
     except Exception as e:
-        print("Error:", e)
+        print("Error in removing user ID:", e)
 
-        
 def find_language(user_id):
     stored_data = collection.find_one({key: {"$exists": True}})
     if stored_data:
-        for language, lang_data in stored_data[key].items():
-            for field, user_ids in lang_data.items():
-                if user_id in user_ids:
-                    return language
-    else:
-        return None
+        for language, lang_data in stored_data[key]["database"].items():
+            if language in ["English", "Russian", "Azerbejani"] and user_id in lang_data:
+                return language
+    return None
 
 def get_total_users(language):
     try:
         total_users = 0
         document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]:
-            lang_data = document[key][language]
-            for field, user_ids in lang_data.items():
-                if field == "users":
-                    total_users += len(user_ids)
+        if document and language in document[key]["database"]:
+            lang_data = document[key]["database"][language]
+            if "users" in lang_data:
+                total_users += len(lang_data["users"])
         return total_users
     except Exception as e:
         print(f'Error in getting total users for {language}:', e)
         return None
 
-
-def find_field(user_id, language, *fields):
-    stored_data = collection.find_one({key: {"$exists": True}})
-    if stored_data and language in stored_data[key]:
-        lang_data = stored_data[key][language]
-        for field in fields:
-            if field in lang_data and user_id in lang_data[field]:
-                return field
-    return None
-
 def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]:
-            lang_data = document[key][language]
-            print(lang_data)
+        if document and language in document[key]["database"]:
+            lang_data = document[key]["database"][language]
             if "male" in lang_data and str(user_id) in lang_data["male"]:
                 return "male"
             elif "female" in lang_data and str(user_id) in lang_data["female"]:
                 return "female"
     except Exception as e:
-        print('Exception occurred in get_gender:', e)
+        print('Error in getting gender:', e)
     return None
 
 def get_age_group(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]:
-            lang_data = document[key][language]
+        if document and language in document[key]["database"]:
+            lang_data = document[key]["database"][language]
             for age_group in ["below_18", "18_24", "25_34", "above_35"]:
                 if str(user_id) in lang_data.get(age_group, []):
                     return age_group.replace("_", "-").capitalize()
@@ -102,8 +66,8 @@ def get_age_group(user_id, language):
 def get_interest(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]:
-            lang_data = document[key][language]
+        if document and language in document[key]["database"]:
+            lang_data = document[key]["database"][language]
             for interest in ["communication", "intimacy", "selling"]:
                 if str(user_id) in lang_data.get(interest, []):
                     return interest.capitalize()
@@ -162,37 +126,3 @@ def get_profile(user_id, language):
         return "An error occurred while fetching the profile.", None
 
 
-def edit_language(user_id, old_lang, new_lang):
-    try:
-        # Extract information from the old language
-        gender = get_gender(user_id, old_lang)
-        age_group = get_age_group(user_id, old_lang)
-        interest = get_interest(user_id, old_lang)
-
-        try:
-            # Remove user ID from fields of the old language
-            scar = remove_user_id(user_id)
-            if scar:
-                print("1 success")
-        except Exception as e:
-            print(f"Error caught while removing user id: {e}")
-
-        try:
-            # Store user ID in the users field of the new language
-            add_user_id(new_lang, user_id, "users")
-        except Exception as e:
-            print(f"Error caught while adding user id: {e}")
-
-        try:
-            # Update gender, age group, and interest fields in the new language
-            add_user_id(new_lang, user_id, gender)
-            add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
-            add_user_id(new_lang, user_id, interest.lower())
-            language = find_language(user_id)
-            print(age_group.replace("-", "_").lower(), interest.lower(), language )
-        except Exception as e:
-            print(f"Error caught while adding user id: {e}")
-            return True
-    except Exception as e:
-        print("Error in change_language:", e)
-        return False

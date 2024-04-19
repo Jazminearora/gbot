@@ -217,32 +217,10 @@ def set_language(client, callback_query):
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_lang = find_language(user_id)
-        gender = get_gender(user_id, old_lang)
-        age_group = get_age_group(user_id, old_lang)
-        interest = get_interest(user_id, old_lang)
-        print("see my details sur", gender, age_group, interest)
-        suks = muks.edit_caption("✅")
-        # Remove user from old language
-        remove_user_id(old_lang, user_id, "users")
-        time.sleep(1.5)
-        add_user_id(new_lang, user_id, "users")
-        time.sleep(1.5)
-        remove_user_id(old_lang, user_id, gender)
-        time.sleep(1.5)
-        add_user_id(new_lang, user_id, gender)
-        time.sleep(1.5)
-        huks = suks.edit_caption("⏳")
-        remove_user_id(old_lang, user_id, age_group.replace("-", "_").lower())
-        time.sleep(1.5)
-        amdi = huks.edit_caption("📡")
-        add_user_id(new_lang, user_id, age_group.replace("-", "_").lower())
-        time.sleep(1.5)
-        remove_user_id(old_lang, user_id, interest.lower())
-        time.sleep(1.5)
-        ruks = amdi.edit_caption("⌛")
-        add_user_id(new_lang, user_id, interest.lower())
-        time.sleep(1.5)
-        trumk = ruks.edit_caption("🤖")
+        huks = muks.edit_caption("⚙️")
+        remove_user_id(old_lang, user_id, old_lang)
+        trumk = huks.edit_caption("🤖")
+        add_user_id(new_lang, user_id, new_lang)
 
 
         try:
