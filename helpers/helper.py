@@ -19,7 +19,6 @@ def remove_user_id(language, user_id, field):
 
 def find_language(user_id):
     stored_data = collection.find_one({key: {"$exists": True}})
-    print("stored_data:", stored_data)
     if stored_data:
         for language, lang_data in stored_data[key]["database"].items():
             if language in ["English", "Russian", "Azerbejani"] and user_id in lang_data:
@@ -32,8 +31,7 @@ def get_total_users(language):
         document = collection.find_one({key: {"$exists": True}})
         if document and language in document[key]["database"]:
             lang_data = document[key]["database"][language]
-            if "users" in lang_data:
-                total_users += len(lang_data["users"])
+            total_users += len(lang_data.get(language, []))
         return total_users
     except Exception as e:
         print(f'Error in getting total users for {language}:', e)
@@ -71,14 +69,15 @@ def get_age_group(user_id, language):
 def get_interest(user_id, language):
     try:
         document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]["database"]:
-            lang_data = document[key]["database"][language]
+        if document:
+            lang_data = document[key]["database"]
             for interest in ["communication", "intimacy", "selling"]:
                 if str(user_id) in lang_data.get(interest, []):
                     return interest.capitalize()
     except Exception as e:
         print('Exception occurred in get_interest:', e)
     return None
+
     
 def is_user_registered(user_id):
     print("funcs called:", user_id)
