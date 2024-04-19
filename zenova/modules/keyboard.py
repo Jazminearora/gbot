@@ -254,6 +254,7 @@ def edit_interest(client, callback_query):
 
         # Get reply markup and caption
         reply_arkup, captoion = get_interest_reply_markup(current_interest, language)
+        print(reply_arkup)
 
         # Edit the message with the new interest options
         callback_query.message.edit_caption(captoion, reply_markup=reply_arkup)
