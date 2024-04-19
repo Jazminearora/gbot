@@ -41,16 +41,15 @@ def get_total_users(language):
 
 def get_gender(user_id, language):
     try:
-        document = collection.find_one({key: {"$exists": True}})
+        document = collection.find_one({key: {'$exists': True}})
         if document:
-            database = document[key].get("database", {})
-            for lang_data in database.values():
-                if 'male' in lang_data and user_id in lang_data['male']:
-                    return "male"
-                elif 'female' in lang_data and user_id in lang_data['female']:
-                    return "female"
+            lang_data = document['database']
+            if "male" in lang_data and str(user_id) in lang_data["male"]:
+                return "male"
+            elif "female" in lang_data and str(user_id) in lang_data["female"]:
+                return "female"
     except Exception as e:
-        print('Error in getting gender:', e)
+        print('Exception occurred in get_gender:', e)
     return None
 
 def get_age_group(user_id, language):
