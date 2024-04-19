@@ -31,7 +31,7 @@ def get_total_users(language):
         document = collection.find_one({key: {"$exists": True}})
         if document and language in document[key]["database"]:
             lang_data = document[key]["database"][language]
-            total_users += len(lang_data.get(language, []))
+            total_users += len(lang_data)  # lang_data is a list, so use len directly
         return total_users
     except Exception as e:
         print(f'Error in getting total users for {language}:', e)
