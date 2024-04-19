@@ -56,11 +56,11 @@ def get_gender(user_id, language):
         print('Exception occurred in get_gender:', e)
     return None
 
-def get_age_group(user_id, language):
+def get_age_group(user_id):
     try:
         document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]["database"]:
-            lang_data = document[key]["database"][language]
+        if document:
+            lang_data = document[key]["database"]
             for age_group in ["below_18", "18_24", "25_34", "above_35"]:
                 if str(user_id) in lang_data.get(age_group, []):
                     return age_group.replace("_", "-").capitalize()
