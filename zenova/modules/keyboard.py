@@ -5,7 +5,7 @@ from helpers.intrst_btn import get_interest_reply_markup
 from helpers.referdb import save_id, is_served_user, referral_count
 from helpers.translator import translate_text
 import re
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from pyrogram.enums import ParseMode
 
 # Function to get reply markup with buttons in the user's selected language
@@ -289,7 +289,7 @@ def set_language(client, callback_query):
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
             print(success_message)
-            trumk.edit_caption(success_message)
+            trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             print("Error in changing language:", e)
 
