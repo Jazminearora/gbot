@@ -96,11 +96,15 @@ async def get_user_name(user_id):
 # Handle private messages with the reply markup
 @zenova.on_message(filters.command(["start"]) & filters.private)
 async def start_command(client, message):
-    if len(message.text) > 6:
-        command_parts = message.text.split(" ")
-        if len(command_parts) > 1:
-            referer_user_id = int(command_parts[1])
+    # Extract the referer user id from the command message
+    command_parts = message.text.split(" ")
+    if len(command_parts) > 1:
+        try:
+            referer_user_id = int(command_parts[1].replace("r", ""))
             print("referer id = ", referer_user_id)
+        except ValueError:
+            await message.reply("Invalid referer user id format. Use 'start=r{user_id}'")
+            return
         name = await get_user_name(referer_user_id)
         if name is not None:
             try:
@@ -118,7 +122,7 @@ async def start_command(client, message):
                         if not is_registered:
                             # Save the sender user ID as referred by the referer user ID
                             await save_id(referer_user_id, user_id)
-                            await message.reply_text(f"You are successfully refered by {name}. \n\nPlease register now for using bot further by command /register")
+                            await message.reply_text(f"You are successfully refered by {name}. \n\nPlease register now for using bot by command: /register")
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
                             total_refer = referral_count(referer_user_id)
@@ -129,6 +133,7 @@ async def start_command(client, message):
                                 await zenova.send_message(referer_user_id, translate_text(caption, target_language="ru"))
                             elif referer_lang == "Azerbejani":
                                 await zenova.send_message(referer_user_id, translate_text(caption, target_language="az"))
+                            zenova.send_message(referer_user_id, caption)
                         else:
                             await message.reply_text("You are Already registered!")
                     else:

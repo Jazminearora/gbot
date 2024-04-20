@@ -81,9 +81,7 @@ def get_interest(user_id, language):
 
     
 def is_user_registered(user_id):
-    print("funcs called:", user_id)
     language = find_language(user_id)
-    print("language:", language)
     if language:
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
