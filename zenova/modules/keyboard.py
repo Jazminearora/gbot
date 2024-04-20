@@ -289,7 +289,7 @@ def set_language(client, callback_query):
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
             print(success_message)
-            trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove())
+            trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
         except Exception as e:
             print("Error in changing language:", e)
 
