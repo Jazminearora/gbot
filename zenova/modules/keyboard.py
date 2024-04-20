@@ -1,7 +1,9 @@
 from pyrogram import filters, types
 from zenova import zenova
-from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_age_group, get_gender, get_interest
+from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, is_user_registered
 from helpers.intrst_btn import get_interest_reply_markup
+from helpers.referdb import save_id, is_served_user, referral_count
+from helpers.translator import translate_text
 import re
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
@@ -80,16 +82,69 @@ def get_reply_markup(language):
     # Add more languages as needed
     return reply_markup
 
+async def get_user_name(user_id):
+    try:
+        user = await zenova.get_users(user_id)
+        if user:
+            name = user.first_name
+            if user.last_name:
+                name += " " + user.last_name
+            return name
+    except Exception as e:
+        return None
+
 # Handle private messages with the reply markup
 @zenova.on_message(filters.command(["start"]) & filters.private)
 async def start_command(client, message):
+    if len(message.text) > 6:
+        command_parts = message.text.split(" ")
+        if len(command_parts) > 1:
+            referer_user_id = int(command_parts[1])
+            print("referer id = ", referer_user_id)
+        name = await get_user_name(referer_user_id)
+        if name is not None:
+            try:
+                user_id = message.from_user.id
+                
+                # Extract the referer user ID from the message
+                command_parts = message.text.split(" ")
+                if len(command_parts) > 1:
+                    referer_user_id = int(command_parts[1])
+                    # Check if the sender user ID has already been referred
+                    is_referred = await is_served_user(user_id)
+                    if not is_referred:
+                        # Check if the user is already registered
+                        is_registered = await is_user_registered(user_id)
+                        if not is_registered:
+                            # Save the sender user ID as referred by the referer user ID
+                            await save_id(referer_user_id, user_id)
+                            await message.reply_text(f"You are successfully refered by {name}. \n\nPlease register now for using bot further by command /register")
+                            referer_lang = find_language(referer_user_id)
+                            referred_name = await get_user_name(user_id)
+                            total_refer = referral_count(referer_user_id)
+                            caption = f"You have successfully referred to {referred_name}.\n\n Total refers: {total_refer}"
+                            if referer_lang == "English":
+                                await zenova.send_message(referer_user_id, caption)
+                            elif referer_lang == "Russian":
+                                await zenova.send_message(referer_user_id, translate_text(caption, target_language="ru"))
+                            elif referer_lang == "Azerbejani":
+                                await zenova.send_message(referer_user_id, translate_text(caption, target_language="az"))
+                        else:
+                            await message.reply_text("You are Already registered!")
+                    else:
+                        await message.reply_text("You are already refered by someone!")
+            except Exception as e:
+                await message.reply_text(f"An error occurred: {str(e)}")
+        else:
+            await message.reply_text(f"Referer id {referer_user_id} is invalid.")
     try:
         user_id = message.from_user.id
         language = find_language(user_id)
         reply_markup = get_reply_markup(language)
         await message.reply_text("Please select an option:", reply_markup=reply_markup)
-    except Exception as e:
+    except Exception:
         await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
+
 
 # Define a regex pattern to match the button texts for all three languages
 button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎|💎 (Premium|Премиум|Premium) 💎|🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧|👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫)$")

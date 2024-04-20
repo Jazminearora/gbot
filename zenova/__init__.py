@@ -33,12 +33,8 @@ zenova = Client(
 
 client = MongoClient(MONGO_URI)
 db = client["zenova-prime"]
-mongodb = db["tgtot"]
-
-language_collection = mongodb["language"]
-gender_collection = mongodb["gender"]
-age_group_collection = mongodb["agegrp"]
-interests_collection = mongodb["interests"]
+referdb = db["referdb"]
+mongodb = db["tgtbot"]
 
 
 async def zenova_bot():
