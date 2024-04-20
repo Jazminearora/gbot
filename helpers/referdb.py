@@ -1,6 +1,6 @@
 from zenova import referdb
 
-def is_served_user(refered_user_id: int) -> bool:
+async def is_served_user(refered_user_id: int) -> bool:
     for document in referdb.find():
         for key, value in document.items():
             if isinstance(value, list) and refered_user_id in value:
@@ -25,10 +25,10 @@ async def save_id(referer_user_id: int, refered_user_id: int):
     except:
         return False
 
-def referral_count(user_id: int) -> int:
+async def referral_count(user_id: int) -> int:
     try:
         referer_key = f"r{user_id}"
-        user = referdb.find_one({referer_key: {"$exists": True}})
+        user = await referdb.find_one({referer_key: {"$exists": True}})
         if user:
             referer_ids = user.get(referer_key, [])
             return len(referer_ids)
