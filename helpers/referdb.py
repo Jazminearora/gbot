@@ -1,6 +1,6 @@
 from zenova import referdb
 
-async def is_served_user(refered_user_id: int) -> bool:
+def is_served_user(refered_user_id: int) -> bool:
     for document in referdb.find():
         for key, value in document.items():
             if isinstance(value, list) and refered_user_id in value:
