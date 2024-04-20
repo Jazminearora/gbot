@@ -109,11 +109,8 @@ async def start_command(client, message):
         if name is not None:
             try:
                 user_id = message.from_user.id
-                
-                # Extract the referer user ID from the message
-                command_parts = message.text.split(" ")
-                if len(command_parts) > 1:
-                    referer_user_id = int(command_parts[1])
+                if command_parts:
+                    referer_user_id = int(command_parts[1].replace("r", ""))
                     # Check if the sender user ID has already been referred
                     is_referred = await is_served_user(user_id)
                     if not is_referred:
