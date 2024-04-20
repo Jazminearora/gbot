@@ -125,7 +125,7 @@ async def start_command(client, message):
                             await message.reply_text(f"You are successfully refered by {name}. \n\nPlease register now for using bot by command: /register")
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
-                            total_refer =  referral_count(referer_user_id)
+                            total_refer = referral_count(referer_user_id)
                             caption = f"You have successfully referred to {referred_name}.\n\n Total refers: {total_refer}"
                             if referer_lang == "English":
                                 await zenova.send_message(referer_user_id, caption)
