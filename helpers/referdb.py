@@ -29,7 +29,7 @@ async def save_id(referer_user_id: int, refered_user_id: int):
     except Exception as e:
         print("Error:", e)
 
-async def referral_count(user_id: int) -> int:
+async def get_point(user_id: int) -> int:
     try:
         referer_key = f"r{user_id}"
         # Retrieve the user document from the database

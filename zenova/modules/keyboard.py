@@ -2,7 +2,7 @@ from pyrogram import filters
 from zenova import zenova, BOT_USERNAME
 from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, is_user_registered, remove_interest
 from helpers.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
-from helpers.referdb import save_id, is_served_user, referral_count
+from helpers.referdb import save_id, is_served_user, get_point
 from helpers.translator import translate_text
 import re
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
@@ -47,11 +47,11 @@ async def start_command(client, message):
                             # Save the sender user ID as referred by the referer user ID
                             await save_id(referer_user_id, user_id)
                             print('saved')
-                            await message.reply_text(f"You are successfully refered by {name}. \n\nPlease register now for using bot by command: /register")
+                            await message.reply_text(f"You are successfully refered by {name}. \n\nPlease register now using /register and restart the bot!")
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
-                            total_refer =await (referral_count(referer_user_id))
-                            caption = f"You have successfully referred to {referred_name}.\n\n Total refers: {total_refer}"
+                            total_points =await (get_point(referer_user_id))
+                            caption = f"You have successfully referred to {referred_name}.\n\n Your Total points: {total_points}"
                             if referer_lang == "English":
                                 await zenova.send_message(referer_user_id, caption)
                             elif referer_lang == "Russian":
@@ -59,20 +59,28 @@ async def start_command(client, message):
                             elif referer_lang == "Azerbejani":
                                 await zenova.send_message(referer_user_id, translate_text(caption, target_language="az"))
                         else:
-                            await message.reply_text("You are Already registered!")
+                            msg = "You are Already registered!"
+                            user_lang = find_language(user_id)
+                            if user_lang == "English":
+                                await message.reply_text(msg)
+                            elif user_lang == "Russian":
+                                await message.reply_text(translate_text(msg, target_language="ru"))
+                            elif user_lang == "Azerbejani":
+                                await message.reply_text(translate_text(msg, target_language="az"))
                     else:
                         await message.reply_text("You are already refered by someone!")
             except Exception as e:
                 await message.reply_text(f"An error occurred: {str(e)}")
         else:
             await message.reply_text(f"Referer id {referer_user_id} is invalid.")
-    try:
-        user_id = message.from_user.id
-        language = find_language(user_id)
-        reply_markup = get_reply_markup(language)
-        await message.reply_text("Please select an option:", reply_markup=reply_markup)
-    except Exception:
-        await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
+    else:    
+        try:
+            user_id = message.from_user.id
+            language = find_language(user_id)
+            reply_markup = get_reply_markup(language)
+            await message.reply_text("Please select an option:", reply_markup=reply_markup)
+        except Exception:
+            await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
 
 
 # Define a regex pattern to match the button texts for all three languages
