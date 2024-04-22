@@ -1,6 +1,6 @@
 from pyrogram import filters
 from zenova import zenova, BOT_USERNAME
-from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, is_user_registered
+from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, is_user_registered, delete_user_id
 from helpers.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
 from helpers.referdb import save_id, is_served_user, referral_count
 from helpers.translator import translate_text
@@ -241,7 +241,7 @@ async def set_interest(client, callback_query):
         user_id = callback_query.from_user.id
         old_interest = get_interest(user_id, language)
         print(old_interest.lower())
-        remove_user_id(old_interest, user_id, old_interest.lower())
+        delete_user_id(user_id, old_interest.lower())
         trumk = await muks.edit_caption("🤖")
         add_user_id(new_interest, user_id, new_interest)
         try:

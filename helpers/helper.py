@@ -18,6 +18,13 @@ def remove_user_id(language, user_id, field):
     except Exception as e:
         print("Error in removing user ID:", e)
 
+def delete_user_id(user_id, field):
+    try:
+        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
+        print("User ID deleted successfully from the interest field:", field)
+    except Exception as e:
+        print("Error in deleting user ID:", e)
+        
 def find_language(user_id):
     stored_data = collection.find_one({key: {"$exists": True}})
     if stored_data:
