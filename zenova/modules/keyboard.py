@@ -187,12 +187,11 @@ async def change_language(client, callback_query):
 @zenova.on_callback_query(filters.regex("^set_language"))
 async def set_language(client, callback_query):
     try:
+        await callback_query.message.delete()
+        user_id = callback_query.from_user.id
         # Extract the new language from the callback data
         new_lang = callback_query.data.split("_")[2]
-        print("new language:", new_lang)
-        muks = await callback_query.message.edit_caption("🔍")
-        # Get the user ID and old language
-        user_id = callback_query.from_user.id
+        muks = await zenova.send_message(user_id,"🔍", reply_markup=ReplyKeyboardRemove())
         old_lang = find_language(user_id)
         remove_user_id(old_lang, user_id, old_lang)
         trumk = await muks.edit_caption("🤖")
