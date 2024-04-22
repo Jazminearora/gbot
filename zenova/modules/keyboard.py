@@ -232,6 +232,7 @@ async def edit_interest(client, callback_query):
 @zenova.on_callback_query(filters.regex("^set_interest"))
 async def set_interest(client, callback_query):
     try:
+        user_id = callback_query.from_user.id
         language = find_language(user_id)
         new_interest = callback_query.data.split("_")[2]
         print("new interest:", new_interest)
