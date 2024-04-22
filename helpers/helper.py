@@ -91,6 +91,7 @@ def get_interest(user_id, language):
         document = collection.find_one({key: {"$exists": True}})
         if document:
             lang_data = document[key]["database"]
+            print('lang data of get interest:', lang_data)
             for interest in ["communication", "intimacy", "selling"]:
                 if str(user_id) in lang_data.get(interest, []):
                     return interest.capitalize()
