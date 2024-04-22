@@ -2,46 +2,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from zenova import mongodb, zenova
 from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
-
-def get_registration_text(language, step):
-    if language == "English":
-        if step == "gender":
-            return "Choose your gender:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("Male👦", callback_data=f"register_gender_{language}_male")],
-                [InlineKeyboardButton("Female👧", callback_data=f"register_gender_{language}_female")]])
-        elif step == "age":
-            return "Choose your age group:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("Below 18", callback_data=f"register_age_{language}_below-18")],
-                [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
-                [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
-                [InlineKeyboardButton("Above 35", callback_data=f"register_age_{language}_above-35")]])
-        elif step == "interest":
-            return "Choose your interest:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("👁‍🗨 Communication", callback_data=f"register_interest_{language}_communication")],
-                [InlineKeyboardButton("🔞 Intimacy (18+)", callback_data=f"register_interest_{language}_intimacy")],
-                [InlineKeyboardButton("🚼 Selling sex (18+)", callback_data=f"register_interest_{language}_selling")]])
-        else:
-            return None, None
-    elif language in ["Russian", "Azerbejani"]:
-        if step == "gender":
-            return "Выберите свой пол:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("Мужчина👦", callback_data=f"register_gender_{language}_male")],
-                [InlineKeyboardButton("Женщина👧", callback_data=f"register_gender_{language}_female")]])
-        elif step == "age":
-            return "Выберите свою возрастную группу:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("Младше 18", callback_data=f"register_age_{language}_below-18")],
-                [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
-                [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
-                [InlineKeyboardButton("Старше 35", callback_data=f"register_age_{language}_above-35")]])
-        elif step == "interest":
-            return "Выберите свой интерес:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("👁‍🗨 Коммуникация", callback_data=f"register_interest_{language}_communication")],
-                [InlineKeyboardButton("🔞 Интимность (18+)", callback_data=f"register_interest_{language}_intimacy")],
-                [InlineKeyboardButton("🚼 Продажа секса (18+)", callback_data=f"register_interest_{language}_selling")]])
-        else:
-            return None, None
-    else:
-        return None, None
+from helpers.get_msg import get_registration_text
     
 @zenova.on_message(filters.command(["register"]) & filters.private)
 async def register_user(client, message):

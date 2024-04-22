@@ -31,9 +31,9 @@ async def referral_count(user_id: int) -> int:
         user = await referdb.find_one({referer_key: {"$exists": True}})
         if user:
             referer_ids = user.get(referer_key, [])
-            return len(referer_ids)
+            return referer_ids
         else:
-            return 0
+            return []
     except Exception as e:
         print("Error:", e)
-        return 0
+        return []
