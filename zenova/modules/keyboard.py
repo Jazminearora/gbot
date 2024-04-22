@@ -240,9 +240,10 @@ async def set_interest(client, callback_query):
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_interest = get_interest(user_id, language)
-        remove_user_id(old_interest, user_id, old_interest)
+        print(old_interest.lower())
+        remove_user_id(old_interest, user_id, old_interest.lower())
         trumk = await muks.edit_caption("🤖")
-        add_user_id(new_interest, user_id, new_interest.lower())
+        add_user_id(new_interest, user_id, new_interest)
         try:
             # If language change is successful, inform the user
             await callback_query.answer(f"↪️ {new_interest} ✅", show_alert=True)
