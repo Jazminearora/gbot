@@ -35,6 +35,7 @@ async def referral_count(user_id: int) -> int:
         referer_key = f"r{user_id}"
         # Retrieve the user document from the database
         user = await referdb.find_one({"user_id": referer_key})
+        print(referdb.find_one())
         if user:
             # Return the count of referred users
             return len(user["referred_users"])
