@@ -38,11 +38,11 @@ async def start_command(client, message):
                 if command_parts:
                     # Check if the sender user ID has already been referred
                     is_referred = await is_served_user(user_id)
-                    print("served true")
+                    print("served", is_referred)
                     if not is_referred:
                         # Check if the user is already registered
                         is_registered =  is_user_registered(user_id)
-                        print("register false")
+                        print("register", is_registered)
                         if not is_registered:
                             # Save the sender user ID as referred by the referer user ID
                             await save_id(referer_user_id, user_id)
