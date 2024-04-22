@@ -29,7 +29,7 @@ async def start_command(client, message):
             referer_user_id = int(command_parts[1].replace("r", ""))
             print("referer id = ", referer_user_id)
         except ValueError:
-            await message.reply("Invalid referer user id format. Use 'start=r{user_id}'")
+            await message.reply("Invalid referer user id format.")
             return
         name = await get_user_name(referer_user_id)
         if name is not None:
@@ -239,8 +239,6 @@ async def set_interest(client, callback_query):
         muks = await callback_query.message.edit_caption("🔍")
         # Get the user ID and old language
         user_id = callback_query.from_user.id
-        old_interest = get_interest(user_id, language)
-        print(old_interest.lower())
         remove_interest(user_id)
         trumk = await muks.edit_caption("🤖")
         add_user_id(new_interest, user_id, new_interest)
