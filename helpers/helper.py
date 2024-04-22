@@ -13,7 +13,8 @@ def add_user_id(language, user_id, field):
 
 def remove_user_id(language, user_id, field):
     try:
-        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
+        hk = collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}}).raw_result
+        print('hk:', hk)
     except Exception as e:
         print("Error in removing user ID:", e)
 
