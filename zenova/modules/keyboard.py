@@ -77,7 +77,7 @@ async def start_command(client, message):
 
 
 # Define a regex pattern to match the button texts for all three languages
-button_pattern = re.compile(r"^🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧|👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫)$")
+button_pattern = re.compile(r"^🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧|👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫$")
 
 @zenova.on_message(filters.private & filters.regex(button_pattern))
 async def handle_keyboard_response(client, message):
