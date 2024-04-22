@@ -22,6 +22,7 @@ async def save_id(referer_user_id: int, refered_user_id: int):
                 user["referred_users"].append(refered_user_id)
                 user["points"] += 1  # Increment points by 1 for each referral
                 referdb.update_one({"user_id": referer_key}, {"$set": {"referred_users": user["referred_users"], "points": user["points"]}})
+                print(user = referdb.find_one({"user_id": referer_key}))
         else:
             # If user does not exist, insert a new document with points initialized to 1
             referdb.insert_one({"user_id": referer_key, "referred_users": [refered_user_id], "points": 1})
@@ -32,7 +33,7 @@ async def referral_count(user_id: int) -> int:
     try:
         referer_key = f"r{user_id}"
         # Retrieve the user document from the database
-        user = await referdb.find_one({"user_id": referer_key})
+        user = referdb.find_one({"user_id": referer_key})
         if user:
             # Return the total points of the user
             return user.get("points", 0)

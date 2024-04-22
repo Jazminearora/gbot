@@ -58,7 +58,6 @@ async def start_command(client, message):
                                 await zenova.send_message(referer_user_id, translate_text(caption, target_language="ru"))
                             elif referer_lang == "Azerbejani":
                                 await zenova.send_message(referer_user_id, translate_text(caption, target_language="az"))
-                            zenova.send_message(referer_user_id, caption)
                         else:
                             await message.reply_text("You are Already registered!")
                     else:
