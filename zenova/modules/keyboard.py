@@ -158,7 +158,7 @@ async def edit_profile(client, callback_query):
         ])
 
         # Edit the message with the new buttons
-        callback_query.message.edit_reply_markup(reply_markup=new_reply_markup)
+        await callback_query.message.edit_reply_markup(reply_markup=new_reply_markup)
     except Exception as e:
         print("Error in edit_profile:", e)
 
@@ -171,7 +171,7 @@ async def change_language(client, callback_query):
         old_lang = find_language(user_id)
         caption, reply_markup = get_lang_change(old_lang)
         # Edit the message with the new language options
-        callback_query.message.edit_caption(caption, reply_markup=reply_markup)
+        await callback_query.message.edit_caption(caption, reply_markup=reply_markup)
     except Exception as e:
         print("Error in change_language:", e)
 
@@ -183,16 +183,16 @@ async def set_language(client, callback_query):
         # Extract the new language from the callback data
         new_lang = callback_query.data.split("_")[2]
         print("new language:", new_lang)
-        muks = callback_query.message.edit_caption("🔍")
+        muks = await callback_query.message.edit_caption("🔍")
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_lang = find_language(user_id)
         remove_user_id(old_lang, user_id, old_lang)
-        trumk = muks.edit_caption("🤖")
+        trumk = await muks.edit_caption("🤖")
         add_user_id(new_lang, user_id, new_lang)
         try:
             # If language change is successful, inform the user
-            callback_query.answer(f"↪️ {new_lang} ✅", show_alert=True)
+            await callback_query.answer(f"↪️ {new_lang} ✅", show_alert=True)
             # Edit the message to display the success message in the new language
             if new_lang == "English":
                 success_message = "Language changed successfully! 🇺🇸"
@@ -201,7 +201,7 @@ async def set_language(client, callback_query):
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
             print(success_message)
-            trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
+            await trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
         except Exception as e:
             print("Error in changing language:", e)
 
@@ -224,7 +224,7 @@ async def edit_interest(client, callback_query):
         reply_arkup, captoion = get_interest_reply_markup(current_interest, language)
 
         # Edit the message with the new interest options
-        callback_query.message.edit_caption(captoion, reply_markup=reply_arkup)
+        await callback_query.message.edit_caption(captoion, reply_markup=reply_arkup)
 
     except Exception as e:
         print("Error in edit_interest:", e)
@@ -235,16 +235,16 @@ async def set_interest(client, callback_query):
         language = find_language(user_id)
         new_interest = callback_query.data.split("_")[2]
         print("new interest:", new_interest)
-        muks = callback_query.message.edit_caption("🔍")
+        muks = await callback_query.message.edit_caption("🔍")
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_interest = get_interest(user_id, language)
         remove_user_id(old_interest, user_id, old_interest)
-        trumk = muks.edit_caption("🤖")
+        trumk = await muks.edit_caption("🤖")
         add_user_id(new_interest, user_id, new_interest)
         try:
             # If language change is successful, inform the user
-            callback_query.answer(f"↪️ {new_interest} ✅", show_alert=True)
+            await callback_query.answer(f"↪️ {new_interest} ✅", show_alert=True)
             # Edit the message to display the success message in the new language
             if language == "English":
                 success_message = "interest changed successfully!"
@@ -253,7 +253,7 @@ async def set_interest(client, callback_query):
             elif language == "Azerbejani":
                 success_message = "maraq uğurla dəyişdi!"
             print(success_message)
-            trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
+            await trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
         except Exception as e:
             print("Error in changing language:", e)
     
