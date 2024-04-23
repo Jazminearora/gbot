@@ -114,8 +114,6 @@ def is_user_registered(user_id):
             return False
     else:    
         return False
-    
-user_registered = filters.create(is_user_registered)
 
 
 def get_profile(user_id, language):
