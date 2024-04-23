@@ -3,7 +3,7 @@ import asyncio
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-from zenova import zenova
+from zenova import zenova, BOT_USERNAME
 from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
 from helpers.get_msg import get_registration_text
 from helpers.translator import translate_text
@@ -94,7 +94,13 @@ async def register_user(client, message):
                             except Exception as e:
                               print("Error in register_user:", e)
                             if not await check_registration_completed(user_id):
-                                await message.reply_text("You are not registered yet! Process stopped.")
+                                button = [
+                                        InlineKeyboardButton(
+                                            text = 'Try Again',
+                                            url = f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
+                                         )
+                                        ]
+                                await message.reply_text(f"You are not registered yet!/n/nUse below button to retry.", reply_markup = InlineKeyboardMarkup(button))
                                 return
                             await save_id(referer_user_id, user_id)
                             await message.reply_text(f"You are successfully refered by {name}.")
