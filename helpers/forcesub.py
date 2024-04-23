@@ -11,17 +11,17 @@ async def is_subscribed(filter, client, update):
     if user_id in ADMIN_IDS:
         return True
     
-    if not is_member(client, chat_ids[0], user_id) or not is_member(client, chat_ids[1], user_id):
+    if not await is_member(client, chat_ids[0], user_id) or not await is_member(client, chat_ids[1], user_id):
         return False
     
     return True
 
-def is_member(client, chat_id, user_id):
+async def is_member(client, chat_id, user_id):
     try:
-        member = client.get_chat_member(chat_id=chat_id, user_id=user_id)
+        member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
     except UserNotParticipant:
         return False
-    if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+    if member. status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
         return True
     return False  
 

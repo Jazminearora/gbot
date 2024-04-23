@@ -136,7 +136,7 @@ async def set_language(client, callback_query):
         muks = await zenova.send_message(user_id,"🔍", reply_markup=ReplyKeyboardRemove())
         old_lang = find_language(user_id)
         remove_user_id(old_lang, user_id, old_lang)
-        trumk = await muks.edit_text("🤖")
+        trumk = await muks.edit_caption("🤖")
         add_user_id(new_lang, user_id, new_lang)
         try:
             # If language change is successful, inform the user
