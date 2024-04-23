@@ -102,8 +102,7 @@ async def register_user(client, message):
                                             )
                                         ]
                                     ])
-                                print(button)
-                                await message.reply_text(f"You are not registered yet!/n/nUse below button to retry.", reply_markup = button)
+                                await message.reply_text(f"You are not registered yet!\n\nUse below button to retry.", reply_markup = button)
                                 return
                             await save_id(referer_user_id, user_id)
                             await message.reply_text(f"You are successfully refered by {name}.")
