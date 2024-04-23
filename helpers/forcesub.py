@@ -1,4 +1,4 @@
-from config import ADMINS
+from config import ADMIN_IDS
 from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.enums import ChatMemberStatus
@@ -7,7 +7,7 @@ chat_ids = (-1001685809766, -1002104201071)
 
 async def is_subscribed(filter, client, update):
     user_id = update.from_user.id
-    if user_id in ADMINS:
+    if user_id in ADMIN_IDS:
         return True
     
     if not is_member(client, chat_ids[0], user_id) or not is_member(client, chat_ids[1], user_id):
