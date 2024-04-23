@@ -3,7 +3,7 @@ from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.enums import ChatMemberStatus
 
-chat_ids = (-1001685809766, -1002104201071)
+chat_ids = (-1001997140154, -1001943241575)
 
 async def is_subscribed(filter, client, update):
     user_id = update.from_user.id
