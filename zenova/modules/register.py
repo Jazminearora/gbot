@@ -1,4 +1,5 @@
 from pyrogram import filters
+import asyncio
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -23,6 +24,16 @@ async def get_user_name(user_id):
     except Exception as e:
         return None
     
+async def check_registration_completed(user_id):
+    """
+    Check if the user has completed registration within a specified time period.
+    """
+    max_attempts = 12  # 12 attempts at 5-second intervals = 60 seconds
+    for attempt in range(max_attempts):
+        if is_user_registered(user_id):
+            return True  # User is registered
+        await asyncio.sleep(5)  # Wait for 5 seconds before next attempt
+
 @zenova.on_message(filters.command(["start"]) & filters.private & subscribed & ~user_registered)
 async def register_user(client, message):
     # Extract the referer user id from the command message
@@ -45,7 +56,7 @@ async def register_user(client, message):
                         # Check if the user is already registered
                         is_registered =  is_user_registered(user_id)
                         if not is_registered:
-                            pls_wait = await message.reply("Register now to complete referal.")
+                            await message.reply("Please Register now to complete Referal.")
                             try:
                                 # Save the sender user ID as referred by the referer user ID
                                 language = find_language(user_id)
@@ -82,6 +93,9 @@ async def register_user(client, message):
                                     await message.reply_text(caption, reply_markup=reply_markup)
                             except Exception as e:
                               print("Error in register_user:", e)
+                            if not await check_registration_completed(user_id):
+                                await message.reply_text("You are not registered yet! Process stopped.")
+                                return
                             await save_id(referer_user_id, user_id)
                             await message.reply_text(f"You are successfully refered by {name}.")
                             referer_lang = find_language(referer_user_id)
