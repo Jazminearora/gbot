@@ -1,5 +1,4 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup
 import re
 
 
@@ -14,6 +13,5 @@ button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
 async def premium_option(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    message_text, inline_buttons = await get_premium_msg(language)
-    inline_keyboard = [buttons for buttons in inline_buttons]
-    await message.reply_text(message_text, reply_markup=InlineKeyboardMarkup(inline_keyboard))
+    message, buttons = await get_premium_msg(language)
+    await message.reply_text(message, reply_markup=buttons)

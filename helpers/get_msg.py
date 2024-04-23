@@ -214,32 +214,32 @@ def get_interest_reply_markup(current_interest, language):
 async def get_premium_msg(language):
     if language == "English":
         message = "💎 PREMIUM\n⛔ Premium search is available only for VIP users ⛔\n\n🔞 Chat in dirty chat\n🔍 Search by gender (m/f)\n🎥 Share photos and videos\n🔥 Send photos, videos, GIFs, stickers\n📃 Information about the interlocutor (age)\n🚫 No advertising\n\n/referals - get 👑VIP for free"
-        buttons = [
-            ["For a day - $1.08"],
-            ["For a three days - $2.15"],
-            ["For a week - $8.61"],
-            ["For a month - $12.98"],
-            ["Get it for free"]
-        ]
+        buttons = InlineKeyboardMarkup([
+            [InlineKeyboardButton("For a day - $1.08", callback_data="premium_1_day")],
+            [InlineKeyboardButton("For a three days - $2.15", callback_data="premium_3_days")],
+            [InlineKeyboardButton("For a week - $8.61", callback_data="premium_1_week")],
+            [InlineKeyboardButton("For a month - $12.98", callback_data="premium_1_month")],
+            [InlineKeyboardButton("Get it for free", callback_data="premium_free")]
+        ])
     elif language == "Russian":
         message = "💎 PREMIUM\n⛔ Премиум-поиск доступен только для пользователей VIP ⛔\n\n🔞 Чат в грязном чате\n🔍 Поиск по полу (м/ж)\n🎥 Обмен фотографиями и видео\n🔥 Отправка фотографий, видео, GIF, стикеров\n📃 Информация о собеседнике (возраст)\n🚫 Без рекламы\n\n/referals - получите 👑VIP бесплатно"
-        buttons = [
-            ["На день - 81₽"],
-            ["На три дня - 162₽"],
-            ["На неделю - 648₽"],
-            ["На месяц - 974₽"],
-            ["Получить бесплатно"]
-        ]
+        buttons = InlineKeyboardMarkup([
+            [InlineKeyboardButton("На день - 81₽", callback_data="premium_1_day")],
+            [InlineKeyboardButton("На три дня - 162₽", callback_data="premium_3_days")],
+            [InlineKeyboardButton("На неделю - 648₽", callback_data="premium_1_week")],
+            [InlineKeyboardButton("На месяц - 974₽", callback_data="premium_1_month")],
+            [InlineKeyboardButton("Получить бесплатно", callback_data="premium_free")]
+        ])
     elif language == "Azerbejani":
         message = "💎 PREMIUM\n⛔ Premium axtarışı yalnız VIP istifadəçilər üçün mövcuddur ⛔\n\n🔞 Pis çatda söhbət edin\n🔍 Cinsiyətə görə axtarış (k/q)\n🎥 Şəkilləri və videoları paylaşın\n🔥 Şəkillər, videolar, GIF-lər, stikerlər göndərin\n📃 Müşahidəçi haqqında məlumat (yaş)\n🚫 Reklam yoxdur\n\n/referals - pulsuz 👑VIP alın"
-        buttons = [
-            ["Bir gün üçün - 1,08 $"],
-            ["Üç gün üçün - 2,15 $"],
-            ["Bir həftə üçün - 8,61 $"],
-            ["Bir ay üçün - 12,98 $"],
-            ["Pulsuz əldə edin"]
-        ]
+        buttons = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Bir gün üçün - 1,08 $", callback_data="premium_1_day")],
+            [InlineKeyboardButton("Üç gün üçün - 2,15 $", callback_data="premium_3_days")],
+            [InlineKeyboardButton("Bir həftə üçün - 8,61 $", callback_data="premium_1_week")],
+            [InlineKeyboardButton("Bir ay üçün - 12,98 $", callback_data="premium_1_month")],
+            [InlineKeyboardButton("Pulsuz əldə edin", callback_data="premium_free")]
+        ])
     else:
         message = "Invalid language specified."
-        buttons = []
+        buttons = InlineKeyboardMarkup([])
     return message, buttons
