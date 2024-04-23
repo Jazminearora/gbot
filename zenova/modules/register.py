@@ -1,46 +1,148 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from zenova import mongodb, zenova
+
+
+from zenova import zenova
 from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
 from helpers.get_msg import get_registration_text
-    
-@zenova.on_message(filters.command(["register"]) & filters.private)
-async def register_user(client, message):
+from helpers.translator import translate_text
+from helpers.referdb import save_id, is_served_user, get_point
+
+
+
+
+async def get_user_name(user_id):
     try:
-        if is_user_registered(message.from_user.id):
-            await message.reply_text("You are already registered.")
+        user = await zenova.get_users(user_id)
+        if user:
+            name = user.first_name
+            if user.last_name:
+                name += " " + user.last_name
+            return name
+    except Exception as e:
+        return None
+    
+@zenova.on_message(filters.command(["start"]) & filters.private)
+async def register_user(client, message):
+    # Extract the referer user id from the command message
+    command_parts = message.text.split(" ")
+    if len(command_parts) > 1:
+        try:
+            referer_user_id = int(command_parts[1].replace("r", ""))
+            print("referer id = ", referer_user_id)
+        except ValueError:
+            await message.reply("Invalid referer user id format.")
             return
-        # Get user ID
-        user_id = message.from_user.id
-        language = find_language(user_id)
-        print("register.py language fetched:", language)
-        # Check if user ID is already registered
-        if language:
-            gender = get_gender(user_id, language)
-            if gender:
-                age = get_age_group(user_id, language)
-                if age:
-                    interest = get_interest(user_id, language)
-                    if interest:
-                        await message.reply_text("You are already registered.")
+        name = await get_user_name(referer_user_id)
+        if name is not None:
+            try:
+                user_id = message.from_user.id
+                if command_parts:
+                    # Check if the sender user ID has already been referred
+                    is_referred = await is_served_user(user_id)
+                    if not is_referred:
+                        # Check if the user is already registered
+                        is_registered =  is_user_registered(user_id)
+                        if not is_registered:
+                            pls_wait = await message.reply("Register now to complete referal.")
+                            try:
+                                # Save the sender user ID as referred by the referer user ID
+                                language = find_language(user_id)
+                                # Check if user ID is already registered
+                                if language:
+                                    gender = get_gender(user_id, language)
+                                    if gender:
+                                        age = get_age_group(user_id, language)
+                                        if age:
+                                            interest = get_interest(user_id, language)
+                                            if interest:
+                                                msg = "You are Already registered!"
+                                                if language == "English":
+                                                    await message.reply_text(msg)
+                                                elif user_lang == "Russian":
+                                                    await message.reply_text(translate_text(msg, target_language="ru"))
+                                                elif user_lang == "Azerbejani":
+                                                    await message.reply_text(translate_text(msg, target_language="az"))
+                                            else:
+                                                caption, reply_markup = get_registration_text(language, "interest")
+                                                await message.reply_text(caption, reply_markup=reply_markup)
+                                        else:
+                                            caption, reply_markup = get_registration_text(language, "age")
+                                            await message.reply_text(caption, reply_markup=reply_markup)
+                                    else:
+                                        caption, reply_markup = get_registration_text(language, "gender")
+                                        await message.reply_text(caption, reply_markup=reply_markup)
+                                else:
+                                    caption= f"Choose your language\nВыберите ваш язык\ndilinizi seçin:"
+                                    reply_markup = InlineKeyboardMarkup([
+                                        [InlineKeyboardButton("English", callback_data="register_language_English")],
+                                        [InlineKeyboardButton("Русский", callback_data="register_language_Russian")],
+                                        [InlineKeyboardButton("Azərbaycan", callback_data="register_language_Azerbejani")]])
+                                    await message.reply_text(caption, reply_markup=reply_markup)
+                            except Exception as e:
+                              print("Error in register_user:", e)
+                            await save_id(referer_user_id, user_id)
+                            await message.reply_text(f"You are successfully refered by {name}.")
+                            referer_lang = find_language(referer_user_id)
+                            referred_name = await get_user_name(user_id)
+                            total_points =await (get_point(referer_user_id))
+                            caption = f"You have successfully referred to {referred_name}.\n\n Your Total points: {total_points}"
+                            if referer_lang == "English":
+                                await zenova.send_message(referer_user_id, caption)
+                            elif referer_lang == "Russian":
+                                await zenova.send_message(referer_user_id, translate_text(caption, target_language="ru"))
+                            elif referer_lang == "Azerbejani":
+                                await zenova.send_message(referer_user_id, translate_text(caption, target_language="az"))
+                        else:
+                            msg = "You are Already registered!"
+                            user_lang = find_language(user_id)
+                            if user_lang == "English":
+                                await message.reply_text(msg)
+                            elif user_lang == "Russian":
+                                await message.reply_text(translate_text(msg, target_language="ru"))
+                            elif user_lang == "Azerbejani":
+                                await message.reply_text(translate_text(msg, target_language="az"))
                     else:
-                        caption, reply_markup = get_registration_text(language, "interest")
+                        await message.reply_text("You are already refered by someone!")
+            except Exception as e:
+                await message.reply_text(f"An error occurred: {str(e)}")
+        else:
+            await message.reply_text(f"Referer id {referer_user_id} is invalid.")
+    else:
+        try:
+            if is_user_registered(message.from_user.id):
+                await message.reply_text("You are already registered.")
+                return
+            # Get user ID
+            user_id = message.from_user.id
+            language = find_language(user_id)
+            # Check if user ID is already registered
+            if language:
+                gender = get_gender(user_id, language)
+                if gender:
+                    age = get_age_group(user_id, language)
+                    if age:
+                        interest = get_interest(user_id, language)
+                        if interest:
+                            await message.reply_text("You are already registered.")
+                        else:
+                            caption, reply_markup = get_registration_text(language, "interest")
+                            await message.reply_text(caption, reply_markup=reply_markup)
+                    else:
+                        caption, reply_markup = get_registration_text(language, "age")
                         await message.reply_text(caption, reply_markup=reply_markup)
                 else:
-                    caption, reply_markup = get_registration_text(language, "age")
+                    caption, reply_markup = get_registration_text(language, "gender")
                     await message.reply_text(caption, reply_markup=reply_markup)
             else:
-                caption, reply_markup = get_registration_text(language, "gender")
+                caption= f"Choose your language\nВыберите ваш язык\ndilinizi seçin:"
+                reply_markup = InlineKeyboardMarkup([
+                    [InlineKeyboardButton("English", callback_data="register_language_English")],
+                    [InlineKeyboardButton("Русский", callback_data="register_language_Russian")],
+                    [InlineKeyboardButton("Azərbaycan", callback_data="register_language_Azerbejani")]])
                 await message.reply_text(caption, reply_markup=reply_markup)
-        else:
-            caption= f"Choose your language\nВыберите ваш язык\ndilinizi seçin:"
-            reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("English", callback_data="register_language_English")],
-                [InlineKeyboardButton("Русский", callback_data="register_language_Russian")],
-                [InlineKeyboardButton("Azərbaycan", callback_data="register_language_Azerbejani")]])
-            await message.reply_text(caption, reply_markup=reply_markup)
-    except Exception as e:
-        print("Error in register_user:", e)
+        except Exception as e:
+            print("Error in register_user:", e)
 
 @zenova.on_callback_query(filters.regex(r"^register_language_"))
 async def register_language_callback(client, callback_query):
