@@ -13,5 +13,6 @@ button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
 async def premium_option(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    message, buttons = await get_premium_msg(language)
-    await message.reply_text(message, reply_markup=buttons)
+    caption, buttons = await get_premium_msg(language)
+    print(caption, buttons)
+    await message.reply_text(caption, reply_markup=buttons)
