@@ -1,6 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
+import urllib.parse
 
 
 from zenova import zenova , BOT_USERNAME
@@ -26,7 +27,8 @@ async def premium_free_callback(bot, update):
     # Assuming you have a function to generate the referral link
     referral_link = f"https://t.me/{BOT_USERNAME}?start=r{user_id}"
     share_txt = "Hey buddy!!\n\n Try this amazing bot for getting connected with strangers from the world!"
-    share_link = f"https://t.me/share/url?url={referral_link}&text={share_txt}"
+    encoded_share_txt = urllib.parse.quote(share_txt)
+    share_link = f"https://t.me/share/url?url={referral_link}&text={encoded_share_txt}"
     print("share link:", share_link)
     await update.message.edit_text(
         text=f"Invite users using your link and receive 👑VIP status for 1 hour for each!\n\nInvited:{total_points} \n\nYour personal link:\n👉 {referral_link}",
