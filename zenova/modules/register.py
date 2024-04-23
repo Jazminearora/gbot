@@ -95,11 +95,11 @@ async def register_user(client, message):
                               print("Error in register_user:", e)
                             if not await check_registration_completed(user_id):
                                 button = [
-                                        InlineKeyboardButton(
-                                            text = 'Try Again',
-                                            url = f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
-                                         )
-                                        ]
+                                    InlineKeyboardButton(
+                                        text = 'Try Again',
+                                        url = f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
+                                    )
+                                ]
                                 await message.reply_text(f"You are not registered yet!/n/nUse below button to retry.", reply_markup = InlineKeyboardMarkup(button))
                                 return
                             await save_id(referer_user_id, user_id)
