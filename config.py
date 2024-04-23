@@ -26,3 +26,5 @@ ERROR_IMG = "https://i.postimg.cc/wTz2NP1N/5ff8d046-d31b-476e-81d2-6b81a231491b.
 Start_img = "https://graph.org/file/d883008fbbafc1609cdc5.jpg"
 approved_users = [5265109324, 6790062374]
 TUTORIAL_LINK = "https://t.me/Equinox_Chats/492033"
+
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "ʜᴇʟʟᴏ {first}\n\n<b>ᴊᴏɪɴ ᴏᴜʀ ᴄʜᴀɴɴᴇʟs ᴀɴᴅ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʀᴇʟᴏᴀᴅ button ᴛᴏ ɢᴇᴛ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛᴇᴅ ꜰɪʟᴇ.</b>")
