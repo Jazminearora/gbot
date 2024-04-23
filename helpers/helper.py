@@ -3,6 +3,7 @@ from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram import filters
 
 def add_user_id(language, user_id, field):
     try:
@@ -113,6 +114,8 @@ def is_user_registered(user_id):
             return False
     else:    
         return False
+    
+user_registered = filters.create(is_user_registered)
 
 
 def get_profile(user_id, language):

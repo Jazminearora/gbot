@@ -3,10 +3,11 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 from zenova import zenova
-from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
+from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered, user_registered
 from helpers.get_msg import get_registration_text
 from helpers.translator import translate_text
 from helpers.referdb import save_id, is_served_user, get_point
+from helpers.forcesub import subscribed
 
 
 
@@ -22,7 +23,7 @@ async def get_user_name(user_id):
     except Exception as e:
         return None
     
-@zenova.on_message(filters.command(["start"]) & filters.private)
+@zenova.on_message(filters.command(["start"]) & filters.private & subscribed & ~user_registered)
 async def register_user(client, message):
     # Extract the referer user id from the command message
     command_parts = message.text.split(" ")

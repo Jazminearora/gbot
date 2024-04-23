@@ -8,15 +8,13 @@ import re
 
 # Helper functions
 from helpers.forcesub import subscribed
-from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, is_user_registered, remove_interest
+from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, user_registered, remove_interest
 from helpers.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
-from helpers.referdb import save_id, is_served_user, get_point
-from helpers.translator import translate_text
 
 
 
 # Handle private messages with the reply markup
-@zenova.on_message(filters.command(["start"]) & filters.private & subscribed)
+@zenova.on_message(filters.command(["start"]) & filters.private & subscribed & user_registered)
 async def start_command(client, message):
     try:
         user_id = message.from_user.id
