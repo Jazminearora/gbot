@@ -7,7 +7,13 @@ BOT_USERNAME = os.environ.get("BOT_USERNAME")
 OWNER_ID = int(os.environ.get("OWNER_ID"))
 LOGGER_ID = int(os.environ.get("LOGGER_ID"))
 MONGO_URI = os.environ.get("MONGO_URI")
-ADMIN_IDS = os.environ.get("ADMIN_IDS", 5265109324)
+
+try:
+    ADMINS=[]
+    for x in (os.environ.get("ADMINS", "").split()):
+        ADMINS.append(int(x))
+except ValueError:
+        raise Exception("Your Admins list does not contain valid integers.")
 key = "chdsxfdcan"
 DEV_USER = []
 SUDO_USERS = os.environ.get("SUDO_USERS")

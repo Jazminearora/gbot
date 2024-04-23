@@ -1,4 +1,4 @@
-from config import ADMIN_IDS
+from config import ADMINS as ADMIN_IDS
 from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.enums import ChatMemberStatus
