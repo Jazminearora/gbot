@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from os import listdir, path
 from dotenv import load_dotenv
 from pyrogram import Client
-from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI
+from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI, ADMIN_IDS
 
 # Tg bot __init_.py
 
@@ -36,6 +36,7 @@ db = client["zenova-prime"]
 referdb = db["referdb"]
 mongodb = db["tgtbot"]
 
+ADMIN_IDS = ADMIN_IDS
 
 async def zenova_bot():
     global BOT_ID, BOT_NAME, BOT_USERNAME
