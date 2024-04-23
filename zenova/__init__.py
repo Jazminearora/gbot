@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from os import listdir, path
 from dotenv import load_dotenv
 from pyrogram import Client
-from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI, ADMIN_IDS
+from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS
 
 # Tg bot __init_.py
 
