@@ -3,11 +3,11 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 from zenova import zenova
-from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered, user_registered
+from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
 from helpers.get_msg import get_registration_text
 from helpers.translator import translate_text
 from helpers.referdb import save_id, is_served_user, get_point
-from helpers.forcesub import subscribed
+from helpers.forcesub import subscribed, user_registered
 
 
 
