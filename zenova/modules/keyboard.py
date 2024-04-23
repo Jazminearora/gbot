@@ -133,7 +133,6 @@ async def set_language(client, callback_query):
         user_id = callback_query.from_user.id
         # Extract the new language from the callback data
         new_lang = callback_query.data.split("_")[2]
-        muks = await zenova.send_message(user_id,"🔍", reply_markup=ReplyKeyboardRemove())
         old_lang = find_language(user_id)
         remove_user_id(old_lang, user_id, old_lang)
         add_user_id(new_lang, user_id, new_lang)
@@ -148,7 +147,7 @@ async def set_language(client, callback_query):
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
             print(success_message)
-            await muks.edit_text(success_message)
+            await zenova.send_message(user_id, success_message, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             print("Error in changing language:", e)
 
