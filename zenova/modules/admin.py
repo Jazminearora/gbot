@@ -2,7 +2,7 @@ import os
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from config import ADMIN_IDS
+from config import  ADMINS as ADMIN_IDS
 from zenova import zenova
 from zenova import mongodb as collection
 from config import key
