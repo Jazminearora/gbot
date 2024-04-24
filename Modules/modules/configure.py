@@ -4,7 +4,7 @@ from Modules import cbot
 
 
 
-button_pattern = re.compile(r"^🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧)$")
+button_pattern = re.compile(r"^(🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧)$")
 
 
 def get_button_pattern():
