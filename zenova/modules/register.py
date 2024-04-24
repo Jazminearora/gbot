@@ -41,7 +41,6 @@ async def register_user(client, message):
     if len(command_parts) > 1:
         try:
             referer_user_id = int(command_parts[1].replace("r", ""))
-            print("referer id = ", referer_user_id)
         except ValueError:
             await message.reply("Invalid referer user id format.")
             return
@@ -109,22 +108,21 @@ async def register_user(client, message):
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
                             total_points =await (get_point(referer_user_id))
-                            caption = f"You have successfully referred to {referred_name}.\n\n Your Total points: {total_points}"
+                            caption_prefix = "You have successfully referred to"
+                            caption_suffix = f".\n\n Your Total points: {total_points}"
                             if referer_lang == "English":
-                                await zenova.send_message(referer_user_id, caption)
+                                await zenova.send_message(referer_user_id, f"{caption_prefix} {referred_name}{caption_suffix}")
                             elif referer_lang == "Russian":
-                                await zenova.send_message(referer_user_id, translate_text(caption, target_language="ru"))
+                                translated_caption = translate_text(caption_prefix, target_language="ru") + f" {referred_name}" + translate_text(caption_suffix, target_language="ru")
+                                await zenova.send_message(referer_user_id, translated_caption)
                             elif referer_lang == "Azerbejani":
-                                await zenova.send_message(referer_user_id, translate_text(caption, target_language="az"))
+                                translated_caption = translate_text(caption_prefix, target_language="az") + f" {referred_name}" + translate_text(caption_suffix, target_language="az")
+                                await zenova.send_message(referer_user_id, translated_caption)
                         else:
                             msg = "You are Already registered!"
                             user_lang = find_language(user_id)
-                            if user_lang == "English":
-                                await message.reply_text(msg)
-                            elif user_lang == "Russian":
-                                await message.reply_text(translate_text(msg, target_language="ru"))
-                            elif user_lang == "Azerbejani":
-                                await message.reply_text(translate_text(msg, target_language="az"))
+                            translations = {"English": msg, "Russian": translate_text(msg, target_language="ru"), "Azerbejani": translate_text(msg, target_language="az")}
+                            await message.reply_text(translations.get(user_lang, msg))
                     else:
                         await message.reply_text("You are already refered by someone!")
             except Exception as e:
