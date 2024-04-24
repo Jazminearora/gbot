@@ -30,7 +30,7 @@ print("Data stored successfully with id:", inserted_id)
 
 async def cbot_boot():
     for all_module in ALL_MODULES:
-        importlib.import_module("cbot.modules." + all_module)
+        importlib.import_module("Modules.modules." + all_module)
     print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
     await idle()
     print("Caught an unknown error")
