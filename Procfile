@@ -1,1 +1,1 @@
-worker: python -m zenova
+worker: python -m Modules

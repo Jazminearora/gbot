@@ -1,4 +1,4 @@
-from zenova import mongodb as collection
+from Modules import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text

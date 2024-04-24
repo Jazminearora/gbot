@@ -1,4 +1,4 @@
-from zenova import premiumdb
+from Modules import premiumdb
 import time
 from datetime import datetime, timedelta
 

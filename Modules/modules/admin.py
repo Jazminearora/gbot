@@ -3,10 +3,10 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from config import  ADMINS as ADMIN_IDS
-from zenova import zenova
-from zenova import mongodb as collection
+from Modules import cbot
+from Modules import mongodb as collection
 from config import key
-from helpers.helper import get_total_users, find_language
+from helpers.helper import get_total_users
 
 
 buttons = [
@@ -37,26 +37,26 @@ home_btn = InlineKeyboardMarkup([
 
 
 # Command handler for /admin
-@zenova.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
+@cbot.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
 async def admin_panel(_, message):
 
     reply_markup = InlineKeyboardMarkup(buttons)
     await message.reply_text('Please choose an option:', reply_markup=reply_markup)
 
 # Callback handler using regex filter
-@zenova.on_callback_query(filters.regex(r'^newsletter$'))
+@cbot.on_callback_query(filters.regex(r'^newsletter$'))
 async def newsletter_handler(_, query):
     await query.message.edit_text(text="You selected Newsletter.")
 
-@zenova.on_callback_query(filters.regex(r'^subscriptions$'))
+@cbot.on_callback_query(filters.regex(r'^subscriptions$'))
 async def subscriptions_handler(_, query):
     await query.message.edit_text(text="You selected Subscriptions.")
 
-@zenova.on_callback_query(filters.regex(r'^impressions$'))
+@cbot.on_callback_query(filters.regex(r'^impressions$'))
 async def impressions_handler(_, query):
     await query.message.edit_text(text="You selected Impressions.")
 
-@zenova.on_callback_query(filters.regex(r'^statistics$'))
+@cbot.on_callback_query(filters.regex(r'^statistics$'))
 async def statistics_handler(_, query):
     # Get the user counts for each language
     eng_users = get_total_users("English") or 0
@@ -76,15 +76,15 @@ async def statistics_handler(_, query):
     await query.message.edit_text(text=stats_text, reply_markup = home_btn)
 
     
-@zenova.on_callback_query(filters.regex(r'^referral$'))
+@cbot.on_callback_query(filters.regex(r'^referral$'))
 async def referral_handler(_, query):
     await query.message.edit_text(text="You selected Referral link.")
 
-@zenova.on_callback_query(filters.regex(r'^vip_users$'))
+@cbot.on_callback_query(filters.regex(r'^vip_users$'))
 async def vip_users_handler(_, query):
     await query.message.edit_text(text="You selected VIP Users.")
 
-@zenova.on_callback_query(filters.regex(r'^st_close$'))
+@cbot.on_callback_query(filters.regex(r'^st_close$'))
 async def close_page(_, query):
     try:
         # Delete the callback message
@@ -92,7 +92,7 @@ async def close_page(_, query):
     except Exception as e:
         print("Error in close_profile:", e)
 
-@zenova.on_callback_query(filters.regex(r'^st_back$'))
+@cbot.on_callback_query(filters.regex(r'^st_back$'))
 async def back_page(_, query):
     try:
         reply_markup = InlineKeyboardMarkup(buttons)
@@ -126,7 +126,7 @@ def save_to_file(data, filename):
             file.write('\n')
 
 # Callback handler for 'List of users' option
-@zenova.on_callback_query(filters.regex(r'^list_users$'))
+@cbot.on_callback_query(filters.regex(r'^list_users$'))
 async def list_users_handler(_, query):
     # Retrieve user data from MongoDB collections
     raw_data = collection.find_one({key: {"$exists": True}})
@@ -143,15 +143,15 @@ async def list_users_handler(_, query):
 
     # Remove the file after sending it
     os.remove("Users_Data.txt")
-@zenova.on_callback_query(filters.regex(r'^delete_inactive$'))
+@cbot.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
     await query.message.edit_text(text="You selected Delete inactive.")
 
-@zenova.on_callback_query(filters.regex(r'^cancel$'))
+@cbot.on_callback_query(filters.regex(r'^cancel$'))
 async def cancel_handler(_, query):
     await query.message.edit_text(text="You canceled the operation.")
 
-@zenova.on_callback_query(filters.regex(r'^st_close$'))
+@cbot.on_callback_query(filters.regex(r'^st_close$'))
 async def close_menu(client, callback_query):
     try:
         # Delete the callback message
@@ -159,7 +159,7 @@ async def close_menu(client, callback_query):
     except Exception as e:
         print("Error in close_profile:", e)
 
-@zenova.on_callback_query(filters.regex(r'^st_back$'))
+@cbot.on_callback_query(filters.regex(r'^st_back$'))
 async def back_menu(_, query):
     try:
         reply_markup = InlineKeyboardMarkup(buttons)

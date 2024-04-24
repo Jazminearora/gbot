@@ -1,5 +1,5 @@
 from pyrogram import Client, filters, types
-from zenova import zenova, language_collection, gender_collection, age_group_collection, interests_collection
+from cbot import cbot, language_collection, gender_collection, age_group_collection, interests_collection
 from helpers.helper import get_gender, get_age_group, get_interests, user_registered
 from langdb import English, Russian, Ajerbejani
 
@@ -15,7 +15,7 @@ async def get_language(user_id):
             return lang
     return "English"  # Default language if not found
 
-@zenova.on_message(filters.command("start"))
+@cbot.on_message(filters.command("start"))
 async def start(bot, message):
     # Check if user exists in any language list
     user_id = message.from_user.id
@@ -93,7 +93,7 @@ async def ask_interests(bot, user_id, lang):
     ]))
 
 # Callback Query Handler for Language Selection
-@zenova.on_callback_query(filters.regex(r"^(English|Russian|Ajerbejani)$"))
+@cbot.on_callback_query(filters.regex(r"^(English|Russian|Ajerbejani)$"))
 async def language_selection(bot, callback_query):
     language = callback_query.data.lower()
     user_id = callback_query.from_user.id
@@ -107,7 +107,7 @@ async def language_selection(bot, callback_query):
     await proceed_with_missing_info(bot, callback_query.message, language, None, None, None)
 
 # Callback Query Handler for Gender Selection
-@zenova.on_callback_query(filters.regex(r"^(Male|Female)$"))
+@cbot.on_callback_query(filters.regex(r"^(Male|Female)$"))
 async def gender_selection(bot, callback_query):
     gender = callback_query.data
     user_id = callback_query.from_user.id
@@ -119,7 +119,7 @@ async def gender_selection(bot, callback_query):
     await ask_age_group(bot, user_id, await get_language(user_id))
 
 # Callback Query Handler for Age Group Selection
-@zenova.on_callback_query(filters.regex(r"^(Below 18|18-25|26-35|Above 35)$"))
+@cbot.on_callback_query(filters.regex(r"^(Below 18|18-25|26-35|Above 35)$"))
 async def age_group_selection(bot, callback_query):
     age_group = callback_query.data
     user_id = callback_query.from_user.id
@@ -131,7 +131,7 @@ async def age_group_selection(bot, callback_query):
     await ask_interests(bot, user_id, await get_language(user_id))
 
 # Callback Query Handler for Interests Selection
-@zenova.on_callback_query(filters.regex(r"^(communication|intimacy|selling)$"))
+@cbot.on_callback_query(filters.regex(r"^(communication|intimacy|selling)$"))
 async def interests_selection(bot, callback_query):
     interests = callback_query.data
     user_id = callback_query.from_user.id

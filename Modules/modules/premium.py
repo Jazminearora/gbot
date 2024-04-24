@@ -4,14 +4,14 @@ import re
 import urllib.parse
 
 
-from zenova import zenova , BOT_USERNAME
+from Modules import cbot , BOT_USERNAME
 from helpers.helper import find_language
 from langdb.get_msg import get_premium_msg
 from database.referdb import get_point
 
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
-@zenova.on_message(filters.private & filters.regex(button_pattern))
+@cbot.on_message(filters.private & filters.regex(button_pattern))
 async def premium_option(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
@@ -19,7 +19,7 @@ async def premium_option(client, message):
     await message.reply_text(caption, reply_markup=buttons)
 
 
-@zenova.on_callback_query(filters.regex("^premium_free$"))
+@cbot.on_callback_query(filters.regex("^premium_free$"))
 async def premium_free_callback(bot, update):
     # Your logic here to handle the callback query
     user_id = update.from_user.id

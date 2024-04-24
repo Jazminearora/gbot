@@ -1,4 +1,4 @@
-from zenova import referdb
+from Modules import referdb
 
 async def is_served_user(refered_user_id: int) -> bool:
     try:

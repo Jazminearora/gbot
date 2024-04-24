@@ -1,16 +1,16 @@
-from zenova import zenova, BOT_USERNAME
+from Modules import cbot, BOT_USERNAME
 from helpers.forcesub import subscribed
 from config import FORCE_MSG
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-@zenova.on_message(filters.command('start') & filters.private & ~subscribed)
+@cbot.on_message(filters.command('start') & filters.private & ~subscribed)
 async def not_joined(client, message):
     buttons = [
         [
             InlineKeyboardButton(text="Join Channel", url="t.me/about_xytra"),
-            InlineKeyboardButton(text="Join Channel", url="t.me/zenova_prime"),
+            InlineKeyboardButton(text="Join Channel", url="t.me/cbot_prime"),
         ]
     ]
     try:

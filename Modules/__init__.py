@@ -23,8 +23,8 @@ logging.basicConfig(
 
 
 
-zenova = Client(
-    ":zenova:",
+cbot = Client(
+    ":cbot:",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
@@ -32,17 +32,17 @@ zenova = Client(
 
 
 client = MongoClient(MONGO_URI)
-db = client["zenova-prime"]
+db = client["cbot-prime"]
 referdb = db["referdb"]
 premiumdb = db["premiumdb"]
 mongodb = db["tgtbot"]
 
 ADMIN_IDS = ADMIN_IDS
 
-async def zenova_bot():
+async def cbot_bot():
     global BOT_ID, BOT_NAME, BOT_USERNAME
-    await zenova.start()
-    getme = await zenova.get_me()
+    await cbot.start()
+    getme = await cbot.get_me()
     BOT_ID = getme.id
     BOT_USERNAME = getme.username
     if getme.last_name:
@@ -51,4 +51,4 @@ async def zenova_bot():
         BOT_NAME = getme.first_name
     
 
-loop.run_until_complete(zenova_bot())
+loop.run_until_complete(cbot_bot())

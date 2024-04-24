@@ -3,7 +3,7 @@ import asyncio
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-from zenova import zenova, BOT_USERNAME
+from Modules import cbot, BOT_USERNAME
 from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
 from langdb.get_msg import get_registration_text
 from helpers.translator import translate_text
@@ -16,7 +16,7 @@ from helpers.forcesub import subscribed, user_registered
 
 async def get_user_name(user_id):
     try:
-        user = await zenova.get_users(user_id)
+        user = await cbot.get_users(user_id)
         if user:
             name = user.first_name
             if user.last_name:
@@ -35,7 +35,7 @@ async def check_registration_completed(user_id):
             return True  # User is registered
         await asyncio.sleep(5)  # Wait for 5 seconds before next attempt
 
-@zenova.on_message(filters.command(["start"]) & filters.private & subscribed & ~user_registered)
+@cbot.on_message(filters.command(["start"]) & filters.private & subscribed & ~user_registered)
 async def register_user(client, message):
     # Extract the referer user id from the command message
     command_parts = message.text.split(" ")
@@ -113,13 +113,13 @@ async def register_user(client, message):
                             caption_prefix = "You have successfully referred to"
                             caption_suffix = f".\n\n Your Total points: {total_points}"
                             if referer_lang == "English":
-                                await zenova.send_message(referer_user_id, f"{caption_prefix} {referred_name}{caption_suffix}")
+                                await cbot.send_message(referer_user_id, f"{caption_prefix} {referred_name}{caption_suffix}")
                             elif referer_lang == "Russian":
                                 translated_caption = translate_text(caption_prefix, target_language="ru") + f" {referred_name}" + translate_text(caption_suffix, target_language="ru")
-                                await zenova.send_message(referer_user_id, translated_caption)
+                                await cbot.send_message(referer_user_id, translated_caption)
                             elif referer_lang == "Azerbejani":
                                 translated_caption = translate_text(caption_prefix, target_language="az") + f" {referred_name}" + translate_text(caption_suffix, target_language="az")
-                                await zenova.send_message(referer_user_id, translated_caption)
+                                await cbot.send_message(referer_user_id, translated_caption)
                         else:
                             msg = "You are Already registered!"
                             user_lang = find_language(user_id)
@@ -167,7 +167,7 @@ async def register_user(client, message):
         except Exception as e:
             print("Error in register_user:", e)
 
-@zenova.on_callback_query(filters.regex(r"^register_language_"))
+@cbot.on_callback_query(filters.regex(r"^register_language_"))
 async def register_language_callback(client, callback_query):
     try:
         # Extract language from callback data
@@ -186,7 +186,7 @@ async def register_language_callback(client, callback_query):
     except Exception as e:
         print("Error in register_language_callback:", e)
 
-@zenova.on_callback_query(filters.regex(r"^register_gender_"))
+@cbot.on_callback_query(filters.regex(r"^register_gender_"))
 async def register_gender_callback(client, callback_query):
     try:
         # Extract language and gender from callback data
@@ -211,7 +211,7 @@ async def register_gender_callback(client, callback_query):
         print("Error in register_gender_callback:", e)
 
 # Callback to handle age group selection
-@zenova.on_callback_query(filters.regex(r"^register_age_"))
+@cbot.on_callback_query(filters.regex(r"^register_age_"))
 async def register_age_callback(client, callback_query):
     try:
         # Extract language and age group from callback data
@@ -236,7 +236,7 @@ async def register_age_callback(client, callback_query):
         print("Error in register_age_callback:", e)
 
 # Callback to handle interest selection
-@zenova.on_callback_query(filters.regex(r"^register_interest_"))
+@cbot.on_callback_query(filters.regex(r"^register_interest_"))
 async def register_interest_callback(client, callback_query):
     try:
         # Extract language and interest from callback data

@@ -1,4 +1,4 @@
-from zenova import mongodb as collection
+from cbot import mongodb as collection
 
 
 key = "ownertg"
