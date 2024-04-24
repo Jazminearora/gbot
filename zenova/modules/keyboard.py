@@ -9,7 +9,7 @@ import re
 # Helper functions
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, remove_interest
-from helpers.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
+from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
 
 
 
@@ -146,7 +146,6 @@ async def set_language(client, callback_query):
                 success_message = "Язык успешно изменен! 🇷🇺"
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
-            print(success_message)
             await zenova.send_message(user_id, success_message, reply_markup=ReplyKeyboardRemove())
         except Exception as e:
             print("Error in changing language:", e)
@@ -161,7 +160,6 @@ async def edit_interest(client, callback_query):
         # Get the user ID and language
         user_id = callback_query.from_user.id
         language = find_language(user_id)
-        print(language)
 
         # Fetch current interest
         current_interest = get_interest(user_id, language)
@@ -181,7 +179,6 @@ async def set_interest(client, callback_query):
         user_id = callback_query.from_user.id
         language = find_language(user_id)
         new_interest = callback_query.data.split("_")[2]
-        print("new interest:", new_interest)
         muks = await callback_query.message.edit_caption("🔍")
         # Get the user ID and old language
         user_id = callback_query.from_user.id
@@ -198,7 +195,6 @@ async def set_interest(client, callback_query):
                 success_message = "интерес успешно изменился!"
             elif language == "Azerbejani":
                 success_message = "maraq uğurla dəyişdi!"
-            print(success_message)
             await trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
         except Exception as e:
             print("Error in changing language:", e)

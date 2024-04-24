@@ -34,6 +34,7 @@ zenova = Client(
 client = MongoClient(MONGO_URI)
 db = client["zenova-prime"]
 referdb = db["referdb"]
+premiumdb = db["premiumdb"]
 mongodb = db["tgtbot"]
 
 ADMIN_IDS = ADMIN_IDS

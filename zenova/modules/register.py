@@ -5,9 +5,10 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from zenova import zenova, BOT_USERNAME
 from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
-from helpers.get_msg import get_registration_text
+from langdb.get_msg import get_registration_text
 from helpers.translator import translate_text
-from helpers.referdb import save_id, is_served_user, get_point
+from database.referdb import save_id, is_served_user, get_point
+from database.premiumdb import extend_premium_user
 from helpers.forcesub import subscribed, user_registered
 
 
@@ -105,6 +106,7 @@ async def register_user(client, message):
                                 return
                             await save_id(referer_user_id, user_id)
                             await message.reply_text(f"You are successfully refered by {name}.")
+                            await extend_premium_user(referer_user_id)
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
                             total_points =await (get_point(referer_user_id))

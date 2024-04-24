@@ -8,14 +8,12 @@ from pyrogram import filters
 def add_user_id(language, user_id, field):
     try:
         collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.database.{field}": user_id}})
-        print("success lang:", language)
     except Exception as e:
         print("Error in adding user ID:", e)
 
 def remove_user_id(language, user_id, field):
     try:
-        hk = collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}}).raw_result
-        print('hk:', hk)
+        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
     except Exception as e:
         print("Error in removing user ID:", e)
 
@@ -61,15 +59,11 @@ def get_total_users(language):
 def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {'$exists': True}})
-        print("get gender docs:", document[key])
         if document:
             lang_data = document[key]['database']
-            print("lang data in get gender:", lang_data)
             if "male" in lang_data and str(user_id) in lang_data["male"]:
-                print("male")
                 return "male"
             elif "female" in lang_data and str(user_id) in lang_data["female"]:
-                print("male")
                 return "female"
     except Exception as e:
         print('Exception occurred in get_gender:', e)
@@ -92,7 +86,6 @@ def get_interest(user_id, language):
         document = collection.find_one({key: {"$exists": True}})
         if document:
             lang_data = document[key]["database"]
-            print('lang data of get interest:', lang_data)
             for interest in ["communication", "intimacy", "selling"]:
                 if str(user_id) in lang_data.get(interest, []):
                     return interest.capitalize()
@@ -107,7 +100,6 @@ def is_user_registered(user_id):
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
-        print(gender, age_group, interest)
         if gender and age_group and interest:
             return True
         else:

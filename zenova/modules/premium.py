@@ -6,8 +6,8 @@ import urllib.parse
 
 from zenova import zenova , BOT_USERNAME
 from helpers.helper import find_language
-from helpers.get_msg import get_premium_msg
-from helpers.referdb import get_point
+from langdb.get_msg import get_premium_msg
+from database.referdb import get_point
 
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
