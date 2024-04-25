@@ -4,7 +4,7 @@ import re
 import urllib.parse
 
 from helpers.helper import find_language
-from helpers.translator import translate_text
+from helpers.translator import translate_text, translate_async
 from Modules import cbot , BOT_USERNAME
 from helpers.helper import find_language
 from langdb.get_msg import get_premium_msg
@@ -23,12 +23,12 @@ async def get_text(total_points, referral_link, language):
     msg2 = "Your personal link:\n👉"
     share_txt = "Hey buddy!!\n\n Try this amazing bot for getting connected with strangers from the world!"
     
-    translated_msg = translate_text(msg, target_language=language)
-    translated_msg2 = translate_text(msg2, target_language=language)
-    translated_share_txt = translate_text(share_txt, target_language=language)
+    translated_msg = await translate_async(msg, target_language=language)
+    translated_msg2 = await translate_async(msg2, target_language=language)
+    translated_share_txt = await translate_async(share_txt, target_language=language)
     
     message = (
-        translated_msg + (total_points) + "\n\n" +
+        translated_msg + str(total_points) + "\n\n" +
         translated_msg2 + referral_link
     )
     return message, translated_share_txt
@@ -47,11 +47,33 @@ async def premium_free_callback(bot, update):
     share_link = f"https://t.me/share/url?url={referral_link}&text={encoded_share_txt}"
     print("share link:", share_link)
     
-    refer_button_text = translate_text("Refer your Friend", target_language=user_lang)
+    refer_button_text = await translate_async("Refer your Friend", target_language=user_lang)
     
     await update.message.edit_text(
         text=message,
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton(refer_button_text, url=share_link)]]
+        )
+    )
+
+@cbot.on_message(filters.command(["referals"]) & filters.private)
+async def referals_command(client, message):
+    user_id = message.from_user.id
+    total_points = await get_point(user_id)
+    referral_link = f"https://t.me/{BOT_USERNAME}?start=r{user_id}"
+    
+    user_lang = find_language(user_id)
+    message, share_txt = await get_text(total_points, referral_link, user_lang)
+
+    
+    encoded_share_txt = urllib.parse.quote(share_txt)
+    share_link = f"https://t.me/share/url?url={referral_link}&text={encoded_share_txt}"
+    print("share link:", share_link)
+    refer_button_text = await translate_async("Refer your Friend", target_language=user_lang)
+
+    await message.reply_text(
+        text=message,
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton(refer_button_texts, url=referral_link)]]
         )
     )
