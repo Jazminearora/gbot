@@ -8,8 +8,9 @@ import re
 
 # Helper functions
 from helpers.forcesub import subscribed, user_registered
-from helpers.helper import get_profile, find_language, remove_user_id, add_user_id, get_interest, remove_interest
+from helpers.helper import get_profile, find_language, get_interest
 from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
+from database.registerdb import add_user_id, remove_interest, remove_user_id
 
 
 

@@ -4,9 +4,10 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 from Modules import cbot, BOT_USERNAME
-from helpers.helper import find_language, add_user_id, get_gender, get_age_group, get_interest, is_user_registered
+from helpers.helper import find_language, get_gender, get_age_group, get_interest, is_user_registered
 from langdb.get_msg import get_registration_text
 from helpers.translator import translate_text
+from database.registerdb import add_user_id
 from database.referdb import save_id, is_served_user, get_point
 from database.premiumdb import extend_premium_user
 from helpers.forcesub import subscribed, user_registered
