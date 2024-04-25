@@ -35,7 +35,7 @@ async def handle_premium_free_request(update):
         )
     )
 
-@cbot.on_command(["referals"] & subscribed & user_registered)
+@cbot.on_message(filters.command("referals") & subscribed & user_registered)
 async def premium_free_command_handler(bot, update):
     await handle_premium_free_request(update)
 
