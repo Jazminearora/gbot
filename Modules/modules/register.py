@@ -105,7 +105,17 @@ async def register_user(client, message):
                                 await message.reply_text(f"You are not registered yet!\n\nUse below button to retry.", reply_markup = button)
                                 return
                             await save_id(referer_user_id, user_id)
-                            await message.reply_text(f"You are successfully refered by {name}.")
+                            referer_lang = find_language(referer_user_id)
+                            if referer_lang == "English":
+                                message_text = f"You are successfully referred by {name}."
+                            elif referer_lang == "Russian":
+                                message_text = f"Вас успешно направил {name}.."
+                            elif referer_lang == "Azerbejani":
+                                message_text = f"Siz {name} tərəfindən uğurla istinad edildiniz."
+                            else:
+                                # Default to English if the language is not recognized
+                                message_text = f"You are successfully referred by {name}."
+                            await message.reply_text(message_text)
                             await extend_premium_user(referer_user_id)
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)

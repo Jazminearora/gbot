@@ -26,14 +26,12 @@ async def start_command(client, message):
 
 
 # Define a regex pattern to match the button texts for all three languages
-button_pattern = re.compile(r"^🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧|👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫$")
+button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫$")
 
 @cbot.on_message(filters.private & filters.regex(button_pattern))
 async def handle_keyboard_response(client, message):
     text = message.text
-    if "Configure search" in text or "Настроить поиск" in text or "Axtarışı tənzimlə" in text:
-        await message.reply_text("Configuring search...")
-    elif "Profile" in text or "Профиль" in text or "Profil" in text:
+    if "Profile" in text or "Профиль" in text or "Profil" in text:
         wait_message = await message.reply_text("💭")
         try:
             user_id = message.from_user.id
