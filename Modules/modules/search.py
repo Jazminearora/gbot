@@ -104,9 +104,9 @@ async def forward_message(client, message):
         if message.from_user.id in pair:
             user1, user2 = pair
             if message.from_user.id == user1:
-                await cbot.copy_message(user2, message.chat.id, [message.id])
+                await cbot.copy_message(user2, message.chat.id, message.id)
             else:
-                await cbot.copy_message(user1, message.chat.id, [message.id])
+                await cbot.copy_message(user1, message.chat.id, message.id)
             break
 
 
