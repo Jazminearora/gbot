@@ -1,15 +1,15 @@
 from pyrogram import Client, filters
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 import re
-import asyncio
 from helpers.helper import find_language, get_gender, get_age_group, get_interest
 from database.premiumdb import is_user_premium, vip_users_details
+from helpers.translator import translate_async
+import asyncio
 from Modules import cbot
 
-# List to store normal users searching for an interlocutor
-searching_users = []
 
-# List to store premium users searching for an interlocutor
+# List to store users searching for an interlocutor
+searching_users = []
 searching_premium_users = []
 
 # List to store pairs of users for chatting
@@ -31,27 +31,17 @@ def add_pair(new_pair):
 
 @cbot.on_message(filters.command("hlo"))
 async def hlo(client, message):
-    text = "Normal Searching users:\n" + str(searching_users) + "\n\nPremium Searching users:\n" + str(searching_premium_users) + "\n\nChat pairs:\n" + str(chat_pairs)
+    text = "Searching users:\n" + str(searching_users) + "\n\nChat pairs:\n" + str(chat_pairs)
     await message.reply(text)
 
-button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")
+button_pattern = re.compile(r"^(Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")
 
 @cbot.on_message(filters.private & filters.regex(button_pattern))
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
-    # Check if user is premium
-    if is_user_premium(message.from_user.id):
-        # Get premium user's search configuration
-        gender = vip_users_details(message.from_user.id, "gender")
-        age_groups = vip_users_details(message.from_user.id, "age_groups")
-        room = vip_users_details(message.from_user.id, "room")
-        # Create keyboard with start searching button
-        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]], resize_keyboard=True, one_time_keyboard=True)
-        await message.reply("Your language: {}\nYour Search Configuration:\nGender: {}\nAge Groups: {}\nRoom: {}\nClick the start searching button to find an interlocutor.".format(user_language, gender, age_groups, room), reply_markup=keyboard)
-    else:
-        # Create keyboard with start searching button for normal users
-        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]], resize_keyboard=True, one_time_keyboard=True)
-        await message.reply("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language), reply_markup=keyboard)
+    # Create keyboard with start searching button
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]], resize_keyboard=True, one_time_keyboard=True)
+    await message.reply("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language), reply_markup=keyboard)
 
 # Handle start search button
 @cbot.on_message(filters.private & filters.regex("Start Searching"))
@@ -68,12 +58,12 @@ async def start_search(client, message):
             if user["user_id"] == user_id:
                 await message.reply("You are already searching.")
                 return
-        # Add premium user to searching list
-        user_language = find_language(user_id)
+        # Get premium user's configuration
         gender = vip_users_details(user_id, "gender")
         age_groups = vip_users_details(user_id, "age_groups")
         room = vip_users_details(user_id, "room")
-        searching_premium_users.append({"user_id": user_id, "language": user_language, "gender": gender, "age_groups": age_groups, "room": room})
+        language = find_language(user_id)
+        searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply("Searching for an interlocutor...", reply_markup=keyboard)
     else:
@@ -87,9 +77,12 @@ async def start_search(client, message):
             if user["user_id"] == user_id:
                 await message.reply("You are already searching.")
                 return
-        # Add normal user to searching list
-        user_language = find_language(user_id)
-        searching_users.append({"user_id": user_id, "language": user_language})
+        # Get normal user's details
+        gender = get_gender(user_id)
+        age_groups = get_age_group(user_id)
+        interest = get_interest(user_id)
+        language = find_language(user_id)
+        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "interest": interest})
         keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply("Searching for an interlocutor...", reply_markup=keyboard)
 
@@ -98,30 +91,33 @@ async def start_search(client, message):
 async def stop_search(client, message):
     user_id = message.from_user.id
     # Remove user from searching list
-    for i, user in enumerate(searching_premium_users):
-        if user["user_id"] == user_id:
-            del searching_premium_users[i]
-            break
     for i, user in enumerate(searching_users):
         if user["user_id"] == user_id:
             del searching_users[i]
+            break
+    for i, user in enumerate(searching_premium_users):
+        if user["user_id"] == user_id:
+            del searching_premium_users[i]
             break
     await message.reply("Search stopped.", reply_markup=ReplyKeyboardRemove())
 
 # Function to match users and start chatting
 async def match_users():
-    while len(searching_premium_users) >= 1 and len(searching_users) >= 1:
-        user1 = searching_premium_users.pop(0)
-        user2 = searching_users.pop(0)
-        # Check if user1's search configuration matches with user2
-        if user1["language"] == user2["language"] and user1["gender"] == user2["gender"] and user1["age_groups"] == user2["age_groups"] and user1["room"] == user2["room"]:
-            add_pair([user1["user_id"], user2["user_id"]])  # Add pair to chat_pairs list
-            await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
-            await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
-            # Create keyboard with cancel button
-            keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
-            await cbot.send_message(user1["user_id"], "Chatting with user...", reply_markup=keyboard)
-            await cbot.send_message(user2["user_id"], "Chatting with user...", reply_markup=keyboard)
+    while len(searching_premium_users) > 0 and len(searching_users) > 0:
+        premium_user = searching_premium_users.pop(0)
+        for normal_user in searching_users:
+            if premium_user["language"] == normal_user["language"] and \
+               premium_user["gender"] == normal_user["gender"] and \
+               premium_user["age_groups"] == normal_user["age_groups"] and \
+               premium_user["room"] == normal_user["interest"]:
+                add_pair([premium_user["user_id"], normal_user["user_id"]])  # Add pair to chat_pairs list
+                await cbot.send_message(premium_user["user_id"], "Interlocutor found! You can start chatting now.")
+                await cbot.send_message(normal_user["user_id"], "Interlocutor found! You can start chatting now.")
+                # Create keyboard with cancel button
+                keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
+                await cbot.send_message(premium_user["user_id"], "Chatting with user...", reply_markup=keyboard)
+                await cbot.send_message(normal_user["user_id"], "Chatting with user...", reply_markup=keyboard)
+                break
 
 # Handle cancel button
 @cbot.on_message(filters.private & filters.regex("Cancel"))
