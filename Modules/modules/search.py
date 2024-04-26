@@ -5,6 +5,7 @@ from helpers.helper import find_language
 from helpers.translator import translate_async
 import asyncio
 from Modules import cbot
+
 # List to store users searching for an interlocutor
 searching_users = []
 
@@ -16,26 +17,14 @@ button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти со
 @cbot.on_message(filters.private & filters.regex(button_pattern))
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
-    searching_users.append((message.from_user.id, user_language))  # Add user to searching list
-    await message.reply_text("Your language: {}\nClick the search button to find an interlocutor.".format(user_language))
-    # Create inline keyboard with stop button
-    keyboard = [[InlineKeyboardButton("Stop Searching", callback_data='stop_search'), InlineKeyboardButton("Search", callback_data='search')]]
-    await message.reply_text("Searching for an interlocutor...", reply_markup=InlineKeyboardMarkup(keyboard))
+    await message.reply_text("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language))
+    # Create inline keyboard with start searching button
+    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Start Searching", callback_data='start_search')]])
+    await message.reply_text("Searching for an interlocutor...", reply_markup=keyboard)
 
-# Handle stop search button
-@cbot.on_callback_query(filters.regex('^stop_search$'))
-async def stop_search(_, query):
-    user_id = query.from_user.id
-    # Remove user from searching list
-    for i, (user, _) in enumerate(searching_users):
-        if user == user_id:
-            del searching_users[i]
-            break
-    await query.answer("Search stopped.")
-
-# Handle search button
-@cbot.on_callback_query(filters.regex('^search$'))
-async def search(_, query):
+# Handle start search button
+@cbot.on_callback_query(filters.regex('^start_search$'))
+async def start_search(_, query):
     user_id = query.from_user.id
     # Check if user is already in a chat
     for pair in chat_pairs:
@@ -52,6 +41,17 @@ async def search(_, query):
     searching_users.append((user_id, user_language))
     await query.answer("Searching for an interlocutor...")
 
+# Handle stop search button
+@cbot.on_callback_query(filters.regex('^stop_search$'))
+async def stop_search(_, query):
+    user_id = query.from_user.id
+    # Remove user from searching list
+    for i, (user, _) in enumerate(searching_users):
+        if user == user_id:
+            del searching_users[i]
+            break
+    await query.answer("Search stopped.")
+
 # Function to match users and start chatting
 async def match_users():
     while len(searching_users) >= 2:
@@ -62,9 +62,9 @@ async def match_users():
             await cbot.send_message(user1, "Interlocutor found! You can start chatting now.")
             await cbot.send_message(user2, "Interlocutor found! You can start chatting now.")
             # Create inline keyboard with cancel button
-            keyboard = [[InlineKeyboardButton("Cancel", callback_data='cancel')]]
-            await cbot.send_message(user1, "Chatting with user...", reply_markup=InlineKeyboardMarkup(keyboard))
-            await cbot.send_message(user2, "Chatting with user...", reply_markup=InlineKeyboardMarkup(keyboard))
+            keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Cancel", callback_data='cancel')]])
+            await cbot.send_message(user1, "Chatting with user...", reply_markup=keyboard)
+            await cbot.send_message(user2, "Chatting with user...", reply_markup=keyboard)
         else:
             # If languages don't match, put users back in the searching list
             searching_users.append((user1, lang1))
@@ -74,12 +74,17 @@ async def match_users():
 
 # Handle cancel button
 @cbot.on_callback_query(filters.regex('^cancel$'))
-async def cancel(_, query):
+async def cancel(_,query):
     user_id = query.from_user.id
     # Remove user from chat pairs
     for i, pair in enumerate(chat_pairs):
         if user_id in pair:
             del chat_pairs[i]
+            break
+    # Remove user from searching list
+    for i, (user, _) in enumerate(searching_users):
+        if user == user_id:
+            del searching_users[i]
             break
     await query.answer("Chat cancelled.")
 
