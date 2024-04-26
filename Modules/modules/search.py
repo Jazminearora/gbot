@@ -38,7 +38,7 @@ button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти со
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
     # Create keyboard with start searching button
-    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]])
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]], resize_keyboard= True, one_time_keyboard= True)
     await message.reply("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language), reply_markup = keyboard)
 
 # Handle start search button
@@ -96,15 +96,15 @@ async def match_users():
 @cbot.on_message(filters.private & filters.regex("Cancel"))
 async def cancel(_, message):
     user_id = message.from_user.id
+        # Find the other user in the pair and inform them
+    for pair in chat_pairs:
+        if user_id in pair:
+            other_user_id = pair[1] if pair[0] == user_id else pair[0]
+            await cbot.send_message(other_user_id, "Chat has been stopped by the other user.")
+            break    
     # Find the chat pair and delete it
     if delete_pair(user_id):
         await message.reply("Chat cancelled.")
-        # Find the other user in the pair and inform them
-        for pair in chat_pairs:
-            if user_id in pair:
-                other_user_id = pair[1] if pair[0] == user_id else pair[0]
-                await cbot.send_message(other_user_id, "Chat has been stopped by the other user.")
-                break
 
 # Periodically check for matched users
 async def match_users_loop():
