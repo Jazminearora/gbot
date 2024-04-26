@@ -48,6 +48,7 @@ async def search_interlocutor(client, message):
 async def start_search(client, message):
     user_id = message.from_user.id
     if await is_user_premium(user_id):
+        print(await is_user_premium(user_id))
         # Check if user is already in a chat
         for pair in chat_pairs:
             if user_id in pair:
@@ -82,7 +83,7 @@ async def start_search(client, message):
         age_groups = get_age_group(user_id)
         interest = get_interest(user_id)
         language = find_language(user_id)
-        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "interest": interest})
+        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": None})
         keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply("Searching for an interlocutor...", reply_markup=keyboard)
 
@@ -109,7 +110,7 @@ async def match_users():
             if premium_user["language"] == normal_user["language"] and \
                premium_user["gender"] == normal_user["gender"] and \
                premium_user["age_groups"] == normal_user["age_groups"] and \
-               premium_user["room"] == normal_user["interest"]:
+               premium_user["room"] == normal_user["room"]:
                 add_pair([premium_user["user_id"], normal_user["user_id"]])  # Add pair to chat_pairs list
                 await cbot.send_message(premium_user["user_id"], "Interlocutor found! You can start chatting now.")
                 await cbot.send_message(normal_user["user_id"], "Interlocutor found! You can start chatting now.")
