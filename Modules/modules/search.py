@@ -1,7 +1,8 @@
 from pyrogram import Client, filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 import re
-from helpers.helper import find_language
+from helpers.helper import find_language, get_gender, get_age_group, get_interest
+from database.premiumdb import is_user_premium,
 from helpers.translator import translate_async
 import asyncio
 from Modules import cbot
@@ -9,6 +10,7 @@ from Modules import cbot
 
 # List to store users searching for an interlocutor
 searching_users = []
+searching_premium_users = []
 
 # List to store pairs of users for chatting
 chat_pairs = []
@@ -45,21 +47,39 @@ async def search_interlocutor(client, message):
 @cbot.on_message(filters.private & filters.regex("Start Searching"))
 async def start_search(client, message):
     user_id = message.from_user.id
-    # Check if user is already in a chat
-    for pair in chat_pairs:
-        if user_id in pair:
-            await message.reply("You are already in a chat.")
-            return
-    # Check if user is already searching
-    for user in searching_users:
-        if user["user_id"] == user_id:
-            await message.reply("You are already searching.")
-            return
-    # Add user to searching list
-    user_language = find_language(user_id)
-    searching_users.append({"user_id": user_id, "language": user_language})
-    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard= True, one_time_keyboard= True)
-    await message.reply("Searching for an interlocutor...", reply_markup = keyboard)
+    if is_user_premium(user_id):
+        # Check if user is already in a chat
+        for pair in chat_pairs:
+            if user_id in pair:
+                await message.reply("You are already in a chat.")
+                return
+        # Check if user is already searching
+        for user in searching_users:
+            if user["user_id"] == user_id:
+                await message.reply("You are already searching.")
+                return
+        # Add user to searching list
+        user_language = find_language(user_id)
+        searching_users.append({"user_id": user_id, "language": user_language})
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard= True, one_time_keyboard= True)
+        await message.reply("Searching for an interlocutor...", reply_markup = keyboard)
+    
+    else:
+        # Check if user is already in a chat
+        for pair in chat_pairs:
+            if user_id in pair:
+                await message.reply("You are already in a chat.")
+                return
+        # Check if user is already searching
+        for user in searching_users:
+            if user["user_id"] == user_id:
+                await message.reply("You are already searching.")
+                return
+        # Add user to searching list
+        user_language = find_language(user_id)
+        searching_users.append({"user_id": user_id, "language": user_language})
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard= True, one_time_keyboard= True)
+        await message.reply("Searching for an interlocutor...", reply_markup = keyboard)
 
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching"))
@@ -70,7 +90,7 @@ async def stop_search(client, message):
         if user["user_id"] == user_id:
             del searching_users[i]
             break
-    await message.reply("Search stopped.")
+    await message.reply("Search stopped.", reply_markup=ReplyKeyboardRemove())
 
 # Function to match users and start chatting
 async def match_users():
@@ -85,12 +105,6 @@ async def match_users():
             keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard= True, one_time_keyboard= True)
             await cbot.send_message(user1["user_id"], "Chatting with user...", reply_markup=keyboard)
             await cbot.send_message(user2["user_id"], "Chatting with user...", reply_markup=keyboard)
-        else:
-            # If languages don't match, put users back in the searching list
-            searching_users.append(user1)
-            searching_users.append(user2)
-            await cbot.send_message(user1["user_id"], "No interlocutor found. Please wait for a matching user.")
-            await cbot.send_message(user2["user_id"], "No interlocutor found. Please wait for a matching user.")
 
 # Handle cancel button
 @cbot.on_message(filters.private & filters.regex("Cancel"))
@@ -100,11 +114,11 @@ async def cancel(_, message):
     for pair in chat_pairs:
         if user_id in pair:
             other_user_id = pair[1] if pair[0] == user_id else pair[0]
-            await cbot.send_message(other_user_id, "Chat has been stopped by the other user.")
+            await cbot.send_message(other_user_id, "Chat has been stopped by the other user.", reply_markup=ReplyKeyboardRemove())
             break    
     # Find the chat pair and delete it
     if delete_pair(user_id):
-        await message.reply("Chat cancelled.")
+        await message.reply("Chat cancelled.", reply_markup=ReplyKeyboardRemove())
 
 # Periodically check for matched users
 async def match_users_loop():

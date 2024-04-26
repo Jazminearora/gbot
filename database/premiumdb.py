@@ -1,113 +1,159 @@
-from Modules import premiumdb
-import time
-from datetime import datetime, timedelta
+from pyrogram import Client, filters
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+import re
+import asyncio
+from helpers.helper import find_language, get_gender, get_age_group, get_interest
+from database.premiumdb import is_user_premium, vip_users_details
+from Modules import cbot
 
-async def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None):
-    try:
-        print(premium_status)
-        # Check if the user already exists in the premium database
-        existing_user = premiumdb.find_one({"_id": user_id})
-        if existing_user:
-            # If user exists, update the premium status and other details
-            update_dict = {}
-            if premium_status is not None:
-                update_dict["premium_status"] = premium_status
-            if purchase_time is not None:
-                update_dict["premium_purchase_time"] = purchase_time
-            if expiry_time is not None:
-                update_dict["premium_expiry_time"] = expiry_time
-            if gender is not None:
-                update_dict["gender"] = gender
-            if age_groups is not None:
-                update_dict["age_groups"] = age_groups
-            if room is not None:
-                update_dict["room"] = room
+# List to store normal users searching for an interlocutor
+searching_users = []
 
-            if update_dict:
-                premiumdb.update_one(
-                    {"_id": user_id},
-                    {"$set": update_dict}
-                )
-        else:
-            # If user does not exist, insert a new document
-            if premium_status is None:
-                new_status = False
+# List to store premium users searching for an interlocutor
+searching_premium_users = []
+
+# List to store pairs of users for chatting
+chat_pairs = []
+
+# Function to delete a pair
+def delete_pair(id_to_delete):
+    global chat_pairs
+    for i, pair in enumerate(chat_pairs):
+        if id_to_delete in pair:
+            del chat_pairs[i]
+            return True
+    return False
+
+# Function to add a pair
+def add_pair(new_pair):
+    global chat_pairs
+    chat_pairs.append(new_pair)
+
+@cbot.on_message(filters.command("hlo"))
+async def hlo(client, message):
+    text = "Normal Searching users:\n" + str(searching_users) + "\n\nPremium Searching users:\n" + str(searching_premium_users) + "\n\nChat pairs:\n" + str(chat_pairs)
+    await message.reply(text)
+
+button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")
+
+@cbot.on_message(filters.private & filters.regex(button_pattern))
+async def search_interlocutor(client, message):
+    user_language = find_language(message.from_user.id)  # Retrieve user's language
+    # Check if user is premium
+    if is_user_premium(message.from_user.id):
+        # Get premium user's search configuration
+        gender = vip_users_details(message.from_user.id, "gender")
+        age_groups = vip_users_details(message.from_user.id, "age_groups")
+        room = vip_users_details(message.from_user.id, "room")
+        # Create keyboard with start searching button
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]], resize_keyboard=True, one_time_keyboard=True)
+        await message.reply("Your language: {}\nYour Search Configuration:\nGender: {}\nAge Groups: {}\nRoom: {}\nClick the start searching button to find an interlocutor.".format(user_language, gender, age_groups, room), reply_markup=keyboard)
+    else:
+        # Create keyboard with start searching button for normal users
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]], resize_keyboard=True, one_time_keyboard=True)
+        await message.reply("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language), reply_markup=keyboard)
+
+# Handle start search button
+@cbot.on_message(filters.private & filters.regex("Start Searching"))
+async def start_search(client, message):
+    user_id = message.from_user.id
+    if is_user_premium(user_id):
+        # Check if user is already in a chat
+        for pair in chat_pairs:
+            if user_id in pair:
+                await message.reply("You are already in a chat.")
+                return
+        # Check if user is already searching
+        for user in searching_premium_users:
+            if user["user_id"] == user_id:
+                await message.reply("You are already searching.")
+                return
+        # Add premium user to searching list
+        user_language = find_language(user_id)
+        gender = vip_users_details(user_id, "gender")
+        age_groups = vip_users_details(user_id, "age_groups")
+        room = vip_users_details(user_id, "room")
+        searching_premium_users.append({"user_id": user_id, "language": user_language, "gender": gender, "age_groups": age_groups, "room": room})
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
+        await message.reply("Searching for an interlocutor...", reply_markup=keyboard)
+    else:
+        # Check if user is already in a chat
+        for pair in chat_pairs:
+            if user_id in pair:
+                await message.reply("You are already in a chat.")
+                return
+        # Check if user is already searching
+        for user in searching_users:
+            if user["user_id"] == user_id:
+                await message.reply("You are already searching.")
+                return
+        # Add normal user to searching list
+        user_language = find_language(user_id)
+        searching_users.append({"user_id": user_id, "language": user_language})
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
+        await message.reply("Searching for an interlocutor...", reply_markup=keyboard)
+
+# Handle stop search button
+@cbot.on_message(filters.private & filters.regex("Stop Searching"))
+async def stop_search(client, message):
+    user_id = message.from_user.id
+    # Remove user from searching list
+    for i, user in enumerate(searching_premium_users):
+        if user["user_id"] == user_id:
+            del searching_premium_users[i]
+            break
+    for i, user in enumerate(searching_users):
+        if user["user_id"] == user_id:
+            del searching_users[i]
+            break
+    await message.reply("Search stopped.", reply_markup=ReplyKeyboardRemove())
+
+# Function to match users and start chatting
+async def match_users():
+    while len(searching_premium_users) >= 1 and len(searching_users) >= 1:
+        user1 = searching_premium_users.pop(0)
+        user2 = searching_users.pop(0)
+        # Check if user1's search configuration matches with user2
+        if user1["language"] == user2["language"] and user1["gender"] == user2["gender"] and user1["age_groups"] == user2["age_groups"] and user1["room"] == user2["room"]:
+            add_pair([user1["user_id"], user2["user_id"]])  # Add pair to chat_pairs list
+            await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
+            await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
+            # Create keyboard with cancel button
+            keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
+            await cbot.send_message(user1["user_id"], "Chatting with user...", reply_markup=keyboard)
+            await cbot.send_message(user2["user_id"], "Chatting with user...", reply_markup=keyboard)
+
+# Handle cancel button
+@cbot.on_message(filters.private & filters.regex("Cancel"))
+async def cancel(_, message):
+    user_id = message.from_user.id
+    # Find the other user in the pair and inform them
+    for pair in chat_pairs:
+        if user_id in pair:
+            other_user_id = pair[1] if pair[0] == user_id else pair[0]
+            await cbot.send_message(other_user_id, "Chat has been stopped by the other user.", reply_markup=ReplyKeyboardRemove())
+            break
+    # Find the chat pair and delete it
+    if delete_pair(user_id):
+        await message.reply("Chat cancelled.", reply_markup=ReplyKeyboardRemove())
+
+# Periodically check for matched users
+async def match_users_loop():
+    while True:
+        await match_users()
+        await asyncio.sleep(5)  # Check every 5 seconds
+
+# Start matching users loop
+cbot.loop.create_task(match_users_loop())
+
+# Handle incoming messages
+@cbot.on_message(filters.private)
+async def forward_message(client, message):
+    for pair in chat_pairs:
+        if message.from_user.id in pair:
+            user1, user2 = pair
+            if message.from_user.id == user1:
+                await cbot.copy_message(user2, message.chat.id, message.id)
             else:
-                new_status = premium_status
-            doc = {
-                "_id": user_id,
-                "premium_status": new_status,
-                "premium_purchase_time": purchase_time,
-                "premium_expiry_time": expiry_time,
-                "gender": gender,
-                "age_groups": age_groups,
-                "room": room
-            }
-            premiumdb.insert_one(doc)
-    except Exception as e:
-        print("Error:", e)
-
-
-async def is_user_premium(user_id: int):
-    try:
-        # Retrieve the user document from the premium database
-        user = premiumdb.find_one({"_id": user_id})
-        if user:
-            premium_status = user.get("premium_status", False)
-            expiry_time = user.get("premium_expiry_time", None)
-            # If user is premium
-            if premium_status:
-                current_time = time.strftime("%H:%M:%S", time.gmtime())
-                # If expiry time is not over
-                if expiry_time and expiry_time > current_time:
-                    return True, expiry_time
-                else:
-                    # If expiry time is over, update premium status to False
-                    premiumdb.update_one(
-                        {"_id": user_id},
-                        {"$set": {"premium_status": False}}
-                    )
-                    return False, None
-            else:
-                # If user is not premium, return False
-                return False, None
-        else:
-            # If user does not exist, return False
-            return False, None
-    except Exception as e:
-        print("Error:", e)
-        return False, None
-    
-
-async def vip_users_details(user_id: int, field: str):
-    try:
-        # Retrieve the user document from the premium database
-        user = premiumdb.find_one({"_id": user_id})
-        if user and field in user:
-            return user[field]
-        else:
-            return None
-    except Exception as e:
-        print("Error:", e)
-        return None
-    
-async def extend_premium_user(user_id: int):
-    try:
-        # Check if the user is already premium
-        is_premium, expiry_time = await is_user_premium(user_id)
-        if is_premium:
-            # If user is premium, extend the expiry time by 2 hours
-            new_expiry_time = (datetime.strptime(expiry_time, "%H:%M:%S") + timedelta(hours=2)).strftime("%H:%M:%S")
-            premiumdb.update_one(
-                {"_id": user_id},
-                {"$set": {"premium_expiry_time": new_expiry_time}}
-            )
-            print(f"Premium extended for user {user_id} to {new_expiry_time}.")
-        else:
-            # If user is not premium, add them as a new premium user
-            current_time = time.strftime("%H:%M:%S", time.gmtime())
-            expiry_time = (datetime.strptime(current_time, "%H:%M:%S") + timedelta(hours=2)).strftime("%H:%M:%S")
-            await save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
-            print(f"User {user_id} added as premium until {expiry_time}.")
-    except Exception as e:
-        print("Error:", e)
+                await cbot.copy_message(user1, message.chat.id, message.id)
+            break
