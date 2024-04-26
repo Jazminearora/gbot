@@ -48,7 +48,7 @@ async def search_interlocutor(client, message):
 async def start_search(client, message):
     user_id = message.from_user.id
     is_premium, _ = await is_user_premium(user_id)
-    if await is_premium:
+    if is_premium:
         print(await is_user_premium(user_id))
         # Check if user is already in a chat
         for pair in chat_pairs:
