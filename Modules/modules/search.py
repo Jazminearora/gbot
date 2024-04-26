@@ -105,21 +105,60 @@ async def stop_search(client, message):
 
 # Function to match users and start chatting
 async def match_users():
-    while len(searching_premium_users) > 0 and len(searching_users) > 0:
-        premium_user = searching_premium_users.pop(0)
-        for normal_user in searching_users:
-            if premium_user["language"] == normal_user["language"] and \
-               premium_user["gender"] == normal_user["gender"] and \
-               premium_user["age_groups"] == normal_user["age_groups"] and \
-               premium_user["room"] == normal_user["room"]:
-                add_pair([premium_user["user_id"], normal_user["user_id"]])  # Add pair to chat_pairs list
-                await cbot.send_message(premium_user["user_id"], "Interlocutor found! You can start chatting now.")
-                await cbot.send_message(normal_user["user_id"], "Interlocutor found! You can start chatting now.")
-                # Create keyboard with cancel button
-                keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
-                await cbot.send_message(premium_user["user_id"], "Chatting with user...", reply_markup=keyboard)
-                await cbot.send_message(normal_user["user_id"], "Chatting with user...", reply_markup=keyboard)
-                break
+    while True:
+        # Try to match premium users with other premium users
+        for i, premium_user1 in enumerate(searching_premium_users):
+            for j, premium_user2 in enumerate(searching_premium_users):
+                if i!= j and premium_user1["language"] == premium_user2["language"] and \
+                   premium_user1["gender"] == premium_user2["gender"] and \
+                   premium_user1["age_groups"] == premium_user2["age_groups"] and \
+                   premium_user1["room"] == premium_user2["room"]:
+                    add_pair([premium_user1["user_id"], premium_user2["user_id"]])  # Add pair to chat_pairs list
+                    del searching_premium_users[i]
+                    del searching_premium_users[j-1]  # j-1 because the list has already been modified
+                    await cbot.send_message(premium_user1["user_id"], "Interlocutor found! You can start chatting now.")
+                    await cbot.send_message(premium_user2["user_id"], "Interlocutor found! You can start chatting now.")
+                    # Create keyboard with cancel button
+                    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
+                    await cbot.send_message(premium_user1["user_id"], "Chatting with user...", reply_markup=keyboard)
+                    await cbot.send_message(premium_user2["user_id"], "Chatting with user...", reply_markup=keyboard)
+                    break
+
+        # Try to match premium users with normal users
+        for i, premium_user in enumerate(searching_premium_users):
+            for normal_user in searching_users:
+                if premium_user["language"] == normal_user["language"] and \
+                   premium_user["gender"] == normal_user["gender"] and \
+                   premium_user["age_groups"] == normal_user["age_groups"] and \
+                   premium_user["room"] == normal_user["room"]:
+                    add_pair([premium_user["user_id"], normal_user["user_id"]])  # Add pair to chat_pairs list
+                    del searching_premium_users[i]
+                    searching_users.remove(normal_user)
+                    await cbot.send_message(premium_user["user_id"], "Interlocutor found! You can start chatting now.")
+                    await cbot.send_message(normal_user["user_id"], "Interlocutor found! You can start chatting now.")
+                    # Create keyboard with cancel button
+                    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
+                    await cbot.send_message(premium_user["user_id"], "Chatting with user...", reply_markup=keyboard)
+                    await cbot.send_message(normal_user["user_id"], "Chatting with user...", reply_markup=keyboard)
+                    break
+
+        # Try to match normal users with other normal users
+        for i, normal_user1 in enumerate(searching_users):
+            for j, normal_user2 in enumerate(searching_users):
+                if i!= j and normal_user1["language"] == normal_user2["language"] and \
+                   normal_user1["gender"] == normal_user2["gender"] and \
+                   normal_user1["age_groups"] == normal_user2["age_groups"] and \
+                   normal_user1["room"] == normal_user2["room"]:
+                    add_pair([normal_user1["user_id"], normal_user2["user_id"]])  # Add pair to chat_pairs list
+                    del searching_users[i]
+                    del searching_users[j-1]  # j-1 because the list has already been modified
+                    await cbot.send_message(normal_user1["user_id"], "Interlocutor found! You can start chatting now.")
+                    await cbot.send_message(normal_user2["user_id"], "Interlocutor found! You can start chatting now.")
+                    # Create keyboard with cancel button
+                    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard=True, one_time_keyboard=True)
+                    await cbot.send_message(normal_user1["user_id"], "Chatting with user...", reply_markup=keyboard)
+                    await cbot.send_message(normal_user2["user_id"], "Chatting with user...", reply_markup=keyboard)
+                    break
 
 # Handle cancel button
 @cbot.on_message(filters.private & filters.regex("Cancel"))
