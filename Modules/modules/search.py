@@ -12,6 +12,19 @@ searching_users = []
 # List to store pairs of users for chatting
 chat_pairs = []
 
+# Function to delete a pair
+def delete_pair(id_to_delete):
+    global chat_pairs
+    for i, pair in enumerate(chat_pairs):
+        if id_to_delete in pair:
+            del chat_pairs[i]
+            return True
+    return False
+
+# Function to add a pair
+def add_pair(new_pair):
+    global chat_pairs
+    chat_pairs.append(new_pair)
 
 @cbot.on_message(filters.command("hlo"))
 async def hlo(client, message):
@@ -37,8 +50,8 @@ async def start_search(client, message):
             await message.reply("You are already in a chat.")
             return
     # Check if user is already searching
-    for user, _ in searching_users:
-        if user == user_id:
+    for user in searching_users:
+        if user["user_id"] == user_id:
             await message.reply("You are already searching.")
             return
     # Add user to searching list
@@ -64,7 +77,7 @@ async def match_users():
         user1 = searching_users.pop(0)
         user2 = searching_users.pop(0)
         if user1["language"] == user2["language"]:
-            chat_pairs.append([user1["user_id"], user2["user_id"]])
+            add_pair([user1["user_id"], user2["user_id"]])  # Add pair to chat_pairs list
             await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
             await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
             # Create inline keyboard with cancel button
@@ -82,15 +95,16 @@ async def match_users():
 @cbot.on_callback_query(filters.regex('^cancel$'))
 async def cancel(_, query):
     user_id = query.from_user.id
-    # Find the chat pair
-    for i, pair in enumerate(chat_pairs):
-        if user_id in pair:
-            other_user_id = pair[1] if pair[0] == user_id else pair[0]
-            del chat_pairs[i]
-            await query.answer("Chat cancelled.")
-            await cbot.send_message(user_id, "Chat has been stopped by you.")
-            await cbot.send_message(other_user_id, "Chat has been stopped by the other user.")
-            break
+    # Find the chat pair and delete it
+    if delete_pair(user_id):
+        await query.answer("Chat cancelled.")
+        await cbot.send_message(user_id, "Chat has been stopped by you.")
+        # Find the other user in the pair and inform them
+        for pair in chat_pairs:
+            if user_id in pair:
+                other_user_id = pair[1] if pair[0] == user_id else pair[0]
+                await cbot.send_message(other_user_id, "Chat has been stopped by the other user.")
+                break
 
 # Periodically check for matched users
 async def match_users_loop():
