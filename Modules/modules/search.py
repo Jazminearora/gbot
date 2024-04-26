@@ -99,7 +99,7 @@ async def forward_message(client, message):
         if message.from_user.id in pair:
             user1, user2 = pair
             if message.from_user.id == user1:
-                await cbot.forward_messages(user2, message.chat.id, [message.message_id])
+                await cbot.forward_messages(user2, message.chat.id, [message.id])
             else:
-                await cbot.forward_messages(user1, message.chat.id, [message.message_id])
+                await cbot.forward_messages(user1, message.chat.id, [message.id])
             break
