@@ -31,7 +31,7 @@ def add_pair(new_pair):
 
 @cbot.on_message(filters.command("hlo"))
 async def hlo(client, message):
-    text = "Searching users:\n" + str(searching_users) + "\n\nChat pairs:\n" + str(chat_pairs)
+    text = "Searching users:\n" + str(searching_users) + "\n\nChat pairs:\n" + str(chat_pairs) + "\n\nPremium users:\n" + str(searching_premium_users)
     await message.reply(text)
 
 button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")
@@ -47,7 +47,7 @@ async def search_interlocutor(client, message):
 @cbot.on_message(filters.private & filters.regex("Start Searching"))
 async def start_search(client, message):
     user_id = message.from_user.id
-    if is_user_premium(user_id):
+    if await is_user_premium(user_id):
         # Check if user is already in a chat
         for pair in chat_pairs:
             if user_id in pair:
@@ -59,9 +59,9 @@ async def start_search(client, message):
                 await message.reply("You are already searching.")
                 return
         # Get premium user's configuration
-        gender = vip_users_details(user_id, "gender")
-        age_groups = vip_users_details(user_id, "age_groups")
-        room = vip_users_details(user_id, "room")
+        gender = await vip_users_details(user_id, "gender")
+        age_groups = await vip_users_details(user_id, "age_groups")
+        room = await vip_users_details(user_id, "room")
         language = find_language(user_id)
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
