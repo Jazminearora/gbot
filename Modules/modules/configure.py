@@ -9,7 +9,7 @@ from helpers.translator import translate_async
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-button_pattern = re.compile(r"^(🔧 (Configure search|Customize search|Modify search|Setup search) 🔧)$")
+button_pattern = re.compile(r"^(🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧)$")
 
 async def get_age_groups_text(user_id, lang):
     age_groups_list = await vip_users_details(user_id, "age_groups")
