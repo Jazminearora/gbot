@@ -4,7 +4,8 @@ from pyrogram import filters
 from Modules import cbot
 from helpers.forcesub import subscribed, user_registered
 from database.premiumdb import save_premium_user, is_user_premium, vip_users_details
-from pyrogram import filters, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 button_pattern = re.compile(r"^(🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧)$")
 
