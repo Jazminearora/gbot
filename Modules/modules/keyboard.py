@@ -20,7 +20,7 @@ async def start_command(client, message):
     try:
         user_id = message.from_user.id
         language = find_language(user_id)
-        reply_markup = get_reply_markup(language)
+        reply_markup = await get_reply_markup(language)
         await message.reply_text("Please select an option:", reply_markup=reply_markup)
     except Exception:
         await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
@@ -117,7 +117,7 @@ async def change_language(client, callback_query):
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         old_lang = find_language(user_id)
-        caption, reply_markup = get_lang_change(old_lang)
+        caption, reply_markup = await get_lang_change(old_lang)
         # Edit the message with the new language options
         await callback_query.message.edit_caption(caption, reply_markup=reply_markup)
     except Exception as e:
@@ -164,7 +164,7 @@ async def edit_interest(client, callback_query):
         current_interest = get_interest(user_id, language)
 
         # Get reply markup and caption
-        reply_arkup, captoion = get_interest_reply_markup(current_interest, language)
+        reply_arkup, captoion = await get_interest_reply_markup(current_interest, language)
 
         # Edit the message with the new interest options
         await callback_query.message.edit_caption(captoion, reply_markup=reply_arkup)

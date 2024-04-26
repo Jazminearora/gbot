@@ -6,7 +6,6 @@ import urllib.parse
 from helpers.helper import find_language
 from helpers.translator import translate_async
 from Modules import cbot , BOT_USERNAME
-from helpers.helper import find_language
 from langdb.get_msg import get_premium_msg
 from database.referdb import get_point
 

@@ -10,7 +10,7 @@ async def not_joined(client, message):
     buttons = [
         [
             InlineKeyboardButton(text="Join Channel", url="t.me/about_xytra"),
-            InlineKeyboardButton(text="Join Channel", url="t.me/cbot_prime"),
+            InlineKeyboardButton(text="Join Channel", url="t.me/zenova_prime"),
         ]
     ]
     try:

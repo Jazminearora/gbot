@@ -77,13 +77,13 @@ async def register_user(client, message):
                                                 elif user_lang == "Azerbejani":
                                                     await message.reply_text(translate_text(msg, target_language="az"))
                                             else:
-                                                caption, reply_markup = get_registration_text(language, "interest")
+                                                caption, reply_markup = await get_registration_text(language, "interest")
                                                 await message.reply_text(caption, reply_markup=reply_markup)
                                         else:
-                                            caption, reply_markup = get_registration_text(language, "age")
+                                            caption, reply_markup = await get_registration_text(language, "age")
                                             await message.reply_text(caption, reply_markup=reply_markup)
                                     else:
-                                        caption, reply_markup = get_registration_text(language, "gender")
+                                        caption, reply_markup = await get_registration_text(language, "gender")
                                         await message.reply_text(caption, reply_markup=reply_markup)
                                 else:
                                     caption= f"Choose your language\nВыберите ваш язык\ndilinizi seçin:"
@@ -160,13 +160,13 @@ async def register_user(client, message):
                         if interest:
                             await message.reply_text("You are already registered.")
                         else:
-                            caption, reply_markup = get_registration_text(language, "interest")
+                            caption, reply_markup = await get_registration_text(language, "interest")
                             await message.reply_text(caption, reply_markup=reply_markup)
                     else:
-                        caption, reply_markup = get_registration_text(language, "age")
+                        caption, reply_markup = await get_registration_text(language, "age")
                         await message.reply_text(caption, reply_markup=reply_markup)
                 else:
-                    caption, reply_markup = get_registration_text(language, "gender")
+                    caption, reply_markup = await get_registration_text(language, "gender")
                     await message.reply_text(caption, reply_markup=reply_markup)
             else:
                 caption= f"Choose your language\nВыберите ваш язык\ndilinizi seçin:"
@@ -190,7 +190,7 @@ async def register_language_callback(client, callback_query):
         if not lang_chk:
             # Store user ID in chosen language's 'users' field in MongoDB
             add_user_id(language, user_id, language)  
-            caption, reply_markup = get_registration_text(language, "gender")
+            caption, reply_markup = await get_registration_text(language, "gender")
             await callback_query.message.edit_text(caption, reply_markup=reply_markup)    
         else:
             await callback_query.message.edit_text("You have already selected a language.")
@@ -214,7 +214,7 @@ async def register_gender_callback(client, callback_query):
             add_user_id(language, user_id, gender)
             
             # Ask user to choose age group
-            caption, reply_markup = get_registration_text(language, "age")
+            caption, reply_markup = await get_registration_text(language, "age")
             await callback_query.message.edit_text(caption, reply_markup=reply_markup)
         else:
             await callback_query.message.edit_text("You have already selected a gender.")
@@ -239,7 +239,7 @@ async def register_age_callback(client, callback_query):
             add_user_id(language, user_id, age_group)
             
             # Ask user to choose interest
-            caption, reply_markup = get_registration_text(language, "interest")
+            caption, reply_markup = await get_registration_text(language, "interest")
             await callback_query.message.edit_text(caption, reply_markup=reply_markup)
         else:
             await callback_query.message.edit_text("You have already selected an age group.")

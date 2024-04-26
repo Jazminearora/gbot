@@ -1,7 +1,7 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 
 # Registration message for register.py file
-def get_registration_text(language, step):
+async def get_registration_text(language, step):
     if language == "English":
         if step == "gender":
             return "Choose your gender:", InlineKeyboardMarkup([
@@ -43,7 +43,7 @@ def get_registration_text(language, step):
     
 
 # Function to get reply markup with buttons in the user's selected language used in keyboard.py
-def get_reply_markup(language):
+async def get_reply_markup(language):
     if language == "English":
         # English buttons
         reply_markup = ReplyKeyboardMarkup(
@@ -117,7 +117,7 @@ def get_reply_markup(language):
     return reply_markup
 
 # function to get language change messae used in keyboard.py
-def get_lang_change(old_lang):
+async def get_lang_change(old_lang):
     if old_lang == "English":
         reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Русский 🇷🇺", callback_data="set_language_Russian")],
@@ -143,7 +143,7 @@ def get_lang_change(old_lang):
     
 
 # function to get interest change messae used in keyboard.py
-def get_interest_reply_markup(current_interest, language):
+async def get_interest_reply_markup(current_interest, language):
     print(current_interest)
     if language == "English":
         if current_interest == "Communication":
