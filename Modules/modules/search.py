@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 import re
 from helpers.helper import find_language, get_gender, get_age_group, get_interest
-from database.premiumdb import is_user_premium,
+from database.premiumdb import is_user_premium
 from helpers.translator import translate_async
 import asyncio
 from Modules import cbot
