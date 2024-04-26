@@ -4,7 +4,7 @@ import re
 import urllib.parse
 
 from helpers.helper import find_language
-from helpers.translator import translate_text, translate_async
+from helpers.translator import translate_async
 from Modules import cbot , BOT_USERNAME
 from helpers.helper import find_language
 from langdb.get_msg import get_premium_msg
@@ -41,7 +41,7 @@ async def premium_free_callback(bot, update):
     referral_link = f"https://t.me/{BOT_USERNAME}?start=r{user_id}"
     
     user_lang = find_language(user_id)
-    message, share_txt = await get_text(total_points, referral_link, user_lang)
+    caption, share_txt = await get_text(total_points, referral_link, user_lang)
     
     encoded_share_txt = urllib.parse.quote(share_txt)
     share_link = f"https://t.me/share/url?url={referral_link}&text={encoded_share_txt}"
@@ -50,7 +50,7 @@ async def premium_free_callback(bot, update):
     refer_button_text = await translate_async("Refer your Friend", target_language=user_lang)
     
     await update.message.edit_text(
-        text=message,
+        text=caption,
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton(refer_button_text, url=share_link)]]
         )
@@ -63,17 +63,16 @@ async def referals_command(client, message):
     referral_link = f"https://t.me/{BOT_USERNAME}?start=r{user_id}"
     
     user_lang = find_language(user_id)
-    message, share_txt = await get_text(total_points, referral_link, user_lang)
+    caption , share_txt = await get_text(total_points, referral_link, user_lang)
 
     
     encoded_share_txt = urllib.parse.quote(share_txt)
     share_link = f"https://t.me/share/url?url={referral_link}&text={encoded_share_txt}"
     print("share link:", share_link)
     refer_button_text = await translate_async("Refer your Friend", target_language=user_lang)
-
     await message.reply_text(
-        text=message,
+        text=caption,
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton(refer_button_texts, url=referral_link)]]
+            [[InlineKeyboardButton(refer_button_text, url=referral_link)]]
         )
     )
