@@ -1,10 +1,11 @@
 from pyrogram import Client, filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup
 import re
 from helpers.helper import find_language
 from helpers.translator import translate_async
 import asyncio
 from Modules import cbot
+
 
 # List to store users searching for an interlocutor
 searching_users = []
@@ -57,7 +58,7 @@ async def start_search(client, message):
     # Add user to searching list
     user_language = find_language(user_id)
     searching_users.append({"user_id": user_id, "language": user_language})
-    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]])
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard= True, one_time_keyboard= True)
     await message.reply("Searching for an interlocutor...", reply_markup = keyboard)
 
 # Handle stop search button
@@ -80,8 +81,8 @@ async def match_users():
             add_pair([user1["user_id"], user2["user_id"]])  # Add pair to chat_pairs list
             await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
             await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
-            # Create inline keyboard with cancel button
-            keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Cancel", callback_data='cancel')]])
+            # Create keyboard with cancel button
+            keyboard = ReplyKeyboardMarkup([[KeyboardButton("Cancel")]], resize_keyboard= True, one_time_keyboard= True)
             await cbot.send_message(user1["user_id"], "Chatting with user...", reply_markup=keyboard)
             await cbot.send_message(user2["user_id"], "Chatting with user...", reply_markup=keyboard)
         else:
@@ -92,13 +93,12 @@ async def match_users():
             await cbot.send_message(user2["user_id"], "No interlocutor found. Please wait for a matching user.")
 
 # Handle cancel button
-@cbot.on_callback_query(filters.regex('^cancel$'))
-async def cancel(_, query):
-    user_id = query.from_user.id
+@cbot.on_message(filters.private & filters.regex("Cancel"))
+async def cancel(_, message):
+    user_id = message.from_user.id
     # Find the chat pair and delete it
     if delete_pair(user_id):
-        await query.answer("Chat cancelled.")
-        await cbot.send_message(user_id, "Chat has been stopped by you.")
+        await message.reply("Chat cancelled.")
         # Find the other user in the pair and inform them
         for pair in chat_pairs:
             if user_id in pair:
