@@ -20,7 +20,7 @@ async def get_age_groups_text(user_id, lang):
 
 @cbot.on_message(((filters.private & filters.regex(button_pattern)) | (filters.command("configure"))) & subscribed & user_registered)
 async def configure_search(client, message):
-    lang = await find_language(message.from_user.id)
+    lang = find_language(message.from_user.id)
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(await translate_async("Gender", lang), callback_data="cgndr"),
          InlineKeyboardButton(await translate_async("Age", lang), callback_data="cage"),
@@ -30,7 +30,7 @@ async def configure_search(client, message):
 
 @cbot.on_callback_query(filters.regex("cgndr"))
 async def gender_callback(client, callback_query):
-    lang = await find_language(callback_query.from_user.id)
+    lang = find_language(callback_query.from_user.id)
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(await translate_async("Male", lang), callback_data="cmle"),
          InlineKeyboardButton(await translate_async("Female", lang), callback_data="cfem")],
@@ -74,7 +74,7 @@ async def any_gender_callback(client, callback_query):
 
 @cbot.on_callback_query(filters.regex("cgoback"))
 async def cback_callback(client, callback_query):
-    lang = await find_language(callback_query.from_user.id)
+    lang = find_language(callback_query.from_user.id)
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(await translate_async("Gender", lang), callback_data="cgndr"),
          InlineKeyboardButton(await translate_async("Age", lang), callback_data="cage"),
@@ -84,7 +84,7 @@ async def cback_callback(client, callback_query):
 
 @cbot.on_callback_query(filters.regex("cage"))
 async def age_callback(client, callback_query):
-    lang = await find_language(callback_query.from_user.id)
+    lang = find_language(callback_query.from_user.id)
     age_text = await get_age_groups_text(callback_query.from_user.id, lang)
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(await translate_async("Below 18", lang), callback_data="cblw_18"),
@@ -118,7 +118,7 @@ async def age_group_callback(client, callback_query):
 @cbot.on_callback_query(filters.regex("agoback"))
 async def back_callback(client, callback_query):
     user_id = callback_query.from_user.id
-    lang = await find_language(user_id)
+    lang = find_language(user_id)
     if user_id in age_groups:
         age_groups_list = age_groups.pop(user_id)
         is_premium, _ = await is_user_premium(user_id)
