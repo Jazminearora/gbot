@@ -83,7 +83,7 @@ async def start_search(client, message):
         gender = get_gender(user_id, "huls")
         age_groups = get_age_group(user_id, "huls")
         interest = get_interest(user_id, "huls")
-        language = find_language(user_id, "huls")
+        language = find_language(user_id)
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": None})
         keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply("Searching for an interlocutor...", reply_markup=keyboard)
