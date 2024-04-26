@@ -1,5 +1,5 @@
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import Client, filters
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 import re
 from helpers.helper import find_language
 from helpers.translator import translate_async
@@ -17,40 +17,40 @@ button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти со
 @cbot.on_message(filters.private & filters.regex(button_pattern))
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
-    await message.reply_text("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language))
-    # Create inline keyboard with start searching button
-    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Start Searching", callback_data='start_search')]])
-    await message.reply_text("Searching for an interlocutor...", reply_markup=keyboard)
+    # Create keyboard with start searching button
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Start Searching")]])
+    await message.reply("Your language: {}\nClick the start searching button to find an interlocutor.".format(user_language), reply_markup = keyboard)
 
 # Handle start search button
-@cbot.on_callback_query(filters.regex('^start_search$'))
-async def start_search(_, query):
-    user_id = query.from_user.id
+@cbot.on_message(filters.private & filters.regex("Start Searching"))
+async def start_search(client, message):
+    user_id = message.from_user.id
     # Check if user is already in a chat
     for pair in chat_pairs:
         if user_id in pair:
-            await query.answer("You are already in a chat.")
+            await message.reply("You are already in a chat.")
             return
     # Check if user is already searching
     for user, _ in searching_users:
         if user == user_id:
-            await query.answer("You are already searching.")
+            await message.reply("You are already searching.")
             return
     # Add user to searching list
     user_language = find_language(user_id)
     searching_users.append((user_id, user_language))
-    await query.answer("Searching for an interlocutor...")
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton("Stop Searching")]])
+    await message.reply("Searching for an interlocutor...", reply_markup = keyboard)
 
 # Handle stop search button
-@cbot.on_callback_query(filters.regex('^stop_search$'))
-async def stop_search(_, query):
-    user_id = query.from_user.id
+@cbot.on_message(filters.private & filters.regex("Stop Searching"))
+async def stop_search(client, message):
+    user_id = message.from_user.id
     # Remove user from searching list
     for i, (user, _) in enumerate(searching_users):
         if user == user_id:
             del searching_users[i]
             break
-    await query.answer("Search stopped.")
+    await message.reply("Search stopped.")
 
 # Function to match users and start chatting
 async def match_users():
@@ -104,7 +104,10 @@ async def forward_message(client, message):
         if message.from_user.id in pair:
             user1, user2 = pair
             if message.from_user.id == user1:
-                await cbot.forward_messages(user2, message.chat.id, [message.id])
+                await cbot.copy_message(user2, message.chat.id, [message.id])
             else:
-                await cbot.forward_messages(user1, message.chat.id, [message.id])
+                await cbot.copy_message(user1, message.chat.id, [message.id])
             break
+
+
+
