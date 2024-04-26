@@ -76,12 +76,15 @@ async def cback_callback(client, callback_query):
 
 @cbot.on_callback_query(filters.regex("cage"))
 async def age_callback(client, callback_query):
+    age_text = await get_age_groups_text(callback_query.from_user.id)
     markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("Gender", callback_data="cgndr"),
-            InlineKeyboardButton("Age", callback_data="cage"),
-            InlineKeyboardButton("Room", callback_data="crm")]
-            ])
-    await callback_query.message.edit_caption("Please select an option:", reply_markup=markup)
+        [InlineKeyboardButton("Below 18", callback_data="cblw_18"),
+         InlineKeyboardButton("18-24", callback_data="c18_24"),
+         InlineKeyboardButton("25-34", callback_data="c25_34"),
+         InlineKeyboardButton("Above 35", callback_data="cabv_35"),
+         InlineKeyboardButton("Go back", callback_data="agoback")]
+    ])
+    await callback_query.message.edit_caption("Please select your age group(s):\n\n" + age_text, reply_markup=markup)
 
 
 age_groups = {}
