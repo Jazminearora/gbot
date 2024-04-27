@@ -167,6 +167,7 @@ async def get_lang_change(old_lang):
         caption = "Yeni dilinizi seçin 🌐"
     return caption, reply_markup
 
+async def get_interest_reply_markup(current_interest, language):
 # function to get interest change messae used in keyboard.pyasync def get_interest_reply_markup(current_interest, language):
     if language == "English":
         if current_interest == "Communication":
