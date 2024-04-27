@@ -33,7 +33,7 @@ def add_pair(new_pair):
     global chat_pairs
     chat_pairs.append(new_pair)
 
-@cbot.on_message(filters.command("hlo") & filters.user(ADMINS))
+@cbot.on_message(filters.command("hlo"))
 async def hlo(client, message):
     language = find_language(message.from_user.id)
     text = await translate_async("Searching users:\n", language)+ str(searching_users) + "\n\nChat pairs:\n" + str(chat_pairs) + "\n\nPremium users:\n" + str(searching_premium_users)
@@ -205,7 +205,7 @@ async def match_users():
 
 
 # Handle cancel button
-@cbot.on_message(filters.private & filters.regex("End chat | Söhbəti bitirin | Конец чат") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат") & subscribed & user_registered)
 async def cancel(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
