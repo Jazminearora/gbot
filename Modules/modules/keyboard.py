@@ -179,7 +179,8 @@ async def set_interest(client, callback_query):
         language = find_language(user_id)
         new_interest = callback_query.data.split("_")[2]
         muks = await callback_query.message.edit_caption("🔍")
-        current_interest = get_interest(user_id, language)
+        current_interest = get_interest(user_id, language).lower
+        print ("current interest:", current_interest)
         remove_user_id(language, user_id, current_interest)        
         trumk = await muks.edit_caption("🤖")
         add_user_id(new_interest, user_id, new_interest)

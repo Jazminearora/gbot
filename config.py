@@ -14,7 +14,7 @@ try:
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
-key = "shibha"
+key = "hulala"
 DEV_USER = []
 SUDO_USERS = os.environ.get("SUDO_USERS")
 CHANNEL_USERNAME = '@Equinoxlogs'
