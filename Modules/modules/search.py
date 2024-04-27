@@ -118,7 +118,7 @@ async def match_users():
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
                     add_pair(new_pair)
-                    name = get_user_name(normal_user["user_id"])
+                    name = await get_user_name(normal_user["user_id"])
                     await cbot.send_message(premium_user["user_id"], f"Interlocutor found!\n\nUsers details:\nName: {name}\nGender: {normal_user["gender"]}\nAge group: {normal_user["age_groups"]}\n\n You can start chatting now.")
                     await cbot.send_message(normal_user["user_id"], "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.")
                     # Remove users from searching lists
@@ -128,6 +128,33 @@ async def match_users():
                     break  # Break out of inner loop if match found
             if matched:  # Break out of outer loop if match found
                 break
+
+
+        # Match premium users with other premium users
+        for i, premium_user1 in enumerate(searching_premium_users.copy()):
+            for j, premium_user2 in enumerate(searching_premium_users[i+1:].copy(), i+1):
+                if (premium_user1["language"] == find_language(premium_user2) and
+                    (premium_user1["gender"] == get_gender(premium_user2, "huls") or premium_user1["gender"] == "any gender") and
+                    get_age_group(premium_user2, "huls") in premium_user1["age_groups"] and
+                    premium_user1["room"] == premium_user2["room"] and
+                    premium_user2["language"] == find_language(premium_user1) and
+                    (premium_user2["gender"] == get_gender(premium_user1, "huls") or premium_user2["gender"] == "any gender") and
+                    get_age_group(premium_user1, "huls") in premium_user2["age_groups"] and
+                    premium_user2["room"] == premium_user1["room"]):
+                    # Match found, add pair to chat_pairs and notify users
+                    new_pair = (premium_user1["user_id"], premium_user2["user_id"])
+                    add_pair(new_pair)
+                    name1 = await get_user_name(premium_user1["user_id"])
+                    name2 = await get_user_name(premium_user2["user_id"])
+                    await cbot.send_message(premium_user1["user_id"], f"Interlocutor found!\n\nUsers details:\nName: {name2}\nGender: {premium_user2["gender"]}\nAge group: {premium_user2["age_groups"]}\n\n You can start chatting now.")
+                    await cbot.send_message(premium_user2["user_id"], f"Interlocutor found!\n\nUsers details:\nName: {name1}\nGender: {premium_user1["gender"]}\nAge group: {premium_user1["age_groups"]}\n\n You can start chatting now.")
+                    # Remove users from searching lists
+                    searching_premium_users.remove(premium_user1)
+                    searching_premium_users.remove(premium_user2)
+                    matched = True  # Set flag to True
+                    break  # Break out of inner loop if match found
+                if matched:  # Break out of outer loop if match found
+                    break
 
         # Match normal users with other normal users
         if not matched:  # Only if no match occurred with premium users

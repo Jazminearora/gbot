@@ -20,9 +20,12 @@ data = {
         "above_35": [],
         "communication": [],
         "intimacy": [],
-        "selling": []
+        "selling": [],
+        "movies": [],
+        "anime": []
     }
 }
+
 
 #Store data in the collection
 inserted_id = mongodb.insert_one({key: data}).inserted_id
@@ -33,7 +36,6 @@ async def cbot_boot():
         importlib.import_module("Modules.modules." + all_module)
     print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
     await idle()
-    print("Caught an unknown error")
 
     
 if __name__ == "__main__":

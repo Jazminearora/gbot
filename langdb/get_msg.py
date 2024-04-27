@@ -17,10 +17,12 @@ async def get_registration_text(language, step):
             return "Choose your interest:", InlineKeyboardMarkup([
                 [InlineKeyboardButton("👁‍🗨 Communication", callback_data=f"register_interest_{language}_communication")],
                 [InlineKeyboardButton("🔞 Intimacy (18+)", callback_data=f"register_interest_{language}_intimacy")],
-                [InlineKeyboardButton("🚼 Selling sex (18+)", callback_data=f"register_interest_{language}_selling")]])
+                [InlineKeyboardButton("🚼 Selling sex (18+)", callback_data=f"register_interest_{language}_selling")],
+                [InlineKeyboardButton("🎬 Movies", callback_data=f"register_interest_{language}_movies")],
+                [InlineKeyboardButton("🎌 Anime", callback_data=f"register_interest_{language}_anime")]])
         else:
             return None, None
-    elif language in ["Russian", "Azerbejani"]:
+    elif language == "Russian":
         if step == "gender":
             return "Выберите свой пол:", InlineKeyboardMarkup([
                 [InlineKeyboardButton("Мужчина👦", callback_data=f"register_gender_{language}_male")],
@@ -35,11 +37,35 @@ async def get_registration_text(language, step):
             return "Выберите свой интерес:", InlineKeyboardMarkup([
                 [InlineKeyboardButton("👁‍🗨 Коммуникация", callback_data=f"register_interest_{language}_communication")],
                 [InlineKeyboardButton("🔞 Интимность (18+)", callback_data=f"register_interest_{language}_intimacy")],
-                [InlineKeyboardButton("🚼 Продажа секса (18+)", callback_data=f"register_interest_{language}_selling")]])
+                [InlineKeyboardButton("🚼 Продажа секса (18+)", callback_data=f"register_interest_{language}_selling")],
+                [InlineKeyboardButton("🎬 Фильмы", callback_data=f"register_interest_{language}_movies")],
+                [InlineKeyboardButton("🎌 Аниме", callback_data=f"register_interest_{language}_anime")]])
+        else:
+            return None, None
+
+    elif language == "Azerbejani":
+        if step == "gender":
+            return "Cinsinizi seçin:", InlineKeyboardMarkup([
+                [InlineKeyboardButton("Kişi👦", callback_data=f"register_gender_{language}_male")],
+                [InlineKeyboardButton("Qadın👧", callback_data=f"register_gender_{language}_female")]])
+        elif step == "age":
+            return "Yaş qrupunuzu seçin:", InlineKeyboardMarkup([
+                [InlineKeyboardButton("18 yaşdan kiçik", callback_data=f"register_age_{language}_below-18")],
+                [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
+                [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
+                [InlineKeyboardButton("35 yaşdan yuxarı", callback_data=f"register_age_{language}_above-35")]])
+        elif step == "interest":
+            return "Maragınızı seçin:", InlineKeyboardMarkup([
+                [InlineKeyboardButton("👁‍🗨 Kommunikasiya", callback_data=f"register_interest_{language}_communication")],
+                [InlineKeyboardButton("🔞 Intim (18+)", callback_data=f"register_interest_{language}_intimacy")],
+                [InlineKeyboardButton("🚼 Seks satışı (18+)", callback_data=f"register_interest_{language}_selling")],
+                [InlineKeyboardButton("🎬 Filmlər", callback_data=f"register_interest_{language}_movies")],
+                [InlineKeyboardButton("🎌 Anime", callback_data=f"register_interest_{language}_anime")]])
         else:
             return None, None
     else:
         return None, None
+
     
 
 # Function to get reply markup with buttons in the user's selected language used in keyboard.py
@@ -140,28 +166,47 @@ async def get_lang_change(old_lang):
             ])
         caption = "Yeni dilinizi seçin 🌐"
     return caption, reply_markup
-    
 
-# function to get interest change messae used in keyboard.py
-async def get_interest_reply_markup(current_interest, language):
-    print(current_interest)
+# function to get interest change messae used in keyboard.pyasync def get_interest_reply_markup(current_interest, language):
     if language == "English":
         if current_interest == "Communication":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy")],
                 [InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Movies 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
         elif current_interest == "Intimacy":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Movies 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
         elif current_interest == "Selling":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Movies 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
+                [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
+            ])
+        elif current_interest == "Movies":
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication")],
+                [InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
+                [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
+            ])
+        elif current_interest == "Anime":
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication")],
+                [InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Movies 🎬", callback_data="set_interest_movies")],
                 [InlineKeyboardButton("Close ❌", callback_data="close_profile")]
             ])
         caption = "Choose your new interest ❤️"
@@ -170,18 +215,40 @@ async def get_interest_reply_markup(current_interest, language):
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy")],
                 [InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Фильмы 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Аниме 🎌", callback_data="set_interest_anime")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
         elif current_interest == "Intimacy":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Фильмы 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Аниме 🎌", callback_data="set_interest_anime")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
         elif current_interest == "Selling":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Фильмы 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Аниме 🎌", callback_data="set_interest_anime")],
+                [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
+            ])
+        elif current_interest == "Movies":
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication")],
+                [InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Аниме 🎌", callback_data="set_interest_anime")],
+                [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
+            ])
+        elif current_interest == "Anime":
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication")],
+                [InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Фильмы 🎬", callback_data="set_interest_movies")],
                 [InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
             ])
         caption = "Выберите новый интерес ❤️"
@@ -190,18 +257,40 @@ async def get_interest_reply_markup(current_interest, language):
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy")],
                 [InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Filmlər 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
                 [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
             ])
         elif current_interest == "Intimacy":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Əlaqə 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Filmlər 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
                 [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
             ])
         elif current_interest == "Selling":
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Əlaqə 👥", callback_data="set_interest_communication")],
                 [InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Filmlər 🎬", callback_data="set_interest_movies")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
+                [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
+            ])
+        elif current_interest == "Movies":
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Əlaqə 👥", callback_data="set_interest_communication")],
+                [InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime")],
+                [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
+            ])
+        elif current_interest == "Anime":
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Əlaqə 👥", callback_data="set_interest_communication")],
+                [InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy")],
+                [InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
+                [InlineKeyboardButton("Filmlər 🎬", callback_data="set_interest_movies")],
                 [InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
             ])
         caption = "Yeni marağınızı seçin ❤️"
@@ -210,6 +299,7 @@ async def get_interest_reply_markup(current_interest, language):
         caption = None
 
     return reply_markup, caption
+
 
 async def get_premium_msg(language):
     if language == "English":

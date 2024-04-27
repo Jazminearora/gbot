@@ -1,4 +1,5 @@
 from config import key
+import pymongo
 from Modules import mongodb as collection
 
 
@@ -18,16 +19,18 @@ def remove_interest(user_id):
     try:
         # Assuming 'collection' is a MongoDB collection object
         # and 'key' is the field name where the interests are stored
-        document = collection.find_one({key: {"$exists": True}})
-        if document:
-            lang_data = document[key]["database"]
-            for interest in ["communication", "intimacy", "selling"]:
-                if str(user_id) in lang_data.get(interest, []):
-                    # Remove the user ID from the interest list
-                    lang_data[interest].remove(str(user_id))
-                    # Update the document in the database
-                    collection.update_one({"_id": document["_id"]}, {"$set": {key: {"database": lang_data}}})
-                    return f"User ID {user_id} removed from {interest.capitalize()}."
+        filter = {key: {"$exists": True}}
+        update = {"$pull": {}}
+        for interest in ["communication", "intimacy", "selling", "movies", "anime"]:
+            print (interest)
+            update["$pull"][f"{key}.database.{interest}"] = str(user_id)
+        
+        result = collection.find_one_and_update(filter, update, return_document=pymongo.ReturnDocument.AFTER)
+        
+        if result:
+            return f"User ID {user_id} removed from interests."
+        else:
+            return f"User ID {user_id} not found in interests."
     except Exception as e:
         print('Exception occurred in remove_interest:', e)
     return None
