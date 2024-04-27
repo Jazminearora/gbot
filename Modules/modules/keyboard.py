@@ -23,7 +23,8 @@ async def start_command(client, message):
         language = find_language(user_id)
         reply_markup = await get_reply_markup(language)
         await message.reply_text(translate_async("Please select an option:", language), reply_markup=reply_markup)
-    except Exception:
+    except Exception as e:
+        print (e)
         await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
 
 
