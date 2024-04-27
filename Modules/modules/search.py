@@ -205,7 +205,7 @@ async def match_users():
 
 
 # Handle cancel button
-@cbot.on_message(filters.private & filters.regex("End chat"|"Söhbəti bitirin"|"Конец чат") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("End chat | Söhbəti bitirin | Конец чат") & subscribed & user_registered)
 async def cancel(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
