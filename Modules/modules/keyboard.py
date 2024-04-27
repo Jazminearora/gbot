@@ -179,9 +179,8 @@ async def set_interest(client, callback_query):
         language = find_language(user_id)
         new_interest = callback_query.data.split("_")[2]
         muks = await callback_query.message.edit_caption("🔍")
-        # Get the user ID and old language
-        user_id = callback_query.from_user.id
-        remove_interest(user_id)
+        current_interest = get_interest(user_id, language)
+        remove_user_id(language, user_id, current_interest)        
         trumk = await muks.edit_caption("🤖")
         add_user_id(new_interest, user_id, new_interest)
         try:

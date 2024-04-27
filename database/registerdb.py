@@ -6,11 +6,13 @@ from Modules import mongodb as collection
 def add_user_id(language, user_id, field):
     try:
         collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.database.{field}": user_id}})
+        print("After removal:", collection.find_one())
     except Exception as e:
         print("Error in adding user ID:", e)
 
 def remove_user_id(language, user_id, field):
     try:
+        print("Before removal:", collection.find_one())
         collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
     except Exception as e:
         print("Error in removing user ID:", e)
