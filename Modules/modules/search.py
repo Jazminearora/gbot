@@ -191,14 +191,14 @@ async def match_users():
                         lang1 = find_language(user1)
                         lang2 = find_language(user2)
                         add_pair(new_pair)
-                        btn = await translate_async("End chat", lang1)
-                        print(btn)
-                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(btn)]], resize_keyboard=True, one_time_keyboard=True)
-                        await cbot.send_message(user1["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang1), reply_markup= keyboard)
-                        await cbot.send_message(user2["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang2), reply_markup=keyboard)
                         # Remove users from searching lists
                         searching_users.remove(user1)
                         searching_users.remove(user2)
+                        btn = await translate_async("Terminate Conversation", lang1)
+                        print(btn)
+                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Terminate Conversation", lang1))]], resize_keyboard=True, one_time_keyboard=True)
+                        await cbot.send_message(user1["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang1), reply_markup= keyboard)
+                        await cbot.send_message(user2["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang2), reply_markup=keyboard)
                         matched = True  # Set flag to True
                         break  # Break out of inner loop if match found
                 if matched:  # Break out of outer loop if match found
@@ -207,7 +207,7 @@ async def match_users():
 
 
 # Handle cancel button
-@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Stop chat") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Terminate Conversation") & subscribed & user_registered)
 async def cancel(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
