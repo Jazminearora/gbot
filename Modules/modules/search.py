@@ -106,12 +106,13 @@ async def stop_search(client, message):
 # Function to match users and start chatting
 async def match_users():
     while True:
+        matched = False  # Flag to check if any match occurred in this iteration
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
                     premium_user["gender"] == normal_user["gender"] and
-                    set(premium_user["age_groups"]) & set(normal_user["age_groups"]) and
+                    any(age_group in premium_user["age_groups"] for age_group in normal_user["age_groups"]) and
                     premium_user["room"] == normal_user["room"]):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
@@ -121,20 +122,27 @@ async def match_users():
                     # Remove users from searching lists
                     searching_premium_users.remove(premium_user)
                     searching_users.remove(normal_user)
-                    break
+                    matched = True  # Set flag to True
+                    break  # Break out of inner loop if match found
+            if matched:  # Break out of outer loop if match found
+                break
 
         # Match normal users with other normal users
-        for i, user1 in enumerate(searching_users.copy()):
-            for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
-                if (user1["language"] == user2["language"]):
-                    # Match found, add pair to chat_pairs and notify users
-                    new_pair = (user1["user_id"], user2["user_id"])
-                    add_pair(new_pair)
-                    await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
-                    await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
-                    # Remove users from searching lists
-                    searching_users.remove(user1)
-                    searching_users.remove(user2)
+        if not matched:  # Only if no match occurred with premium users
+            for i, user1 in enumerate(searching_users.copy()):
+                for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
+                    if user1["language"] == user2["language"]:
+                        # Match found, add pair to chat_pairs and notify users
+                        new_pair = (user1["user_id"], user2["user_id"])
+                        add_pair(new_pair)
+                        await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
+                        await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
+                        # Remove users from searching lists
+                        searching_users.remove(user1)
+                        searching_users.remove(user2)
+                        matched = True  # Set flag to True
+                        break  # Break out of inner loop if match found
+                if matched:  # Break out of outer loop if match found
                     break
         await asyncio.sleep(1)  # Check every 1 second
 
