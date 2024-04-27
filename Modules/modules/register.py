@@ -27,9 +27,7 @@ async def get_user_name(user_id):
         return None
     
 async def check_registration_completed(user_id):
-    """
-    Check if the user has completed registration within a specified time period.
-    """
+    # Check if the user has completed registration within a specified time period.
     max_attempts = 12  # 12 attempts at 5-second intervals = 60 seconds
     for attempt in range(max_attempts):
         if is_user_registered(user_id):

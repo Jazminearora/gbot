@@ -10,7 +10,7 @@ import re
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import get_profile, find_language, get_interest
 from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
-from database.registerdb import add_user_id, remove_interest, remove_user_id
+from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
 
 
 
@@ -182,15 +182,16 @@ async def set_interest(client, callback_query):
         current_interest = get_interest(user_id, language).lower()
         print ("current interest:", current_interest)
         try:
-            remove_user_id(language, user_id, current_interest)  
+            remove_str_id(user_id, current_interest)  
         except Exception as e:
             print("Exception:", e)    
             return  
         trumk = await muks.edit_caption("🤖")
         try:
-            add_user_id(new_interest, user_id, new_interest)
+            store_str_id(user_id, new_interest)
         except Exception as e:
             print("Exception:", e) 
+            return
         try:
             # If language change is successful, inform the user
             await callback_query.answer(f"↪️ {new_interest} ✅", show_alert=True)
