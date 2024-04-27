@@ -50,7 +50,7 @@ async def search_interlocutor(client, message):
     await message.reply(caption, reply_markup=keyboard)
 
 # Handle start search button
-@cbot.on_message(filters.private & filters.regex("Start Searching"|"Начать поиск"|"Axtarmağa başlayın") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("Start Searching|Начать поиск|Axtarmağa başlayın") & subscribed & user_registered)
 async def start_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
@@ -94,7 +94,7 @@ async def start_search(client, message):
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
 
 # Handle stop search button
-@cbot.on_message(filters.private & filters.regex("Stop Searching"|"Прекратить поиск"|"Axtarışı dayandırın") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
 async def stop_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
