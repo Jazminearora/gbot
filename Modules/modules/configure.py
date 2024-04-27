@@ -87,10 +87,10 @@ async def age_callback(client, callback_query):
     lang = find_language(callback_query.from_user.id)
     age_text = await get_age_groups_text(callback_query.from_user.id, lang)
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(await translate_async("Below 18", lang), callback_data="cblw_18"),
+        [InlineKeyboardButton(await translate_async("Below-18", lang), callback_data="cblw_18"),
          InlineKeyboardButton(await translate_async("18-24", lang), callback_data="c18_24"),
          InlineKeyboardButton(await translate_async("25-34", lang), callback_data="c25_34"),
-         InlineKeyboardButton(await translate_async("Above 35", lang), callback_data="cabv_35"),
+         InlineKeyboardButton(await translate_async("Above-35", lang), callback_data="cabv_35"),
          InlineKeyboardButton(await translate_async("Go back", lang), callback_data="agoback")]
     ])
     await callback_query.message.edit_caption(await translate_async("Please select your age group(s) and click back to configure:\n\n" + f"Current configuration: {age_text}", lang), reply_markup=markup)
@@ -107,10 +107,10 @@ async def age_group_callback(client, callback_query):
         age_groups[user_id] = []
     # Convert callback data to proper age group format
     age_group_text = {
-        "cblw_18": await translate_async("Below 18", lang),
+        "cblw_18": await translate_async("Below-18", lang),
         "c18_24": await translate_async("18-24", lang),
         "c25_34": await translate_async("25-34", lang),
-        "cabv_35": await translate_async("Above 35", lang)
+        "cabv_35": await translate_async("Above-35", lang)
     }.get(age_group)
     age_groups[user_id].append(age_group_text)
     await callback_query.answer(await translate_async("Age group added!", lang), show_alert=True)

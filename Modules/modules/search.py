@@ -4,6 +4,7 @@ import re
 from helpers.helper import find_language, get_gender, get_age_group, get_interest
 from database.premiumdb import is_user_premium, vip_users_details
 from helpers.translator import translate_async
+from Modules.modules.register import get_user_name
 import asyncio
 from Modules import cbot
 
@@ -111,14 +112,15 @@ async def match_users():
         for premium_user in searching_premium_users.copy():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
-                    premium_user["gender"] == normal_user["gender"] and
+                    (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender") and
                     normal_user["age_groups"] in premium_user["age_groups"] and
                     premium_user["room"] == normal_user["room"]):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
                     add_pair(new_pair)
-                    await cbot.send_message(premium_user["user_id"], "Interlocutor found! You can start chatting now.")
-                    await cbot.send_message(normal_user["user_id"], "Interlocutor found! You can start chatting now.")
+                    name = get_user_name(normal_user["user_id"])
+                    await cbot.send_message(premium_user["user_id"], f"Interlocutor found!\n\nUsers details:\nName: {name}\nGender: {normal_user["gender"]}\nAge group: {normal_user["age_groups"]}\n\n You can start chatting now.")
+                    await cbot.send_message(normal_user["user_id"], "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.")
                     # Remove users from searching lists
                     searching_premium_users.remove(premium_user)
                     searching_users.remove(normal_user)
@@ -135,8 +137,8 @@ async def match_users():
                         # Match found, add pair to chat_pairs and notify users
                         new_pair = (user1["user_id"], user2["user_id"])
                         add_pair(new_pair)
-                        await cbot.send_message(user1["user_id"], "Interlocutor found! You can start chatting now.")
-                        await cbot.send_message(user2["user_id"], "Interlocutor found! You can start chatting now.")
+                        await cbot.send_message(user1["user_id"], "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.")
+                        await cbot.send_message(user2["user_id"], "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.")
                         # Remove users from searching lists
                         searching_users.remove(user1)
                         searching_users.remove(user2)
@@ -177,7 +179,22 @@ async def forward_message(client, message):
         if message.from_user.id in pair:
             user1, user2 = pair
             if message.from_user.id == user1:
-                await cbot.copy_message(user2, message.chat.id, message.id)
-            else:
-                await cbot.copy_message(user1, message.chat.id, message.id)
+                is_premium, _ = await is_user_premium(user1)
+                if is_premium:
+                    await cbot.copy_message(user2, message.chat.id, message.id)
+                else:
+                    if message.text:
+                        await cbot.copy_message(user2, message.chat.id, message.id)
+                    else:
+                        await cbot.send_message(user1, "Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.")
+            elif message.from_user.id == user2:
+                is_premium, _ = await is_user_premium(user2)
+                if is_premium:
+                    await cbot.copy_message(user1, message.chat.id, message.id)
+                else:
+                    if message.text:
+                        await cbot.copy_message(user1, message.chat.id, message.id)
+                    else:
+                        await cbot.send_message(user2, "Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.")
+
             break
