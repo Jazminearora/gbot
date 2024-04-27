@@ -112,7 +112,7 @@ async def match_users():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
                     premium_user["gender"] == normal_user["gender"] and
-                    any(age_group in premium_user["age_groups"] for age_group in normal_user["age_groups"]) and
+                    normal_user["age_groups"] in premium_user["age_groups"] and
                     premium_user["room"] == normal_user["room"]):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
