@@ -191,7 +191,9 @@ async def match_users():
                         lang1 = find_language(user1)
                         lang2 = find_language(user2)
                         add_pair(new_pair)
-                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
+                        btn = translate_async("End chat", lang1)
+                        print(btn)
+                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(btn)]], resize_keyboard=True, one_time_keyboard=True)
                         await cbot.send_message(user1["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang1), reply_markup= keyboard)
                         await cbot.send_message(user2["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang2), reply_markup=keyboard)
                         # Remove users from searching lists
