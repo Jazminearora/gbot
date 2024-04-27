@@ -111,7 +111,7 @@ async def match_users():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
                     premium_user["gender"] == normal_user["gender"] and
-                    premium_user["age_groups"] == normal_user["age_groups"] and
+                    set(premium_user["age_groups"]) & set(normal_user["age_groups"]) and
                     premium_user["room"] == normal_user["room"]):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
@@ -126,10 +126,7 @@ async def match_users():
         # Match normal users with other normal users
         for i, user1 in enumerate(searching_users.copy()):
             for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
-                if (user1["language"] == user2["language"] and
-                    user1["gender"] == user2["gender"] and
-                    user1["age_groups"] == user2["age_groups"] and
-                    user1["room"] == user2["room"]):
+                if (user1["language"] == user2["language"]):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (user1["user_id"], user2["user_id"])
                     add_pair(new_pair)
