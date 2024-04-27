@@ -32,7 +32,7 @@ cbot = Client(
 
 
 client = MongoClient(MONGO_URI)
-db = client["cbot-prim"]
+db = client["cbot-primer"]
 referdb = db["referdb"]
 premiumdb = db["premiumdb"]
 mongodb = db["tgtbot"]
