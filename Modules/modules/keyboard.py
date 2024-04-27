@@ -10,6 +10,7 @@ import re
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import get_profile, find_language, get_interest
 from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
+from helpers.translator import translate_async
 from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
 
 
@@ -21,7 +22,7 @@ async def start_command(client, message):
         user_id = message.from_user.id
         language = find_language(user_id)
         reply_markup = await get_reply_markup(language)
-        await message.reply_text("Please select an option:", reply_markup=reply_markup)
+        await message.reply_text(translate_async("Please select an option:", language), reply_markup=reply_markup)
     except Exception:
         await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
 
@@ -145,7 +146,9 @@ async def set_language(client, callback_query):
                 success_message = "Язык успешно изменен! 🇷🇺"
             elif new_lang == "Azerbejani":
                 success_message = "Dil uğurla dəyişdirildi! 🇦🇿"
-            await cbot.send_message(user_id, success_message, reply_markup=ReplyKeyboardRemove())
+            reply_markup = await get_reply_markup(new_lang)
+            await cbot.send_message(user_id, success_message, reply_markup=reply_markup)
+            
         except Exception as e:
             print("Error in changing language:", e)
 
@@ -202,7 +205,8 @@ async def set_interest(client, callback_query):
                 success_message = "интерес успешно изменился!"
             elif language == "Azerbejani":
                 success_message = "maraq uğurla dəyişdi!"
-            await trumk.edit_caption(success_message, reply_markup=ReplyKeyboardRemove(selective= True))
+            reply_markup = await get_reply_markup(language)
+            await trumk.edit_caption(success_message, reply_markup=reply_markup)
         except Exception as e:
             print("Error in changing language:", e)
     
