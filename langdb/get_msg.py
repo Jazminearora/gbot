@@ -334,3 +334,46 @@ async def get_premium_msg(language):
         caption = "Invalid language specified."
         buttons = InlineKeyboardMarkup([])
     return caption, buttons
+
+async def interlocutor_vip_message(language, name, gender, age_group):
+    if language == "English":
+        message = f"Interlocutor found!\n\nUsers details:\nName: {name}\nGender: {gender}\nAge group: {age_group}\n\nYou can start chatting now."
+    elif language == "Russian":
+        message = f"Собеседник найден!\n\nДанные пользователя:\nИмя: {name}\nПол: {gender}\nВозрастная группа: {age_group}\n\nТеперь вы можете начать общение."
+    elif language == "Azerbejani":
+        message = f"Müşayiətçi tapıldı!\n\nİstifadəçinin məlumatları:\nAd: {name}\nCins: {gender}\nYaş qrupu: {age_group}\n\nSiz artıq söhbətə başlaya bilərsiniz."
+    else:
+        message = "Language not supported."
+    return message
+
+
+async def interlocutor_normal_message(language):
+    if language == "English":
+        message = "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now."
+        keyboard = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("End chat")]
+            ],
+            resize_keyboard=True
+        )
+    elif language == "Russian":
+        message = "Собеседник найден!\nКупите Premium, чтобы узнать подробности о собеседнике😈! \n\nТеперь вы можете начать общение."
+        keyboard = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("Завершить чат")]
+            ],
+            resize_keyboard=True
+        )
+    elif language == "Azerbejani":
+        message = "Müşayiətçi tapıldı!\nMəlumatlarını öyrənmək üçün Premium alın😈! \n\nSiz artıq söhbətə başlaya bilərsiniz."
+        keyboard = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("Söhbəti sonlandır")]
+            ],
+            resize_keyboard=True
+        )
+    else:
+        message = "Language not supported."
+        keyboard = None
+    
+    return message, keyboard

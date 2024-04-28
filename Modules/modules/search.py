@@ -4,8 +4,8 @@ import re
 from helpers.helper import find_language, get_gender, get_age_group, get_interest
 from helpers.forcesub import user_registered, subscribed
 from database.premiumdb import is_user_premium, vip_users_details
-from langdb.get_msg import get_reply_markup
-from helpers.translator import translate_async, translate_text
+from langdb.get_msg import get_reply_markup, interlocutor_vip_message, interlocutor_normal_message
+from helpers.translator import translate_async
 from Modules.modules.register import get_user_name
 import asyncio
 from Modules import cbot
@@ -89,9 +89,11 @@ async def start_search(client, message):
         age_groups = get_age_group(user_id, "huls")
         interest = get_interest(user_id, "huls")
         language = find_language(user_id)
-        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": None})
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
+        # sleep for 1 sec
+        await asyncio.sleep(1) 
+        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": None})
 
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
@@ -109,49 +111,6 @@ async def stop_search(client, message):
             break
     reply_markup = await get_reply_markup(language)
     await message.reply(await translate_async("Search stopped.", language), reply_markup=reply_markup)
-
-async def interlocutor_vip_message(language, name, gender, age_group):
-    if language == "English":
-        message = f"Interlocutor found!\n\nUsers details:\nName: {name}\nGender: {gender}\nAge group: {age_group}\n\nYou can start chatting now."
-    elif language == "Russian":
-        message = f"Собеседник найден!\n\nДанные пользователя:\nИмя: {name}\nПол: {gender}\nВозрастная группа: {age_group}\n\nТеперь вы можете начать общение."
-    elif language == "Azerbejani":
-        message = f"Müşayiətçi tapıldı!\n\nİstifadəçinin məlumatları:\nAd: {name}\nCins: {gender}\nYaş qrupu: {age_group}\n\nSiz artıq söhbətə başlaya bilərsiniz."
-    else:
-        message = "Language not supported."
-    return message
-
-
-async def interlocutor_normal_message(language):
-    if language == "English":
-        message = "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now."
-        keyboard = ReplyKeyboardMarkup(
-            [
-                [KeyboardButton("End chat")]
-            ],
-            resize_keyboard=True
-        )
-    elif language == "Russian":
-        message = "Собеседник найден!\nКупите Premium, чтобы узнать подробности о собеседнике😈! \n\nТеперь вы можете начать общение."
-        keyboard = ReplyKeyboardMarkup(
-            [
-                [KeyboardButton("Завершить чат")]
-            ],
-            resize_keyboard=True
-        )
-    elif language == "Azerbejani":
-        message = "Müşayiətçi tapıldı!\nMəlumatlarını öyrənmək üçün Premium alın😈! \n\nSiz artıq söhbətə başlaya bilərsiniz."
-        keyboard = ReplyKeyboardMarkup(
-            [
-                [KeyboardButton("Söhbəti sonlandır")]
-            ],
-            resize_keyboard=True
-        )
-    else:
-        message = "Language not supported."
-        keyboard = None
-    
-    return message, keyboard
 
 
 # Function to match users and start chatting

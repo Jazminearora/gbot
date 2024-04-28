@@ -2,6 +2,7 @@ from Modules import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text
+from database.premiumdb import is_user_premium
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def find_language(user_id):
@@ -81,9 +82,12 @@ def get_profile(user_id, language):
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
-        
+        premium, expiry = is_user_premium(user_id)
         if language == "English":
             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
+            message += f"\nPremium Status: {premium}"
+            if premium:
+                message += f"\nPremium Expiry: {expiry}"
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":
@@ -91,6 +95,9 @@ def get_profile(user_id, language):
             ru_age_group = translate_text(age_group, target_language="ru")
             ru_interest = translate_text(interest, target_language="ru")
             message = text_2.format(gender=ru_gender, age_group=ru_age_group, interest=ru_interest)
+            message += f"\nСтатус премиума: {premium}"
+            if premium:
+                message += f"\nСрок действия премиума: {expiry}"
             edit_button_text = "Редактировать ✏️"
             close_button_text = "Закрыть ❌"
         elif language == "Azerbejani":
@@ -98,6 +105,9 @@ def get_profile(user_id, language):
             az_age_group = translate_text(age_group, target_language="az")
             az_interest = translate_text(interest, target_language="az")
             message = text_3.format(gender=az_gender, age_group=az_age_group, interest=az_interest)
+            message += f"\nPremium Statusu: {premium}"
+            if premium:
+                message += f"\nPremiumun Bitiş Tarixi: {expiry}"
             edit_button_text = "Redaktə et ✏️"
             close_button_text = "Bağla ❌"
         else:

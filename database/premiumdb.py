@@ -1,4 +1,5 @@
 from Modules import premiumdb
+from config import EXTEND_HRS_REFER
 import time
 from datetime import datetime, timedelta
 
@@ -57,7 +58,7 @@ async def is_user_premium(user_id: int):
             expiry_time = user.get("premium_expiry_time", None)
             # If user is premium
             if premium_status:
-                current_time = time.strftime("%H:%M:%S", time.gmtime())
+                current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 # If expiry time is not over
                 if expiry_time and expiry_time > current_time:
                     return True, expiry_time
@@ -97,7 +98,7 @@ async def extend_premium_user(user_id: int):
         is_premium, expiry_time = await is_user_premium(user_id)
         if is_premium:
             # If user is premium, extend the expiry time by 2 hours
-            new_expiry_time = (datetime.strptime(expiry_time, "%H:%M:%S") + timedelta(hours=2)).strftime("%H:%M:%S")
+            new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=EXTEND_HRS_REFER)).strftime("%Y-%m-%d %H:%M:%S")
             premiumdb.update_one(
                 {"_id": user_id},
                 {"$set": {"premium_expiry_time": new_expiry_time}}
@@ -105,8 +106,8 @@ async def extend_premium_user(user_id: int):
             print(f"Premium extended for user {user_id} to {new_expiry_time}.")
         else:
             # If user is not premium, add them as a new premium user
-            current_time = time.strftime("%H:%M:%S", time.gmtime())
-            expiry_time = (datetime.strptime(current_time, "%H:%M:%S") + timedelta(hours=2)).strftime("%H:%M:%S")
+            current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+            expiry_time = (datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
             await save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
             print(f"User {user_id} added as premium until {expiry_time}.")
     except Exception as e:
