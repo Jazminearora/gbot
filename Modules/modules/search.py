@@ -124,9 +124,9 @@ async def match_users():
         for premium_user in searching_premium_users.copy():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
-                    (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender") and
-                    normal_user["age_groups"] in premium_user["age_groups"] and
-                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any")):
+                    (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
+                    (normal_user["age_groups"] in premium_user["age_groups"] or premium_user["age_groups"] is None )and
+                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
                     add_pair(new_pair)
@@ -197,7 +197,6 @@ async def match_users():
                         break  # Break out of inner loop if match found
                 if matched:  # Break out of outer loop if match found
                     break
-        await asyncio.sleep(1)  # Check every 1 second
 
 
 # Handle cancel button
@@ -223,7 +222,7 @@ async def cancel(_, message):
 async def match_users_loop():
     while True:
         await match_users()
-        await asyncio.sleep(5)  # Check every 5 seconds
+        await asyncio.sleep(3)  # Check every 3 seconds
 
 # Start matching users loop
 cbot.loop.create_task(match_users_loop())
