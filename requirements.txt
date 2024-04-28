@@ -10,3 +10,4 @@ pyrostep
 gpytranslate
 datetime
 AaioAPI
+aiohttp
