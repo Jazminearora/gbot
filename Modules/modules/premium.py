@@ -1,6 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
+import uuid
 import urllib.parse
 import asyncio
 from AaioAPI import AsyncAaioAPI
@@ -81,8 +82,8 @@ async def referals_command(client, message):
         )
     )
 
-
-
+# Temporary storage for order details
+pending_orders = {}
 
 @cbot.on_callback_query(filters.regex(r"premium_"))
 async def premium_callback(client, callback_query):
@@ -101,10 +102,15 @@ async def premium_callback(client, callback_query):
         amount = 12.98
         extend_hrs = 720
 
-    order_id = f"premium_{user_id}_{data}"
+    # Generate random order ID using UUID
+    order_id = str(uuid.uuid4())
+
     lang = "en"  # You can get the user's language here
     currency = "USD"  # You can get the user's currency here
     desc = "Premium subscription"  # You can get the description here
+
+    # Store order details temporarily
+    pending_orders[order_id] = {"user_id": user_id, "extend_hrs": extend_hrs}
 
     client = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
     URL = await client.create_payment(order_id, amount, lang, currency, desc)
@@ -114,10 +120,17 @@ async def premium_callback(client, callback_query):
     while True:
         if await client.is_expired(order_id):
             await callback_query.message.reply_text("Invoice was expired")
+            del pending_orders[order_id]  # Remove expired order from pending_orders
             break
         elif await client.is_success(order_id):
-            await extend_premium_user_hrs(user_id, extend_hrs)
-            await callback_query.message.reply_text("Payment was successful. Your premium subscription has been extended.")
+            # Retrieve user ID and extend hours from pending_orders using order_id
+            order_details = pending_orders.get(order_id)
+            if order_details:
+                await extend_premium_user_hrs(order_details["user_id"], order_details["extend_hrs"])
+                await callback_query.message.reply_text("Payment was successful. Your premium subscription has been extended.")
+                del pending_orders[order_id]  # Remove processed order from pending_orders
+            else:
+                await callback_query.message.reply_text("Invalid order ID.")
             break
         else:
             await callback_query.message.reply_text("Invoice wasn't paid. Please pay the bill")
