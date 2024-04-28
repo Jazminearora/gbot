@@ -77,12 +77,12 @@ def is_user_registered(user_id):
         return False
 
 
-def get_profile(user_id, language):
+async def get_profile(user_id, language):
+    premium, expiry = await is_user_premium(user_id)
     try:
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
-        premium, expiry = is_user_premium(user_id)
         if language == "English":
             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
             message += f"\nPremium Status: {premium}"

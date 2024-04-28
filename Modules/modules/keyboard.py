@@ -39,7 +39,7 @@ async def handle_keyboard_response(client, message):
         try:
             user_id = message.from_user.id
             language = find_language(user_id)
-            profile_text, reply_markup = get_profile(user_id, language)
+            profile_text, reply_markup = await get_profile(user_id, language)
             try:
                 await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
             except Exception as e:
@@ -69,7 +69,7 @@ async def back(client, callback_query):
     try:
         user_id =callback_query.from_user.id
         language = find_language(user_id)
-        profile_text, reply_markup = get_profile(user_id, language)
+        profile_text, reply_markup = await get_profile(user_id, language)
         try:
             await callback_query.message.edit_caption(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
         except Exception as e:
