@@ -174,7 +174,7 @@ async def match_users():
                     lang2 = find_language(normal_user["user_id"])
                     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
                     await cbot.send_message(premium_user["user_id"], cap1, reply_markup= keyboard)
-                    caption, markup = interlocutor_normal_message(lang2)
+                    caption, markup =await interlocutor_normal_message(lang2)
                     await cbot.send_message(normal_user["user_id"],caption , reply_markup= markup)
                     # Remove users from searching lists
                     searching_premium_users.remove(premium_user)
@@ -228,7 +228,7 @@ async def match_users():
                         # Remove users from searching lists
                         searching_users.remove(user1)
                         searching_users.remove(user2)
-                        caption, markup = interlocutor_normal_message(lang2)
+                        caption, markup = await interlocutor_normal_message(lang2)
                         print(caption, markup)
                         await cbot.send_message(user1["user_id"], caption, reply_markup=markup)
                         await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
