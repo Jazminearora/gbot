@@ -3,7 +3,6 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
 from uuid import uuid1
 import urllib.parse
-import asyncio
 from AaioAPI import AsyncAaioAPI
 
 from helpers.helper import find_language
