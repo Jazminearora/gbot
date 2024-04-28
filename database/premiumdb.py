@@ -112,3 +112,13 @@ async def extend_premium_user(user_id: int):
             print(f"User {user_id} added as premium until {expiry_time}.")
     except Exception as e:
         print("Error:", e)
+
+
+async def calculate_remaining_time(expiry_time):
+    expiry_datetime = datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S")
+    current_time = datetime.utcnow()
+    time_difference = expiry_datetime - current_time
+
+    # Format the remaining time using days, seconds, and microseconds
+    remaining_time = timedelta(days=time_difference.days, seconds=time_difference.seconds)
+    return remaining_time

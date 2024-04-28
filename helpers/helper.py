@@ -2,7 +2,7 @@ from Modules import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text
-from database.premiumdb import is_user_premium
+from database.premiumdb import is_user_premium, calculate_remaining_time
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def find_language(user_id):
@@ -78,7 +78,8 @@ def is_user_registered(user_id):
 
 
 async def get_profile(user_id, language):
-    premium, expiry = await is_user_premium(user_id)
+    premium, time = await is_user_premium(user_id)
+    expiry = await calculate_remaining_time(time)
     try:
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)

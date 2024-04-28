@@ -93,7 +93,7 @@ async def start_search(client, message):
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
         # sleep for 1 sec
         await asyncio.sleep(1) 
-        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": None})
+        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
 
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
@@ -123,7 +123,7 @@ async def match_users():
                 if (premium_user["language"] == normal_user["language"] and
                     (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender") and
                     normal_user["age_groups"] in premium_user["age_groups"] and
-                    premium_user["room"] == normal_user["room"]):
+                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any")):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
                     add_pair(new_pair)
@@ -150,11 +150,11 @@ async def match_users():
                 if (premium_user1["language"] == find_language(premium_user2) and
                     (premium_user1["gender"] == get_gender(premium_user2, "huls") or premium_user1["gender"] == "any gender") and
                     get_age_group(premium_user2, "huls") in premium_user1["age_groups"] and
-                    premium_user1["room"] == premium_user2["room"] and
+                    (premium_user1["room"] == premium_user2["room"] or premium_user1["room"] == "any") and
                     premium_user2["language"] == find_language(premium_user1) and
                     (premium_user2["gender"] == get_gender(premium_user1, "huls") or premium_user2["gender"] == "any gender") and
                     get_age_group(premium_user1, "huls") in premium_user2["age_groups"] and
-                    premium_user2["room"] == premium_user1["room"]):
+                    (premium_user2["room"] == premium_user1["room"] or premium_user2["room"] == "any")):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user1["user_id"], premium_user2["user_id"])
                     add_pair(new_pair)

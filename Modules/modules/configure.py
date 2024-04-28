@@ -134,3 +134,29 @@ async def back_callback(client, callback_query):
 
         else:
             await callback_query.answer(await translate_async("You need to be a premium user to update your age groups.", lang), show_alert=True)
+
+
+@cbot.on_callback_query(filters.regex("crm"))
+async def room_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    lang = find_language(user_id)
+    cr_room = await vip_users_details(user_id, "room")
+    reply_markup = InlineKeyboardMarkup([
+    [InlineKeyboardButton(await translate_async("👥 Communication", lang), callback_data="config_communication")],
+    [InlineKeyboardButton(await translate_async("💕 Intimacy", lang), callback_data="config_intimacy")],
+    [InlineKeyboardButton(await translate_async("💰 Selling", lang), callback_data="config_selling")],
+    [InlineKeyboardButton(await translate_async("🎬 Movies", lang), callback_data="config_movies")],
+    [InlineKeyboardButton(await translate_async("🎌 Anime", lang), callback_data="config_anime")],
+    [InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
+     InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")]
+    ])
+    await callback_query.message.edit_caption(await translate_async(f"Current Configuration: {cr_room}\n\nPlease select the room for your search configuration:", lang), reply_markup=reply_markup)
+
+
+@cbot.on_callback_query(filters.regex("config_communication|config_intimacy|config_selling|config_movies|config_anime|config_any"))
+async def room_configuration_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    lang = find_language(user_id)
+    room_type = callback_query.data.replace("config_", "")
+    await save_premium_user(user_id, room=room_type)
+    await callback_query.answer(await translate_async(f"Your room configuration has been updated to {room_type}.", lang), show_alert=True)
