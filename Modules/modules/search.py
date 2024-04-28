@@ -201,7 +201,7 @@ async def match_users():
                     add_pair(new_pair)
                     name1 = await get_user_name(premium_user1["user_id"])
                     name2 = await get_user_name(premium_user2["user_id"])
-                    lang1 = find_language(premium_user["user_id"])
+                    lang1 = find_language(premium_user1["user_id"])
                     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
                     cap1 = interlocutor_vip_message(lang1, name2, {premium_user2["gender"]}, {premium_user2["age_groups"]})
                     cap2 = interlocutor_vip_message(lang2, name1, {premium_user1["gender"]}, {premium_user1["age_groups"]})
@@ -222,8 +222,8 @@ async def match_users():
                     if user1["language"] == user2["language"]:
                         # Match found, add pair to chat_pairs and notify users
                         new_pair = (user1["user_id"], user2["user_id"])
-                        lang1 = find_language(user1)
-                        lang2 = find_language(user2)
+                        lang1 = find_language(user1["user_id"])
+                        lang2 = find_language(user2["user_id"])
                         add_pair(new_pair)
                         # Remove users from searching lists
                         searching_users.remove(user1)
