@@ -17,7 +17,11 @@ except ValueError:
 key = "fulala"
 DEV_USER = []
 SUDO_USERS = os.environ.get("SUDO_USERS")
-EXTEND_HRS_REFER = int(os.environ.get("EXTEND_HRS_REFER"), 2)
+EXTEND_HRS_REFER = os.environ.get("EXTEND_HRS_REFER")
+if EXTEND_HRS_REFER is not None and isinstance(EXTEND_HRS_REFER, str):
+    EXTEND_HRS_REFER = int(EXTEND_HRS_REFER, 2)
+else:
+    EXTEND_HRS_REFER = 2
 CHANNEL_USERNAME = '@Equinoxlogs'
 SUPPORTING = '@Equinox_Chats'
 UPDATE = "https://t.me/EquinoxNetwork"

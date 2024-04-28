@@ -188,7 +188,6 @@ async def match_users():
                         searching_users.remove(user1)
                         searching_users.remove(user2)
                         caption, markup = await interlocutor_normal_message(lang2)
-                        print(caption, markup)
                         await cbot.send_message(user1["user_id"], caption, reply_markup=markup)
                         await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
                         matched = True  # Set flag to True
