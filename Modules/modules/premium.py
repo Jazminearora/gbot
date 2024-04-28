@@ -1,7 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
-import uuid
+from uuid import uuid1
 import urllib.parse
 import asyncio
 from AaioAPI import AsyncAaioAPI
@@ -14,6 +14,9 @@ from database.referdb import get_point
 
 from Modules import cbot , BOT_USERNAME
 from config import MERCHANT_ID, MERCHANT_KEY, API_KEY
+
+aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
+
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
 @cbot.on_message(filters.private & filters.regex(button_pattern))
@@ -82,12 +85,10 @@ async def referals_command(client, message):
         )
     )
 
-# Temporary storage for order details
-pending_orders = {}
-
 @cbot.on_callback_query(filters.regex(r"premium_"))
 async def premium_callback(client, callback_query):
     user_id = callback_query.from_user.id
+    language = find_language(user_id)
     data = callback_query.data
     if data == "premium_1_day":
         amount = 1.08
@@ -103,35 +104,31 @@ async def premium_callback(client, callback_query):
         extend_hrs = 720
 
     # Generate random order ID using UUID
-    order_id = str(uuid.uuid4())
+    order_id = str(uuid1())
 
     lang = "en"  # You can get the user's language here
     currency = "USD"  # You can get the user's currency here
     desc = "Premium subscription"  # You can get the description here
 
-    # Store order details temporarily
-    pending_orders[order_id] = {"user_id": user_id, "extend_hrs": extend_hrs}
+    URL = await aaio.create_payment(order_id, amount, lang, currency, desc)
+    markup = InlineKeyboardMarkup([
+    [InlineKeyboardButton(await translate_async("💰 Proceed to payment", language), url = URL)],
+    [InlineKeyboardButton(await translate_async("🔄️ Check payment", language), callback_data=f"check_payement_{order_id}_{extend_hrs}")]])
+    await callback_query.message.reply_text(await translate_async("Please pay for your premium subscription!", language), reply_markup = markup)
 
-    client = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
-    URL = await client.create_payment(order_id, amount, lang, currency, desc)
 
-    await callback_query.message.reply_text(f"Please pay for your premium subscription: {URL}")
+@cbot.on_callback_query(filters.regex(r"check_payment_(.+)"))
+async def check_payment_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    order_id = callback_query.data.split("_")[2]
+    hrs = callback_query.data.split("_")[3]
+    # Check the payment status using the order ID
+    payment_info = await aaio.get_payment_info(order_id)
+    if payment_info.is_success():
+        await extend_premium_user_hrs(user_id, hrs)
+        await callback_query.message.reply_text("Payment was successful. Your premium subscription has been extended.")
+    else:
+        await callback_query.message.reply_text("Payment is still pending.")
 
-    while True:
-        if await client.is_expired(order_id):
-            await callback_query.message.reply_text("Invoice was expired")
-            del pending_orders[order_id]  # Remove expired order from pending_orders
-            break
-        elif await client.is_success(order_id):
-            # Retrieve user ID and extend hours from pending_orders using order_id
-            order_details = pending_orders.get(order_id)
-            if order_details:
-                await extend_premium_user_hrs(order_details["user_id"], order_details["extend_hrs"])
-                await callback_query.message.reply_text("Payment was successful. Your premium subscription has been extended.")
-                del pending_orders[order_id]  # Remove processed order from pending_orders
-            else:
-                await callback_query.message.reply_text("Invalid order ID.")
-            break
-        else:
-            await callback_query.message.reply_text("Invoice wasn't paid. Please pay the bill")
-        await asyncio.sleep(5)
+
+   
