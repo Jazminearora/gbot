@@ -25,6 +25,19 @@ def get_total_users(language):
         print(f'Error in getting total users for {language}:', e)
         return None
 
+def get_users_list(language):
+    try:
+        users_list = []
+        document = collection.find_one({key: {"$exists": True}})
+        if document and language in document[key]["database"]:
+            lang_data = document[key]["database"][language]
+            users_list = [user_id for user_id in lang_data]
+        return users_list
+    except Exception as e:
+        print(f'Error in getting users list for {language}:', e)
+        return None
+    
+    
 def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {'$exists': True}})

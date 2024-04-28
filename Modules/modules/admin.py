@@ -1,13 +1,18 @@
 import os
 from pyrogram import filters
+from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, PeerIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import asyncio
+import datetime, time
+import pyrostep
 
 from config import  ADMINS as ADMIN_IDS
-from Modules import cbot
+from Modules import cbot, logger
 from Modules import mongodb as collection
 from config import key
-from helpers.helper import get_total_users
+from helpers.helper import get_total_users, get_users_list
 
+pyrostep.listen(cbot)
 
 buttons = [
         [
@@ -46,7 +51,73 @@ async def admin_panel(_, message):
 # Callback handler using regex filter
 @cbot.on_callback_query(filters.regex(r'^newsletter$'))
 async def newsletter_handler(_, query):
-    await query.message.edit_text(text="You selected Newsletter.")
+    await query.message.edit_text(text="Select the language for the newsletter:")
+    lang_buttons = [
+        [
+            InlineKeyboardButton("English", callback_data='newsletter_English'),
+            InlineKeyboardButton("Russian", callback_data='newsletter_Russian'),
+            InlineKeyboardButton("Azerbejani", callback_data='newsletter_Azerbejani'),
+        ],
+        [
+            InlineKeyboardButton("Cancel", callback_data='cancel')
+        ]
+    ]
+    lang_markup = InlineKeyboardMarkup(lang_buttons)
+    await query.message.edit_text(text="Select the language for the newsletter:", reply_markup=lang_markup)
+
+@cbot.on_callback_query(filters.regex(r'^newsletter_(English|Russian|Azerbejani)$'))
+async def newsletter_language_handler(_, query):
+    lang = query.data.split('_')[1]
+    await query.message.edit_text(text=f"Selected language: {lang}")
+    await query.message.edit_text(text="Enter the newsletter message:")
+    title1 = await pyrostep.wait_for(query.chat.id, query.from_user.id)
+    newsletter_msg = title1.text
+    if newsletter_msg:
+        await query.message.edit_text(text="Sending newsletter...")
+        users = get_users_list(lang)
+        sts_msg = await query.message.edit_text(text="Sending newsletter...")
+        done = 0
+        failed = 0
+        success = 0
+        start_time = time.time()
+        total_users = len(users)
+        for user in users:
+            sts = await send_newsletter(user, newsletter_msg)
+            if sts == 200:
+                success += 1
+            else:
+                failed += 1
+            done += 1
+            if not done % 20:
+                await sts_msg.edit(
+                    text=f"Sending newsletter...\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
+                )
+        completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
+        await sts_msg.edit(
+            text=f"Newsletter sent successfully!\nCompleted in {completed_in}\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
+        )
+    else:
+        await query.message.edit_text(text="Newsletter message not received. Please try again.")
+
+async def send_newsletter(user_id, message):
+    try:
+        await message.forward(chat_id=int(user_id))
+        return 200
+    except FloodWait as e:
+        await asyncio.sleep(e.value)
+        return send_newsletter(user_id, message)
+    except InputUserDeactivated:
+        logger.info(f"{user_id} : Deactivated")
+        return 400
+    except UserIsBlocked:
+        logger.info(f"{user_id} : Blocked")
+        return 400
+    except PeerIdInvalid:
+        logger.info(f"{user_id} : Invalid ID")
+        return 400
+    except Exception as e:
+        logger.error(f"{user_id} : {e}")
+        return 500
 
 @cbot.on_callback_query(filters.regex(r'^subscriptions$'))
 async def subscriptions_handler(_, query):
