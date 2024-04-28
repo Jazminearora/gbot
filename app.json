@@ -11,6 +11,18 @@
       "description": "Your Telegram API Hash",
       "required": true
     },
+    "API_KEY": {
+      "description": "AAIO Payment site API Key",
+      "required": true
+    },
+    "MERCHANT_ID": {
+      "description": "AAIO Payment site MERCHANT ID",
+      "required": true
+    },
+    "MERCHANT_KEY": {
+      "description": "AAIO Payment site MERCHANT KEY",
+      "required": true
+    },
     "BOT_TOKEN": {
       "description": "Your Telegram Bot Token",
       "required": true

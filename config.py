@@ -7,6 +7,10 @@ BOT_USERNAME = os.environ.get("BOT_USERNAME")
 OWNER_ID = int(os.environ.get("OWNER_ID"))
 LOGGER_ID = int(os.environ.get("LOGGER_ID"))
 MONGO_URI = os.environ.get("MONGO_URI")
+API_KEY = os.environ.get("API_KEY")
+MERCHANT_ID = os.environ.get("MERCHANT_ID")
+MERCHANT_KEY = os.environ.get("MERCHANT_KEY")
+
 
 try:
     ADMINS=[]

@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup
 import re
 from helpers.helper import find_language, get_gender, get_age_group, get_interest
 from helpers.forcesub import user_registered, subscribed
@@ -36,7 +36,10 @@ def add_pair(new_pair):
 @cbot.on_message(filters.command("hlo"))
 async def hlo(client, message):
     language = find_language(message.from_user.id)
-    text = await translate_async("Searching users:\n", language)+ str(searching_users) + "\n\nChat pairs:\n" + str(chat_pairs) + "\n\nPremium users:\n" + str(searching_premium_users)
+    try:
+        text = await translate_async("Searching users:\n", language)+ str(searching_users) + "\n\nChat pairs:\n" + str(chat_pairs) + "\n\nPremium users:\n" + str(searching_premium_users)
+    except:
+        text = f"Searching users: {searching_users})" + "\n\nChat pairs:" + (chat_pairs) + "\n\nPremium users:" + (searching_premium_users)
     await message.reply(text)
 
 button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")

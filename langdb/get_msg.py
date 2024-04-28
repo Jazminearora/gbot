@@ -310,7 +310,7 @@ async def get_premium_msg(language):
             [InlineKeyboardButton("For a three days - $2.15", callback_data="premium_3_days")],
             [InlineKeyboardButton("For a week - $8.61", callback_data="premium_1_week")],
             [InlineKeyboardButton("For a month - $12.98", callback_data="premium_1_month")],
-            [InlineKeyboardButton("Get it for free", callback_data="premium_free")]
+            [InlineKeyboardButton("Get it for free", callback_data="prem_free")]
         ])
     elif language == "Russian":
         caption = "💎 PREMIUM\n⛔ Премиум-поиск доступен только для пользователей VIP ⛔\n\n🔞 Чат в грязном чате\n🔍 Поиск по полу (м/ж)\n🎥 Обмен фотографиями и видео\n🔥 Отправка фотографий, видео, GIF, стикеров\n📃 Информация о собеседнике (возраст)\n🚫 Без рекламы\n\n/referals - получите 👑VIP бесплатно"
@@ -319,7 +319,7 @@ async def get_premium_msg(language):
             [InlineKeyboardButton("На три дня - 162₽", callback_data="premium_3_days")],
             [InlineKeyboardButton("На неделю - 648₽", callback_data="premium_1_week")],
             [InlineKeyboardButton("На месяц - 974₽", callback_data="premium_1_month")],
-            [InlineKeyboardButton("Получить бесплатно", callback_data="premium_free")]
+            [InlineKeyboardButton("Получить бесплатно", callback_data="prem_free")]
         ])
     elif language == "Azerbejani":
         caption = "💎 PREMIUM\n⛔ Premium axtarışı yalnız VIP istifadəçilər üçün mövcuddur ⛔\n\n🔞 Pis çatda söhbət edin\n🔍 Cinsiyətə görə axtarış (k/q)\n🎥 Şəkilləri və videoları paylaşın\n🔥 Şəkillər, videolar, GIF-lər, stikerlər göndərin\n📃 Müşahidəçi haqqında məlumat (yaş)\n🚫 Reklam yoxdur\n\n/referals - pulsuz 👑VIP alın"
@@ -328,7 +328,7 @@ async def get_premium_msg(language):
             [InlineKeyboardButton("Üç gün üçün - 2,15 $", callback_data="premium_3_days")],
             [InlineKeyboardButton("Bir həftə üçün - 8,61 $", callback_data="premium_1_week")],
             [InlineKeyboardButton("Bir ay üçün - 12,98 $", callback_data="premium_1_month")],
-            [InlineKeyboardButton("Pulsuz əldə edin", callback_data="premium_free")]
+            [InlineKeyboardButton("Pulsuz əldə edin", callback_data="prem_free")]
         ])
     else:
         caption = "Invalid language specified."
