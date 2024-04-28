@@ -5,7 +5,7 @@ from helpers.helper import find_language, get_gender, get_age_group, get_interes
 from helpers.forcesub import user_registered, subscribed
 from database.premiumdb import is_user_premium, vip_users_details
 from langdb.get_msg import get_reply_markup
-from helpers.translator import translate_async
+from helpers.translator import translate_async, translate_text
 from Modules.modules.register import get_user_name
 import asyncio
 from Modules import cbot
@@ -194,9 +194,9 @@ async def match_users():
                         # Remove users from searching lists
                         searching_users.remove(user1)
                         searching_users.remove(user2)
-                        btn = await translate_async("Terminate Conversation", lang1)
+                        btn = translate_text("Terminate Conversation", lang1)
                         print(btn)
-                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Terminate Conversation", lang1))]], resize_keyboard=True, one_time_keyboard=True)
+                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(translate_text("Terminate Conversation", lang1))]], resize_keyboard=True, one_time_keyboard=True)
                         await cbot.send_message(user1["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang1), reply_markup= keyboard)
                         await cbot.send_message(user2["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang2), reply_markup=keyboard)
                         matched = True  # Set flag to True
