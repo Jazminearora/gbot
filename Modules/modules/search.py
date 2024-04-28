@@ -110,7 +110,7 @@ async def stop_search(client, message):
     reply_markup = await get_reply_markup(language)
     await message.reply(await translate_async("Search stopped.", language), reply_markup=reply_markup)
 
-async def get_interlocutor_message(language, name, gender, age_group):
+async def interlocutor_vip_message(language, name, gender, age_group):
     if language == "English":
         message = f"Interlocutor found!\n\nUsers details:\nName: {name}\nGender: {gender}\nAge group: {age_group}\n\nYou can start chatting now."
     elif language == "Russian":
@@ -120,6 +120,39 @@ async def get_interlocutor_message(language, name, gender, age_group):
     else:
         message = "Language not supported."
     return message
+
+
+async def interlocutor_normal_message(language):
+    if language == "English":
+        message = "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now."
+        keyboard = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("End chat")]
+            ],
+            resize_keyboard=True
+        )
+    elif language == "Russian":
+        message = "Собеседник найден!\nКупите Premium, чтобы узнать подробности о собеседнике😈! \n\nТеперь вы можете начать общение."
+        keyboard = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("Завершить чат")]
+            ],
+            resize_keyboard=True
+        )
+    elif language == "Azerbejani":
+        message = "Müşayiətçi tapıldı!\nMəlumatlarını öyrənmək üçün Premium alın😈! \n\nSiz artıq söhbətə başlaya bilərsiniz."
+        keyboard = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("Söhbəti sonlandır")]
+            ],
+            resize_keyboard=True
+        )
+    else:
+        message = "Language not supported."
+        keyboard = None
+    
+    return message, keyboard
+
 
 # Function to match users and start chatting
 async def match_users():
@@ -137,11 +170,12 @@ async def match_users():
                     add_pair(new_pair)
                     name = await get_user_name(normal_user["user_id"])
                     lang1 = find_language(premium_user["user_id"])
-                    cap1 = get_interlocutor_message(lang1, name, {normal_user["gender"]}, {normal_user["age_groups"]})
+                    cap1 = interlocutor_vip_message(lang1, name, {normal_user["gender"]}, {normal_user["age_groups"]})
                     lang2 = find_language(normal_user["user_id"])
                     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
                     await cbot.send_message(premium_user["user_id"], cap1, reply_markup= keyboard)
-                    await cbot.send_message(normal_user["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang2), reply_markup= keyboard)
+                    caption, markup = interlocutor_normal_message(lang2)
+                    await cbot.send_message(normal_user["user_id"],caption , reply_markup= markup)
                     # Remove users from searching lists
                     searching_premium_users.remove(premium_user)
                     searching_users.remove(normal_user)
@@ -169,8 +203,8 @@ async def match_users():
                     name2 = await get_user_name(premium_user2["user_id"])
                     lang1 = find_language(premium_user["user_id"])
                     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
-                    cap1 = get_interlocutor_message(lang1, name2, {premium_user2["gender"]}, {premium_user2["age_groups"]})
-                    cap2 = get_interlocutor_message(lang2, name1, {premium_user1["gender"]}, {premium_user1["age_groups"]})
+                    cap1 = interlocutor_vip_message(lang1, name2, {premium_user2["gender"]}, {premium_user2["age_groups"]})
+                    cap2 = interlocutor_vip_message(lang2, name1, {premium_user1["gender"]}, {premium_user1["age_groups"]})
                     await cbot.send_message(premium_user1["user_id"], cap1, reply_markup= keyboard)
                     await cbot.send_message(premium_user2["user_id"], cap2, reply_markup= keyboard)
                     # Remove users from searching lists
@@ -194,11 +228,10 @@ async def match_users():
                         # Remove users from searching lists
                         searching_users.remove(user1)
                         searching_users.remove(user2)
-                        btn = translate_text("Terminate Conversation", lang1)
-                        print(btn)
-                        keyboard = ReplyKeyboardMarkup([[KeyboardButton(translate_text("Terminate Conversation", lang1))]], resize_keyboard=True, one_time_keyboard=True)
-                        await cbot.send_message(user1["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang1), reply_markup= keyboard)
-                        await cbot.send_message(user2["user_id"], await translate_async("Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now.", lang2), reply_markup=keyboard)
+                        caption, markup = interlocutor_normal_message(lang2)
+                        print(caption, markup)
+                        await cbot.send_message(user1["user_id"], caption, reply_markup=markup)
+                        await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
                         matched = True  # Set flag to True
                         break  # Break out of inner loop if match found
                 if matched:  # Break out of outer loop if match found
@@ -217,7 +250,8 @@ async def cancel(_, message):
             other_user_id = pair[1] if pair[0] == user_id else pair[0]
             other_user_lang = find_language(other_user_id)
             reply_markup2 = await get_reply_markup(other_user_lang)
-            await cbot.send_message(other_user_id, await translate_async("Chat has been Ended by the other user.", other_user_lang), reply_markup=reply_markup2)
+            caption = await translate_async("Chat has been Ended by the other user.", other_user_lang)
+            await cbot.send_message(other_user_id, caption, reply_markup=reply_markup2)
             break
     # Find the chat pair and delete it
     if delete_pair(user_id):
