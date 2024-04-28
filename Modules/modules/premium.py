@@ -90,44 +90,54 @@ async def premium_callback(client, callback_query):
     language = find_language(user_id)
     data = callback_query.data
     if data == "premium_1_day":
+        tex = translate_async("1 day", language)
         amount = 1.08
         extend_hrs = 24
     elif data == "premium_3_days":
+        tex = translate_async("3 days", language)
         amount = 2.15
         extend_hrs = 72
     elif data == "premium_1_week":
+        tex = translate_async("1 week", language)
         amount = 8.61
         extend_hrs = 168
     elif data == "premium_1_month":
+        tex = translate_async("1 month", language)
         amount = 12.98
         extend_hrs = 720
 
     # Generate random order ID using UUID
     order_id = str(uuid1())
-
-    lang = "en"  # You can get the user's language here
+    if language == "Azerbejani":
+        lang = "au"
+    elif language == "Russian":
+        lang = "ru"
+    else:
+        lang = "en"
     currency = "USD"  # You can get the user's currency here
-    desc = "Premium subscription"  # You can get the description here
+    desc = f"Premium subscription for {extend_hrs} hrs."  # You can get the description here
 
     URL = await aaio.create_payment(order_id, amount, lang, currency, desc)
     markup = InlineKeyboardMarkup([
     [InlineKeyboardButton(await translate_async("💰 Proceed to payment", language), url = URL)],
     [InlineKeyboardButton(await translate_async("🔄️ Check payment", language), callback_data=f"check_payement_{order_id}_{extend_hrs}")]])
-    await callback_query.message.reply_text(await translate_async("Please pay for your premium subscription!", language), reply_markup = markup)
+    await callback_query.message.edit_caption(await translate_async(f"Order details:\n\nDuration: {tex}\nAmount: ${amount}\n\nPlease pay for your premium subscription!", language), reply_markup = markup)
 
 
-@cbot.on_callback_query(filters.regex(r"check_payment_(.+)"))
+@cbot.on_callback_query(filters.regex(r'check_payement_(.+)_(.+)'))
 async def check_payment_callback(client, callback_query):
     user_id = callback_query.from_user.id
+    langauge = find_language(user_id)
     order_id = callback_query.data.split("_")[2]
     hrs = callback_query.data.split("_")[3]
     # Check the payment status using the order ID
     payment_info = await aaio.get_payment_info(order_id)
     if payment_info.is_success():
         await extend_premium_user_hrs(user_id, hrs)
-        await callback_query.message.reply_text("Payment was successful. Your premium subscription has been extended.")
+        await callback_query.message.delete()
+        await callback_query.message.reply_text(translate_async("Payment was successful. Your premium subscription has been extended.", langauge))
     else:
-        await callback_query.message.reply_text("Payment is still pending.")
+        await callback_query.answer(translate_async("Payment is still pending.", langauge), show_alert=True)
 
 
    
