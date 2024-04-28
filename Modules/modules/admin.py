@@ -68,9 +68,8 @@ async def newsletter_handler(_, query):
 @cbot.on_callback_query(filters.regex(r'^newsletter_(English|Russian|Azerbejani)$'))
 async def newsletter_language_handler(_, query):
     lang = query.data.split('_')[1]
-    await query.message.edit_text(text=f"Selected language: {lang}")
     await query.message.edit_text(text="Enter the newsletter message:")
-    title1 = await pyrostep.wait_for(query.chat.id, query.from_user.id)
+    title1 = await pyrostep.wait_for(query.from_user.id)
     newsletter_msg = title1.text
     if newsletter_msg:
         await query.message.edit_text(text="Sending newsletter...")
