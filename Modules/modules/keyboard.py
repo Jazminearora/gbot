@@ -69,8 +69,8 @@ async def handle_keyboard_response(client, message):
         # Create a list of strings to store the top referers with their points
         top_referers_str = []
         # Iterate over the top referers and append their IDs and points to the list
-        for i, (user_id, points) in enumerate(top_referers, start=1):
-            referer_id = user_id
+        for i, (referer_id, points) in enumerate(top_referers, start=1):
+            print(referer_id, points)
             if i <= 5:
                 name = await get_user_name(referer_id)
                # user = await client.get_users(referer_id)
@@ -82,7 +82,7 @@ async def handle_keyboard_response(client, message):
         await message.reply(f"<b>{get_top_text(lang)}:</b>\n\n{top_referers_text}\n\n<b>{get_prize_text(lang)}</b>", parse_mode=ParseMode.HTML)
     else:
         # Send a message to the user if there are no top referers
-        await message.reply(get_no_referers_text(lang), parse_mode="html")
+        await message.reply(get_no_referers_text(lang), parse_mode=ParseMode.HTML)
 
 def get_points_text(lang):
     if lang == "English":
