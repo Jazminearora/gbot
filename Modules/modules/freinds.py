@@ -36,9 +36,6 @@ async def add_friend(client, query):
         await query.message.reply_text("User ID invalid")
     if friend_id!= str(query.from_user.id):
         try:
-            if not is_user_registered(friend_id):
-                await query.message.reply_text("User has not registered!")
-                return
             friend_id = int(friend_id)
             try:
                 await client.send_message(friend_id, f"Friend request from @{query.from_user.username}! Do you want to add them as a friend?", reply_markup=InlineKeyboardMarkup([
