@@ -145,3 +145,42 @@ async def calculate_remaining_time(expiry_time):
     # Format the remaining time using days, seconds, and microseconds
     remaining_time = timedelta(days=time_difference.days, seconds=time_difference.seconds)
     return remaining_time
+
+async def remove_item_from_field(user_id: int, field: str, item: any):
+    try:
+        # Retrieve the user document from the premium database
+        user = premiumdb.find_one({"_id": user_id})
+        if user and field in user:
+            field_value = user[field]
+            if isinstance(field_value, list):
+                # If the field value is a list, remove the item from the list
+                if item in field_value:
+                    field_value.remove(item)
+                    premiumdb.update_one(
+                        {"_id": user_id},
+                        {"$set": {field: field_value}}
+                    )
+                    print(f"Item {item} removed from field {field} for user {user_id}.")
+                else:
+                    print(f"Item {item} not found in field {field} for user {user_id}.")
+            elif isinstance(field_value, str):
+                # If the field value is a string, cannot remove an item from a string
+                print(f"Field {field} is a string, cannot remove an item from it for user {user_id}.")
+            else:
+                # If the field value is neither a list nor a string, raise an error
+                raise ValueError(f"Unsupported field type for field {field} for user {user_id}.")
+        else:
+            print(f"Field {field} not found for user {user_id}.")
+    except Exception as e:
+        print("Error:", e)
+
+
+async def get_premium_users():
+    try:
+        premium_users = premiumdb.find({"premium_status": True})
+        premium_user_ids = [user["_id"] for user in premium_users]
+        total_premium_users = len(premium_user_ids)
+        return premium_user_ids, total_premium_users
+    except Exception as e:
+        print("Error:", e)
+        return [], 0

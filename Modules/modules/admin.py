@@ -11,6 +11,7 @@ from Modules import cbot, logger
 from Modules import mongodb as collection
 from config import key
 from helpers.helper import get_total_users, get_users_list
+from database.premiumdb import get_premium_users
 
 pyrostep.listen(cbot)
 broadcasting_in_progress = False
@@ -175,7 +176,22 @@ async def referral_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^vip_users$'))
 async def vip_users_handler(_, query):
-    await query.message.edit_text(text="You selected VIP Users.")
+    premium_user_ids, total_premium_users = await get_premium_users()
+    data = {'Premium Users': list(premium_user_ids)}
+    filename = 'premium_users.txt'
+    save_to_file(data, filename)
+    await query.message.reply_document(
+        document="premium_users.txt",
+        caption=f"Here is the detailed list of premium users!\n\nTotal Premium users: {total_premium_users}"
+    )
+
+def save_to_file(data, filename):
+    with open(filename, 'w') as file:
+        for language, details in data.items():
+            file.write(f'{language}:\n')
+            for field, users in details.items():
+                file.write(f'  {field}: {', '.join(users)}\n')
+            file.write('\n')
 
 @cbot.on_callback_query(filters.regex(r'^st_close$'))
 async def close_page(_, query):
