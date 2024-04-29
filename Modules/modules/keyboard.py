@@ -34,7 +34,7 @@ async def start_command(client, message):
 
 
 # Define a regex pattern to match the button texts for all three languages
-button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫$")
+button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥|👫 (Friends|Друзья|Dostlar) 👫$")
 
 @cbot.on_message(filters.private & filters.regex(button_pattern))
 async def handle_keyboard_response(client, message):
@@ -51,8 +51,6 @@ async def handle_keyboard_response(client, message):
                 await wait_message.edit_text(f"An error occurred: {str(e)}")
         except Exception as e:
             await wait_message.edit_text(f"An error occurred: {str(e)}")
-    elif "Top" in text or "Лучшие" in text or "Ən yuxarı" in text:
-        await message.reply_text("Viewing top options...")
     elif "Add to group" in text or "Добавить в группу" in text or "Qrupa əlavə et" in text:
         bot = BOT_USERNAME
         markup = InlineKeyboardMarkup([
