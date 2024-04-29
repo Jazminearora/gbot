@@ -223,10 +223,31 @@ async def cancel(_, message):
         reply_markup = await get_reply_markup(language)
         await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
 
-# Periodically check for matched users
-scheduler = aps.AsyncIOScheduler()
-scheduler.add_job(match_users, 'interval', seconds=5)
-scheduler.start()
+from contextvars import ContextVar
+
+cbot_status = ContextVar('cbot_status')
+cbot_status.set('running')
+
+async def match_users_loop():
+    while cbot_status.get() == 'running':
+        try:
+            await match_users()
+            await asyncio.sleep(5)
+        except Exception as e:
+            print(f'Error in match_users_loop: {e}')
+    
+# Start matching users loop
+cbot_loop = asyncio.get_event_loop()
+cbot_loop.create_task(match_users_loop())
+
+
+
+# When stopping the bot, set the status to 'stopping' and cancel the task
+cbot_status.set('stopping')
+for task in asyncio.all_tasks():
+    if task.get_name() == 'match_users_loop':
+        task.cancel()
+asyncio.gather(cbot_loop.shutdown_asyncgens(), cbot_loop.run_until_complete(cbot_loop.shutdown_default_executor()))
 
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)
