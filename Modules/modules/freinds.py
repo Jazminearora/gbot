@@ -50,8 +50,10 @@ async def add_friend(client, query):
         await client.get_users(friend_id)
     except UserIdInvalid:
         await query.message.reply_text(await translate_async("User ID invalid", language))
-    except PeerIdInvalid:
+        return
+    except:
         await query.message.reply_text(await translate_async("User not found in my database! Tell him to register first!", language))
+        return
     if friend_id!= str(query.from_user.id):
         try:
             friend_id = int(friend_id)
