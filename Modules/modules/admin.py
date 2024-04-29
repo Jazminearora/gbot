@@ -69,28 +69,17 @@ async def newsletter_handler(_, query):
 async def newsletter_language_handler(_, query):
     lang = query.data.split('_')[1]
     await query.message.edit_text(text="Enter the newsletter message:")
-    title1 = await pyrostep.wait_for(query.from_user.id)
-    print(title1)
-    try:
-        if title1.forward_from_chat:
-            chat_id = title1.forward_from_chat.id
-            message_id = title1.forward_from_message_id
-        else:
-            chat_id = title1.from_user.id
-            message_id = title1.id
-    except:
-        pass
-    newsletter_msg = title1.text
+    newsletter_msg = await pyrostep.wait_for(query.from_user.id)
     if newsletter_msg:
         users = get_users_list(lang)
-        sts_msg = await query.message.edit_text(text="Sending newsletter...")
+        sts_msg = await cbot.send_message(text="Sending newsletter...")
         done = 0
         failed = 0
         success = 0
         start_time = time.time()
         total_users = len(users)
         for user in users:
-            sts = await send_newsletter(user, title1)
+            sts = await send_newsletter(user, newsletter_msg)
             if sts == 200:
                 success += 1
             else:
@@ -101,11 +90,11 @@ async def newsletter_language_handler(_, query):
                     text=f"Sending newsletter...\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
                 )
         completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-        await sts_msg.edit(
+        await cbot.send_message(query.from_user.id,
             text=f"Newsletter sent successfully!\nCompleted in {completed_in}\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
         )
     else:
-        await query.message.edit_text(text="Newsletter message not received. Please try again.")
+        await cbot.send_message(query.from_user.id, text="Newsletter message not received. Please try again.")
 
 async def send_newsletter(user_id, message):
     try:
