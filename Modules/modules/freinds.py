@@ -1,6 +1,8 @@
 from pyrogram import filters, Client
 from pyrogram.errors import UserBlocked, UserIdInvalid
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+import re
+
 from database.premiumdb import save_premium_user, vip_users_details
 from.. import cbot
 import pyrostep
@@ -8,8 +10,9 @@ from helpers.helper import is_user_registered
 
 pyrostep.listen(cbot)
 
+button_pattern = re.compile(r"^(👫 (Friends|Друзья|Dostlar) 👫)$")
 
-@cbot.on_message(filters.command("frens"))
+@cbot.on_message((filters.command("frens")| ((filters.regex(button_pattern)))))
 async def frens(client, message):
     user_id = message.from_user.id
     frens_list = await vip_users_details(user_id, "frens")
@@ -17,10 +20,10 @@ async def frens(client, message):
             [InlineKeyboardButton("Add friend", callback_data="add_friend")]
         ])
     if frens_list:
-        frens_text = "Here is the list of your friends:\n"
+        frens_text = "Here is the list of your friends:\n\n"
         for friend_id in frens_list:
             detail = await client.get_users(friend_id)
-            frens_text += f"@{detail.mention}\n"
+            frens_text += f"{detail.mention}\n"
         await message.reply_text(frens_text, reply_markup=keyboard)
     else:
         await message.reply_text("You don't have any friends yet!\n\n Add your friends now!", reply_markup=keyboard)
