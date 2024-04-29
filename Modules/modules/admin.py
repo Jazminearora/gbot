@@ -72,12 +72,12 @@ async def newsletter_language_handler(_, query):
     title1 = await pyrostep.wait_for(query.from_user.id)
     print(title1)
     try:
-        print(title1.id)
-    except:
-        pass
-    try:
-        print(title1.sender_chat)
-        print(title1.chat.id)
+        if title1.forward_from_chat:
+            chat_id = title1.forward_from_chat.id
+            message_id = title1.forward_from_message_id
+        else:
+            chat_id = title1.from_user.id
+            message_id = title1.id
     except:
         pass
     newsletter_msg = title1.text
@@ -90,7 +90,7 @@ async def newsletter_language_handler(_, query):
         start_time = time.time()
         total_users = len(users)
         for user in users:
-            sts = await send_newsletter(user, newsletter_msg)
+            sts = await send_newsletter(user, title1)
             if sts == 200:
                 success += 1
             else:
