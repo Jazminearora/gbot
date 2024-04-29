@@ -13,16 +13,16 @@ pyrostep.listen(cbot)
 async def frens(client, message):
     user_id = message.from_user.id
     frens_list = await vip_users_details(user_id, "frens")
+    keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Add friend", callback_data="add_friend")]
+        ])
     if frens_list:
         frens_text = "Here is the list of your friends:\n"
         for friend_id in frens_list:
             frens_text += f"@{await client.get_users(friend_id).username}\n"
-        keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("Add friend", callback_data="add_friend")]
-        ])
         await message.reply_text(frens_text, reply_markup=keyboard)
     else:
-        await message.reply_text("You don't have any friends yet!")
+        await message.reply_text("You don't have any friends yet!\n\n Add your friends now!", reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex("add_friend"))
 async def add_friend(client, query):
