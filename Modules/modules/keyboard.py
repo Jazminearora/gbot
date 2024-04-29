@@ -71,6 +71,7 @@ async def handle_keyboard_response(client, message):
         # Iterate over the top referers and append their IDs and points to the list
         for i, (user_id, points) in enumerate(top_referers, start=1):
             referer_id = user_id[1:]
+            print(referer_id,"  hh  ", user_id)
             if i <= 5:
                 name = await get_user_name(referer_id)
                # user = await client.get_users(referer_id)
