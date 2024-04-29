@@ -11,3 +11,4 @@ gpytranslate
 datetime
 AaioAPI
 aiohttp
+apscheduler
