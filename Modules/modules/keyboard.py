@@ -70,7 +70,7 @@ async def handle_keyboard_response(client, message):
         # Iterate over the top referers and append their IDs and points to the list
         for i, (referer_id, points) in enumerate(top_referers, start=1):
             if i <= 5:
-                top_referers_str.append(f"{i}. {client.get_users(referer_id).mention()} - {points} {get_points_text(lang)}")
+                top_referers_str.append(f"{i}. {await client.get_users(referer_id).mention()} - {points} {get_points_text(lang)}")
         # Create a string to display the top referers
         top_referers_text = "\n".join(top_referers_str)
         # Send a message to the user with the top referers
