@@ -49,7 +49,7 @@ async def hlo(client, message):
 
 button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")
 
-@cbot.on_message(filters.private & filters.regex(button_pattern) & filters.private & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex(button_pattern) & subscribed & user_registered)
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
     # Create keyboard with start searching button

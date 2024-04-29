@@ -17,7 +17,7 @@ async def not_joined(client, message):
         buttons.append(
             [
                 InlineKeyboardButton(
-                    text = 'Try Again',
+                    text = 'Continue',
                     url = f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
                 )
             ]

@@ -27,8 +27,16 @@
       "description": "Your Telegram Bot Token",
       "required": true
     },
-    "BOT_USERNAME": {
-      "description": "Your Bot Username",
+    "MONGO_URI": {
+      "description": "Your MongoDB URI",
+      "required": true
+    },
+    "FORCE_SUB1": {
+      "description": "Url of your 1st force subscribe channel/group link",
+      "required": true
+    },
+    "FORCE_SUB2": {
+      "description": "Url of your 2nd force subscribe channel/group link",
       "required": true
     },
     "OWNER_ID": {
@@ -45,5 +53,5 @@
       "url": "heroku/python"
     }
   ],
-  "stack": "heroku-20"
+  "stack": "heroku-22"
 }

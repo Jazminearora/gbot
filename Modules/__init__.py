@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from os import listdir, path
 from dotenv import load_dotenv
 from pyrogram import Client
-from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS
+from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS, FORCE_SUB1, FORCE_SUB2
 
 # Tg bot __init_.py
 
@@ -50,6 +50,6 @@ async def cbot_bot():
         BOT_NAME = getme.first_name + " " + getme.last_name
     else:
         BOT_NAME = getme.first_name
-    
+
 
 loop.run_until_complete(cbot_bot())
