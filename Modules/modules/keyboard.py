@@ -1,7 +1,6 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
-from pyrogram.enums.ParseMode import HTML
 
 from Modules import cbot, BOT_USERNAME
 import re
@@ -80,7 +79,7 @@ async def handle_keyboard_response(client, message):
         # Create a string to display the top referers
         top_referers_text = "\n".join(top_referers_str)
         # Send a message to the user with the top referers
-        await message.reply(f"<b>{get_top_text(lang)}:</b>\n\n{top_referers_text}\n\n<b>{get_prize_text(lang)}</b>", parse_mode="HTML")
+        await message.reply(f"<b>{get_top_text(lang)}:</b>\n\n{top_referers_text}\n\n<b>{get_prize_text(lang)}</b>", parse_mode=ParseMode.HTML)
     else:
         # Send a message to the user if there are no top referers
         await message.reply(get_no_referers_text(lang), parse_mode="html")
