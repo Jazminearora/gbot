@@ -31,7 +31,7 @@ async def add_friend(client, query):
     friend_id_input = await pyrostep.wait_for(user_id)
     friend_id = friend_id_input.text
     try:
-        Client.get_users(friend_id)
+        await client.get_users(friend_id)
     except UserIdInvalid:
         await query.message.reply_text("User ID invalid")
     if friend_id!= str(query.from_user.id):
