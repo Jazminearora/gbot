@@ -72,6 +72,7 @@ async def handle_keyboard_response(client, message):
             referer_id = user_id[1:]
             if i <= 5:
                 user = await client.get_users(referer_id)
+                print("raw:",user_id, "removed:", referer_id)
                 top_referers_str.append(f"{i}. {user.mention()} - {points} {get_points_text(lang)}")
         # Create a string to display the top referers
         top_referers_text = "\n".join(top_referers_str)
