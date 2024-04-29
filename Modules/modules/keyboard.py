@@ -72,10 +72,11 @@ async def handle_keyboard_response(client, message):
         for i, (referer_id, points) in enumerate(top_referers, start=1):
             print(referer_id, points)
             if i <= 5:
-                name = await get_user_name(referer_id)
+                user = await cbot.get_users(referer_id)
+                name = user.first_name + " " + user.last_name if user.last_name else user.first_name
                # user = await client.get_users(referer_id)
                # print("raw:",user_id, "removed:", referer_id)
-                top_referers_str.append(f"{i}. {name} - {points} {get_points_text(lang)}")
+                top_referers_str.append(f"{i}. {name}({referer_id}) { - {points} {get_points_text(lang)}")
         # Create a string to display the top referers
         top_referers_text = "\n".join(top_referers_str)
         # Send a message to the user with the top referers
