@@ -102,7 +102,7 @@ async def start_search(client, message):
         # sleep for 1 sec
         await asyncio.sleep(1) 
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
-        for _ in range(3):
+        for _ in range(1):
             await match_users()
             await asyncio.sleep(3) 
 
@@ -127,7 +127,7 @@ async def stop_search(client, message):
 # Function to match users and start chatting
 async def match_users():
     count = 0
-    while count < 2:
+    while count < 1:
         print("function called")
         matched = False  # Flag to check if any match occurred in this iteration
         # Match premium users with normal users
@@ -135,8 +135,7 @@ async def match_users():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
                     (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
-                    (normal_user["age_groups"] in premium_user["age_groups"] or premium_user["age_groups"] is None )and
-                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
+                    (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
                     add_pair(new_pair)
