@@ -201,11 +201,8 @@ async def cancel(_, message):
 # Periodically check for matched users
 async def match_users_loop():
     while True:
-        await match_users()
-        await asyncio.sleep(3)  # Check every 3 seconds
-
-# Submit the search_users function to the ThreadPoolExecutor
-executor.submit(match_users)
+        # Submit the search_users function to the ThreadPoolExecutor
+        executor.submit(await match_users)
 
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)

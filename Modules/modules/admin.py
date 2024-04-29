@@ -78,12 +78,12 @@ async def newsletter_language_handler(_, query):
         stop_broadcast_button = KeyboardButton("Stop Broadcasting")
         stop_broadcast_markup = ReplyKeyboardMarkup([[stop_broadcast_button]], resize_keyboard=True, one_time_keyboard= True)
         sts_msg = await cbot.send_message(query.from_user.id, text="Sending newsletter in 10 seconds...", reply_markup= stop_broadcast_markup)
+        await asyncio.sleep(10)
         done = 0
         failed = 0
         success = 0
         start_time = time.time()
         total_users = len(users)
-        asyncio.sleep(10)
         for user in users:
             if broadcasting_in_progress:
                 sts = await send_newsletter(user, newsletter_msg)
