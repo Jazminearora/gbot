@@ -1,4 +1,5 @@
 from pyrogram import filters
+from pyrogram.errors import PeerIdInvalid
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
 
@@ -72,12 +73,12 @@ async def handle_keyboard_response(client, message):
         for i, (referer_id, points) in enumerate(top_referers, start=1):
             print(referer_id, points)
             if i <= 5:
-                user = await cbot.get_users(referer_id)
-                name = user.first_name + " " + user.last_name if user.last_name else user.first_name
-               # user = await client.get_users(referer_id)
-               # print("raw:",user_id, "removed:", referer_id)
-                meter = await client.get_users(referer_id)
-                top_referers_str.append(f"{i}. {meter.mention(style="html")} - {points} {get_points_text(lang)}")
+                try:
+                    meter = await client.get_users(referer_id)
+                    mention = meter.mention(style="html")
+                except PeerIdInvalid:
+                    mention = referer_id
+                top_referers_str.append(f"{i}. {mention} - {points} {get_points_text(lang)}")
         # Create a string to display the top referers
         top_referers_text = "\n".join(top_referers_str)
         # Send a message to the user with the top referers
