@@ -27,7 +27,6 @@ async def start_command(client, message):
         reply_markup = await get_reply_markup(language)
         try:
             text = await translate_async("Please select an option:", language)
-            print(text)
         except:
             text = "Please select an option:"
         await message.reply_text(text, reply_markup=reply_markup)
