@@ -90,19 +90,19 @@ async def premium_callback(client, callback_query):
     language = find_language(user_id)
     data = callback_query.data
     if data == "premium_1_day":
-        tex = translate_async("1 day", language)
+        tex = await translate_async("1 day", language)
         amount = 1.08
         extend_hrs = 24
     elif data == "premium_3_days":
-        tex = translate_async("3 days", language)
+        tex = await translate_async("3 days", language)
         amount = 2.15
         extend_hrs = 72
     elif data == "premium_1_week":
-        tex = translate_async("1 week", language)
+        tex =await translate_async("1 week", language)
         amount = 8.61
         extend_hrs = 168
     elif data == "premium_1_month":
-        tex = translate_async("1 month", language)
+        tex =await translate_async("1 month", language)
         amount = 12.98
         extend_hrs = 720
 

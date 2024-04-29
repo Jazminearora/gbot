@@ -70,9 +70,18 @@ async def newsletter_language_handler(_, query):
     lang = query.data.split('_')[1]
     await query.message.edit_text(text="Enter the newsletter message:")
     title1 = await pyrostep.wait_for(query.from_user.id)
+    print(title1)
+    try:
+        print(title1.id)
+    except:
+        pass
+    try:
+        print(title1.sender_chat)
+        print(title1.chat.id)
+    except:
+        pass
     newsletter_msg = title1.text
     if newsletter_msg:
-        await query.message.edit_text(text="Sending newsletter...")
         users = get_users_list(lang)
         sts_msg = await query.message.edit_text(text="Sending newsletter...")
         done = 0
