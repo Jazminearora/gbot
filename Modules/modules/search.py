@@ -11,6 +11,7 @@ import asyncio
 from Modules import cbot
 from config import ADMINS
 import concurrent.futures
+import apscheduler.schedulers.asyncio as aps
 
 # Create a ThreadPoolExecutor with 1 worker
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
@@ -21,6 +22,7 @@ searching_premium_users = []
 
 # List to store pairs of users for chatting
 chat_pairs = []
+
 
 # Function to delete a pair
 def delete_pair(id_to_delete):
@@ -100,7 +102,7 @@ async def start_search(client, message):
         # sleep for 1 sec
         await asyncio.sleep(1) 
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
-
+        
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
 async def stop_search(client, message):
@@ -222,13 +224,9 @@ async def cancel(_, message):
         await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
 
 # Periodically check for matched users
-async def match_users_loop():
-    while True:
-        # Submit the search_users function to the ThreadPoolExecutor
-        executor.submit(await match_users)
-
-# Start matching users loop
-cbot.loop.create_task(match_users_loop())
+scheduler = aps.AsyncIOScheduler()
+scheduler.add_job(match_users, 'interval', seconds=5)
+scheduler.start()
 
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)
