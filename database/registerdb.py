@@ -1,5 +1,4 @@
 from config import key
-import pymongo
 from Modules import mongodb as collection
 
 
