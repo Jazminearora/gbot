@@ -228,14 +228,6 @@ async def cancel(_, message):
         await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
 
 
-
-# When stopping the bot, set the status to 'stopping' and cancel the task
-cbot_status.set('stopping')
-for task in asyncio.all_tasks():
-    if task.get_name() == 'match_users_loop':
-        task.cancel()
-asyncio.gather(cbot_loop.shutdown_asyncgens(), cbot_loop.run_until_complete(cbot_loop.shutdown_default_executor()))
-
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)
 async def forward_message(client, message):
