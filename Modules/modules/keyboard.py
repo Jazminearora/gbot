@@ -1,6 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
+from pyrogram.enums.ParseMode import HTML
 
 from Modules import cbot, BOT_USERNAME
 import re
