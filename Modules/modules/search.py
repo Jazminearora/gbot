@@ -102,7 +102,10 @@ async def start_search(client, message):
         # sleep for 1 sec
         await asyncio.sleep(1) 
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
-        
+        for _ in range(5):
+            await match_users()
+            await asyncio.sleep(3) 
+
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
 async def stop_search(client, message):
@@ -124,6 +127,7 @@ async def stop_search(client, message):
 # Function to match users and start chatting
 async def match_users():
     while True:
+        print("function called")
         matched = False  # Flag to check if any match occurred in this iteration
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
@@ -222,23 +226,6 @@ async def cancel(_, message):
     if delete_pair(user_id):
         reply_markup = await get_reply_markup(language)
         await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
-
-from contextvars import ContextVar
-
-cbot_status = ContextVar('cbot_status')
-cbot_status.set('running')
-
-async def match_users_loop():
-    while cbot_status.get() == 'running':
-        try:
-            await match_users()
-            await asyncio.sleep(5)
-        except Exception as e:
-            print(f'Error in match_users_loop: {e}')
-    
-# Start matching users loop
-cbot_loop = asyncio.get_event_loop()
-cbot_loop.create_task(match_users_loop())
 
 
 
