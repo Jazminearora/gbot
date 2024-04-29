@@ -1,7 +1,7 @@
 import os
 from pyrogram import filters
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, PeerIdInvalid
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 import asyncio
 import datetime, time
 import pyrostep
@@ -13,6 +13,8 @@ from config import key
 from helpers.helper import get_total_users, get_users_list
 
 pyrostep.listen(cbot)
+broadcasting_in_progress = False
+
 
 buttons = [
         [
@@ -48,7 +50,6 @@ async def admin_panel(_, message):
     reply_markup = InlineKeyboardMarkup(buttons)
     await message.reply_text('Please choose an option:', reply_markup=reply_markup)
 
-# Callback handler using regex filter
 @cbot.on_callback_query(filters.regex(r'^newsletter$'))
 async def newsletter_handler(_, query):
     await query.message.edit_text(text="Select the language for the newsletter:")
@@ -70,32 +71,48 @@ async def newsletter_language_handler(_, query):
     lang = query.data.split('_')[1]
     await query.message.edit_text(text="Enter the newsletter message:")
     newsletter_msg = await pyrostep.wait_for(query.from_user.id)
-    print(newsletter_msg)
     if newsletter_msg:
+        global broadcasting_in_progress
+        broadcasting_in_progress = True
         users = get_users_list(lang)
-        sts_msg = await cbot.send_message(query.from_user.id, text="Sending newsletter...")
+        stop_broadcast_button = KeyboardButton("Stop Broadcasting")
+        stop_broadcast_markup = ReplyKeyboardMarkup([[stop_broadcast_button]], resize_keyboard=True, one_time_keyboard= True)
+        sts_msg = await cbot.send_message(query.from_user.id, text="Sending newsletter in 10 seconds...", reply_markup= stop_broadcast_markup)
         done = 0
         failed = 0
         success = 0
         start_time = time.time()
         total_users = len(users)
+        asyncio.sleep(10)
         for user in users:
-            sts = await send_newsletter(user, newsletter_msg)
-            if sts == 200:
-                success += 1
+            if broadcasting_in_progress:
+                sts = await send_newsletter(user, newsletter_msg)
+                if sts == 200:
+                    success += 1
+                else:
+                    failed += 1
+                done += 1
+                if not done % 20:
+                    await sts_msg.edit(
+                        text=f"Sending newsletter...\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
+                    )
             else:
-                failed += 1
-            done += 1
-            if not done % 20:
-                await sts_msg.edit(
-                    text=f"Sending newsletter...\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
-                )
-        completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-        await cbot.send_message(query.from_user.id,
-            text=f"Newsletter sent successfully!\nCompleted in {completed_in}\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
-        )
+                break
+        if broadcasting_in_progress:
+            completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
+            await cbot.send_message(query.from_user.id,
+                text=f"Newsletter sent successfully!\nCompleted in {completed_in}\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
+            )
+        else:
+            await cbot.send_message(query.from_user.id, text="Broadcasting stopped by admin.")
     else:
         await cbot.send_message(query.from_user.id, text="Newsletter message not received. Please try again.")
+
+@cbot.on_callback_query(filters.regex(r'^stop_broadcasting$'))
+async def stop_broadcasting_handler(_, query):
+    global broadcasting_in_progress
+    broadcasting_in_progress = False
+    await query.message.edit_text(text="Broadcasting stopped.")
 
 async def send_newsletter(user_id, message):
     try:
