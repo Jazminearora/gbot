@@ -7,6 +7,7 @@ import re
 
 
 # Helper functions
+from Modules.modules.register import get_user_name
 from helpers.forcesub import subscribed, user_registered
 from database.referdb import get_top_referers
 from helpers.helper import get_profile, find_language, get_interest
@@ -71,9 +72,10 @@ async def handle_keyboard_response(client, message):
         for i, (user_id, points) in enumerate(top_referers, start=1):
             referer_id = user_id[1:]
             if i <= 5:
-                user = await client.get_users(referer_id)
-                print("raw:",user_id, "removed:", referer_id)
-                top_referers_str.append(f"{i}. {user.mention()} - {points} {get_points_text(lang)}")
+                name = await get_user_name(referer_id)
+               # user = await client.get_users(referer_id)
+               # print("raw:",user_id, "removed:", referer_id)
+                top_referers_str.append(f"{i}. {name} - {points} {get_points_text(lang)}")
         # Create a string to display the top referers
         top_referers_text = "\n".join(top_referers_str)
         # Send a message to the user with the top referers
