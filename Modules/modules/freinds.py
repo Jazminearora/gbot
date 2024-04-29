@@ -23,7 +23,7 @@ async def frens(client, message):
         frens_text = "Here is the list of your friends:\n\n"
         for friend_id in frens_list:
             detail = await client.get_users(friend_id)
-            frens_text += f"{detail.mention}\n"
+            frens_text += f"{detail.mention}({friend_id})\n"
         await message.reply_text(frens_text, reply_markup=keyboard)
     else:
         await message.reply_text("You don't have any friends yet!\n\n Add your friends now!", reply_markup=keyboard)
@@ -31,7 +31,7 @@ async def frens(client, message):
 @cbot.on_callback_query(filters.regex("add_friend"))
 async def add_friend(client, query):
     user_id = query.from_user.id
-    await query.edit_text("Enter the ID of the friend you want to add:")
+    await query.message.edit_text("Enter the ID of the friend you want to add:")
     friend_id_input = await pyrostep.wait_for(user_id)
     friend_id = friend_id_input.text
     frens_list = await vip_users_details(user_id, "frens")
