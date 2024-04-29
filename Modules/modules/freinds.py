@@ -28,7 +28,8 @@ async def frens(client, message):
 async def add_friend(client, query):
     user_id = query.from_user.id
     await query.message.reply_text("Enter the ID of the friend you want to add:")
-    friend_id = await pyrostep.wait_for(user_id).text
+    friend_id_input = await pyrostep.wait_for(user_id)
+    friend_id = friend_id_input.text
     try:
         Client.get_users(friend_id)
     except UserIdInvalid:
