@@ -19,7 +19,8 @@ async def frens(client, message):
     if frens_list:
         frens_text = "Here is the list of your friends:\n"
         for friend_id in frens_list:
-            frens_text += f"@{await client.get_users(friend_id).username()}\n"
+            detail = await client.get_users(friend_id)
+            frens_text += f"@{detail.mention}\n"
         await message.reply_text(frens_text, reply_markup=keyboard)
     else:
         await message.reply_text("You don't have any friends yet!\n\n Add your friends now!", reply_markup=keyboard)
