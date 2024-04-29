@@ -1,5 +1,5 @@
 from pyrogram import filters, Client
-from pyrogram.errors import UserBlocked, UserIdInvalid
+from pyrogram.errors import UserBlocked, UserIdInvalid, PeerIdInvalid
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
 
@@ -31,13 +31,19 @@ async def frens(client, message):
 @cbot.on_callback_query(filters.regex("add_friend"))
 async def add_friend(client, query):
     user_id = query.from_user.id
-    await query.message.reply_text("Enter the ID of the friend you want to add:")
+    await query.edit_text("Enter the ID of the friend you want to add:")
     friend_id_input = await pyrostep.wait_for(user_id)
     friend_id = friend_id_input.text
+    frens_list = await vip_users_details(user_id, "frens")
+    for id in frens_list:
+        if id == friend_id:
+            query.message.reply_text("This user is already your friend.")
     try:
         await client.get_users(friend_id)
     except UserIdInvalid:
         await query.message.reply_text("User ID invalid")
+    except PeerIdInvalid:
+        await query.message.reply_text("User not found in my database! Tell him to register first!")
     if friend_id!= str(query.from_user.id):
         try:
             friend_id = int(friend_id)
