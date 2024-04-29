@@ -102,7 +102,7 @@ async def start_search(client, message):
         # sleep for 1 sec
         await asyncio.sleep(1) 
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
-        for _ in range(5):
+        for _ in range(3):
             await match_users()
             await asyncio.sleep(3) 
 
@@ -126,7 +126,8 @@ async def stop_search(client, message):
 
 # Function to match users and start chatting
 async def match_users():
-    try:
+    count = 0
+    while count < 2:
         print("function called")
         matched = False  # Flag to check if any match occurred in this iteration
         # Match premium users with normal users
@@ -206,8 +207,8 @@ async def match_users():
                         break  # Break out of inner loop if match found
                 if matched:  # Break out of outer loop if match found
                     break
-    except Exception as e:
-        print("exception:", e)
+        if not matched:
+            count += 1
 
 # Handle cancel button
 @cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Terminate Conversation") & subscribed & user_registered)
