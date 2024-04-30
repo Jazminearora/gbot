@@ -41,11 +41,12 @@ async def add_friend(client, query):
     friend_id_input = await pyrostep.wait_for(user_id)
     friend_id = friend_id_input.text
     frens_list = await vip_users_details(user_id, "frens")
-    print(frens_list)
-    for id in frens_list:
-        if id == friend_id:
-            query.message.reply_text(await translate_async("This user is already your friend.", language))
-            return
+
+    if frens_list is not  None:
+        for id in frens_list:
+            if id == friend_id:
+                query.message.reply_text(await translate_async("This user is already your friend.", language))
+                return
     try:
         await client.get_users(friend_id)
     except UserIdInvalid:
@@ -78,10 +79,11 @@ async def accept_friend(client, query):
     language = find_language(user_id)
     friend_id = query.from_user.id
     frens_list = await vip_users_details(user_id, "frens")
-    for id in frens_list:
-        if id == friend_id:
-            query.message.reply_text(await translate_async("This user is already your friend.", language))
-            return
+    if frens_list is not  None:
+        for id in frens_list:
+            if id == friend_id:
+                query.message.reply_text(await translate_async("This user is already your friend.", language))
+                return   
     await query.message.reply_text(await translate_async("You have accepted the friend request!", language))
     detail = await client.get_users(user_id)
     await cbot.send_message(user_id, f"{detail.mention} {await translate_async("has accepted your friend request!")}")

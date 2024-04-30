@@ -141,7 +141,7 @@ async def match_users():
                     add_pair(new_pair)
                     name = await get_user_name(normal_user["user_id"])
                     lang1 = find_language(premium_user["user_id"])
-                    cap1 = await interlocutor_vip_message(lang1, name, {normal_user["gender"]}, {normal_user["age_groups"]})
+                    cap1 = await interlocutor_vip_message(lang1, name, normal_user["gender"], normal_user["age_groups"])
                     lang2 = find_language(normal_user["user_id"])
                     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
                     await cbot.send_message(premium_user["user_id"], cap1, reply_markup= keyboard)

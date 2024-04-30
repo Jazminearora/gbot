@@ -10,8 +10,9 @@ from config import  ADMINS as ADMIN_IDS
 from Modules import cbot, logger
 from Modules import mongodb as collection
 from config import key
-from helpers.helper import get_total_users, get_users_list
+from helpers.helper import get_total_users, get_users_list, find_language
 from database.premiumdb import get_premium_users
+from database.registerdb import remove_user_id
 
 pyrostep.listen(cbot)
 broadcasting_in_progress = False
@@ -35,7 +36,7 @@ buttons = [
             InlineKeyboardButton("♿️ Delete inactive", callback_data='delete_inactive')
         ],
         [
-            InlineKeyboardButton("🚫 Cancel", callback_data='cancel')
+            InlineKeyboardButton("🚫 Cancel", callback_data='st_close')
         ]
     ]
 
@@ -43,6 +44,7 @@ home_btn = InlineKeyboardMarkup([
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]])
 
+failed_users = []
 
 # Command handler for /admin
 @cbot.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
@@ -131,15 +133,19 @@ async def send_newsletter(user_id, message):
         return send_newsletter(user_id, message)
     except InputUserDeactivated:
         logger.info(f"{user_id} : Deactivated")
+        failed_users.append(user_id)
         return 400
     except UserIsBlocked:
         logger.info(f"{user_id} : Blocked")
+        failed_users.append(user_id)
         return 400
     except PeerIdInvalid:
         logger.info(f"{user_id} : Invalid ID")
+        failed_users.append(user_id)
         return 400
     except Exception as e:
         logger.error(f"{user_id} : {e}")
+        failed_users.append(user_id)
         return 500
 
 @cbot.on_callback_query(filters.regex(r'^subscriptions$'))
@@ -179,13 +185,13 @@ async def vip_users_handler(_, query):
     premium_user_ids, total_premium_users = await get_premium_users()
     data = {'Premium Users': list(premium_user_ids)}
     filename = 'premium_users.txt'
-    save_to_file(data, filename)
+    save_file(data, filename)
     await query.message.reply_document(
         document="premium_users.txt",
         caption=f"Here is the detailed list of premium users!\n\nTotal Premium users: {total_premium_users}"
     )
 
-def save_to_file(data, filename):
+def save_file(data, filename):
     with open(filename, 'w') as file:
         for language, details in data.items():
             file.write(f'{language}:\n')
@@ -254,9 +260,44 @@ async def list_users_handler(_, query):
     os.remove("Users_Data.txt")
 @cbot.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
-    await query.message.edit_text(text="You selected Delete inactive.")
+    confirm_buttons = [
+        [
+            InlineKeyboardButton("Yes, delete", callback_data='confirm_delete_inactive'),
+            InlineKeyboardButton("No, cancel", callback_data='cancel_delete_inactive')
+        ]
+    ]
+    confirm_markup = InlineKeyboardMarkup(confirm_buttons)
+    try:
+        numb = len(failed_users)
+        numbera = numb
+    except:
+        numbera = 0
+    await query.message.edit_text(text=f"You are about to delete {numbera} inactive users. This action is irreversible. Are you sure?", reply_markup=confirm_markup)
 
-@cbot.on_callback_query(filters.regex(r'^cancel$'))
+@cbot.on_callback_query(filters.regex(r'^confirm_delete_inactive$'))
+async def confirm_delete_inactive_handler(_, query):
+    failed_users = get_failed_users()  # Get the list of failed users
+    failed = 0
+    success = 0
+    start_time = time.time()
+    for user_id in failed_users:
+        try:
+            language = find_language(user_id)
+            remove_user_id(None, user_id, language)  # Remove the user ID from the database
+            asyncio.sleep(5)
+            success += 1
+        except Exception as e:
+            await query.message.reply_text(f"An exception occured while removing id= {user_id}\n\nException: {e}")
+            print("Error in confirm_delete_inactive:", e)
+            failed += 1
+            pass
+    completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
+    await query.message.edit_text(text=f"Inactive users deleted successfully.\n\nSuccess: {success}\nFailed: {failed}\n\nTime taken: {completed_in}")
+
+def get_failed_users():
+    return failed_users  # Return the list of failed users
+
+@cbot.on_callback_query(filters.regex(r'^cancel_delete_inactive$'))
 async def cancel_handler(_, query):
     await query.message.edit_text(text="You canceled the operation.")
 

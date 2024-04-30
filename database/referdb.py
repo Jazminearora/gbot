@@ -59,3 +59,4 @@ async def get_top_referers() -> list:
     except Exception as e:
         print("Error:", e)
         return []
+    

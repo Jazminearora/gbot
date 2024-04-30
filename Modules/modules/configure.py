@@ -122,18 +122,20 @@ async def back_callback(client, callback_query):
     if user_id in age_groups:
         age_groups_list = age_groups.pop(user_id)
         is_premium, _ = await is_user_premium(user_id)
-        if is_premium:
-            await save_premium_user(user_id, age_groups=age_groups_list)
-            await callback_query.answer(await translate_async("Your age groups have been updated.", lang), show_alert=True)
-            markup = InlineKeyboardMarkup([
+        markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton(await translate_async("Gender", lang), callback_data="cgndr"),
                  InlineKeyboardButton(await translate_async("Age", lang), callback_data="cage"),
                  InlineKeyboardButton(await translate_async("Room", lang), callback_data="crm")]
             ])
+        if is_premium:
+            await save_premium_user(user_id, age_groups=age_groups_list)
+            await callback_query.answer(await translate_async("Your age groups have been updated.", lang), show_alert=True)
             await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)
 
         else:
             await callback_query.answer(await translate_async("You need to be a premium user to update your age groups.", lang), show_alert=True)
+    else:
+        await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)        
 
 
 @cbot.on_callback_query(filters.regex("crm"))
