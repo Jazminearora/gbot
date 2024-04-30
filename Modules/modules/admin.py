@@ -52,8 +52,15 @@ preview_mode = False
 @cbot.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
 async def admin_panel(_, message):
 
+    reply_markup = InlineKeyboardMarkup(buttons)
+    await message.reply_text('Please choose an option:', reply_markup=reply_markup)
+
+@cbot.on_callback_query(filters.regex(r'^newsletter$'))
+async def newsletter_handler(_, message):
+
+
     global preview_mode
-    preview_mode = False
+
 
     reply_markup = InlineKeyboardMarkup([
         [
@@ -61,7 +68,7 @@ async def admin_panel(_, message):
             InlineKeyboardButton("Preview Mode Off", callback_data='preview_off'),
         ]
     ])
-    await message.reply_text('Please choose a preview mode:', reply_markup=reply_markup)
+    await message.reply_text(f'Preview mode: {preview_mode}\n\nPlease choose a preview mode:', reply_markup=reply_markup)
 
 @cbot.on_callback_query(filters.regex(r'^preview_(on|off)$'))
 async def preview_handler(_, query):
@@ -70,8 +77,6 @@ async def preview_handler(_, query):
         preview_mode = True
     else:
         preview_mode = False
-
-    await query.message.edit_text(text="Select the language for the newsletter:")
     lang_buttons = [
         [
             InlineKeyboardButton("English", callback_data='newsletter_English'),
@@ -96,45 +101,58 @@ async def newsletter_language_handler(_, query):
     await query.message.edit_text(text="Enter the newsletter message:")
     newsletter_msg = await pyrostep.wait_for(query.from_user.id)
     if newsletter_msg:
-        global broadcasting_in_progress
-        broadcasting_in_progress = True
-        users = get_users_list(lang)
-        stop_broadcast_button = InlineKeyboardButton("Stop Broadcasting", callback_data="stop_broadcast")
-        stop_broadcast_markup = InlineKeyboardMarkup([[stop_broadcast_button]])
-        sts_msg = await cbot.send_message(query.from_user.id, text="Starting process of Sending newsletter in 10 seconds...", reply_markup=stop_broadcast_markup)
+        if preview_mode:
+            await newsletter_msg.forward(chat_id=int(query.from_user.id))
+        else:
+            await newsletter_msg.copy(chat_id=int(query.from_user.id))
+        await cbot.send_message(query.from_user.id, text="Do you want to broadcast this message? (y/n)")
+        confirmation = await pyrostep.wait_for(query.from_user.id)
+        confirmation_text = confirmation.text
+        if confirmation_text == 'y':
+            global broadcasting_in_progress
+            broadcasting_in_progress = True
+            users = get_users_list(lang)
+            stop_broadcast_button = InlineKeyboardButton("Stop Broadcasting", callback_data="stop_broadcast")
+            stop_broadcast_markup = InlineKeyboardMarkup([[stop_broadcast_button]])
+            sts_msg = await cbot.send_message(query.from_user.id, text="Starting process of Sending newsletter in 10 seconds...", reply_markup=stop_broadcast_markup)
 
-        # Wait for 10 seconds
-        if await wait_for_10_seconds():
-            done = 0
-            failed = 0
-            success = 0
-            start_time = time.time()
-            total_users = len(users)
-            for user in users:
-                if broadcasting_in_progress:
-                    sts = await send_newsletter(user, newsletter_msg)
-                    if sts == 200:
-                        success += 1
+            # Wait for 10 seconds
+            if await wait_for_10_seconds():
+                done = 0
+                failed = 0
+                success = 0
+                start_time = time.time()
+                total_users = len(users)
+                for user in users:
+                    if broadcasting_in_progress:
+                        sts = await send_newsletter(user, newsletter_msg)
+                        if sts == 200:
+                            success += 1
+                        else:
+                            failed += 1
+                        done += 1
+                        if not done % 20:
+                            await sts_msg.edit(
+                                text=f"Sending newsletter...\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
+                            )
                     else:
-                        failed += 1
-                    done += 1
-                    if not done % 20:
-                        await sts_msg.edit(
-                            text=f"Sending newsletter...\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
-                        )
-                else:
-                    break
+                        break
 
-            if broadcasting_in_progress:
-                completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-                await cbot.send_message(query.from_user.id,
-                    text=f"Newsletter sent successfully!\nCompleted in {completed_in}\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
-                )
+                if broadcasting_in_progress:
+                    completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
+                    await cbot.send_message(query.from_user.id,
+                        text=f"Newsletter sent successfully!\nCompleted in {completed_in}\nTotal users: {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nFailed: {failed}"
+                    )
+                else:
+                    await cbot.send_message(query.from_user.id, text="Broadcasting stopped by admin.")
             else:
-                await cbot.send_message(query.from_user.id, text="Broadcasting stopped by admin.")
+                await cbot.send_message(query.from_user.id, text="Broadcasting cancelled by admin.")
+        elif confirmation_text == 'n':
+            await cbot.send_message(query.from_user.id, text="Broadcast cancelled by admin.")
+        else:
+            await cbot.send_message(query.from_user.id, text="Invalid response. Please enter y or n.")
     else:
         await cbot.send_message(query.from_user.id, text="Newsletter message not received. Please try again.")
-
 @cbot.on_callback_query(filters.regex(r'^stop_broadcast$'))
 async def stop_broadcasting_handler(_, query):
     global broadcasting_in_progress
