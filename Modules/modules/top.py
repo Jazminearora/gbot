@@ -3,7 +3,7 @@ from pyrogram.errors import PeerIdInvalid
 from pyrogram.enums import ParseMode
 from pyrogram import filters
 
-from .. import cbot
+from Modules import cbot
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language
 from database.referdb import get_top_referers
