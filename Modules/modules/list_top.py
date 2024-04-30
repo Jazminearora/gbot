@@ -13,6 +13,7 @@ button_pattern = re.compile(r"^(🔝 (Top|Лучшие|Ən yuxarı) 🔝)$")
 
 @cbot.on_message((filters.command("top")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
 async def frens(client, message):
+    await message.reply("okk")
     lang = find_language(message.from_user.id)
     top_referers = await get_top_referers()
     if top_referers:
