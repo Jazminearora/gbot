@@ -46,15 +46,31 @@ home_btn = InlineKeyboardMarkup([
 
 failed_users = []
 
+preview_mode = False
+
 # Command handler for /admin
 @cbot.on_message(filters.command("admin") & filters.user(ADMIN_IDS))
 async def admin_panel(_, message):
 
-    reply_markup = InlineKeyboardMarkup(buttons)
-    await message.reply_text('Please choose an option:', reply_markup=reply_markup)
+    global preview_mode
+    preview_mode = False
 
-@cbot.on_callback_query(filters.regex(r'^newsletter$'))
-async def newsletter_handler(_, query):
+    reply_markup = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("Preview Mode On", callback_data='preview_on'),
+            InlineKeyboardButton("Preview Mode Off", callback_data='preview_off'),
+        ]
+    ])
+    await message.reply_text('Please choose a preview mode:', reply_markup=reply_markup)
+
+@cbot.on_callback_query(filters.regex(r'^preview_(on|off)$'))
+async def preview_handler(_, query):
+    global preview_mode
+    if query.data == 'preview_on':
+        preview_mode = True
+    else:
+        preview_mode = False
+
     await query.message.edit_text(text="Select the language for the newsletter:")
     lang_buttons = [
         [
@@ -68,6 +84,7 @@ async def newsletter_handler(_, query):
     ]
     lang_markup = InlineKeyboardMarkup(lang_buttons)
     await query.message.reply_text(text="Please choose the language for the newsletter recipients:", reply_markup=lang_markup)
+
 
 async def wait_for_10_seconds():
     await asyncio.sleep(10)
@@ -125,8 +142,12 @@ async def stop_broadcasting_handler(_, query):
     await query.message.edit_text(text="Broadcasting stopped.")
 
 async def send_newsletter(user_id, message):
+    global preview_mode
     try:
-        await message.forward(chat_id=int(user_id))
+        if preview_mode:
+            await message.forward(chat_id=int(user_id))
+        else:
+            await message.copy(chat_id=int(user_id))
         return 200
     except FloodWait as e:
         await asyncio.sleep(e.value)

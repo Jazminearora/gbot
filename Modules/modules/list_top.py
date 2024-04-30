@@ -42,12 +42,16 @@ async def frens(client, message):
         message_text += f"{i + 1}. {user}\n"
 
     # Add the user's position to the message
-    if user_position == 0:
+    if user_chat_time == 0:
         message_text += "\n👤 **Your position:**\n"
         message_text += "📵🚭🔇 - in dialogues 20s"
     else:
         message_text += f"\n👤 **Your position:**\n"
-        message_text += f"{user_position}. {message.from_user.id} - in dialogues {str(timedelta(seconds=user_chat_time))}"
+        try:
+            timee = str(timedelta(seconds=user_chat_time))
+        except Exception:
+            timee = 0
+        message_text += f"{user_position}. {message.from_user.id} - in dialogues {timee}"
 
     message_text += "\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**"
 
