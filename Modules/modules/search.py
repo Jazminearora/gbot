@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import time
 import re
 import apscheduler.schedulers.asyncio as aps
 from pyrogram import filters
@@ -275,7 +276,7 @@ async def check_inactive_chats():
         last_message_time1 = last_message_timestamps.get(user1)
         last_message_time2 = last_message_timestamps.get(user2)
         if last_message_time1 and last_message_time2:
-            if (datetime.now() - last_message_time1).total_seconds() > 600 and (datetime.now() - last_message_time2).total_seconds() > 600:
+            if (time.time() - last_message_time1).total_seconds() > 600 and (datetime.now() - last_message_time2).total_seconds() > 600:
                 # Chat has been inactive for more than 10 minutes, end the chat
                 delete_pair(user1)
                 lang1 = find_language(user1)
