@@ -177,9 +177,15 @@ async def remove_item_from_field(user_id: int, field: str, item: any):
 
 async def get_premium_users():
     try:
-        premium_users = premiumdb.find({"premium_status": True})
-        premium_user_ids = [user["_id"] for user in premium_users]
-        total_premium_users = len(premium_user_ids)
+        premium_users = premiumdb.find({})
+        premium_user_ids = []
+        total_premium_users = 0
+        for user in premium_users:
+            user_id = user["_id"]
+            is_premium, _ = await is_user_premium(user_id)
+            if is_premium:
+                premium_user_ids.append(user_id)
+                total_premium_users += 1
         return premium_user_ids, total_premium_users
     except Exception as e:
         print("Error:", e)

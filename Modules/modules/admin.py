@@ -191,13 +191,13 @@ async def vip_users_handler(_, query):
         caption=f"Here is the detailed list of premium users!\n\nTotal Premium users: {total_premium_users}"
     )
 
-def save_file(data, filename):
-    with open(filename, 'w') as file:
-        for language, details in data.items():
-            file.write(f'{language}:\n')
-            for field, users in details.items():
-                file.write(f'  {field}: {', '.join(users)}\n')
-            file.write('\n')
+async def save_file(data, filename):
+    try:
+        with open(filename, 'w') as file:
+            # Write data to the file
+            file.write(str(data))
+    except Exception as e:
+        print("Error:", e)
 
 @cbot.on_callback_query(filters.regex(r'^st_close$'))
 async def close_page(_, query):

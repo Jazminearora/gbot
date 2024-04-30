@@ -1,5 +1,5 @@
 from pyrogram import filters, Client
-from pyrogram.errors import UserBlocked, UserIdInvalid, PeerIdInvalid
+from pyrogram.errors import UserBlocked, UserIdInvalid, PeerIdInvalid, RPCError
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
 
@@ -57,7 +57,7 @@ async def add_friend(client, query):
         return
     if friend_id!= str(query.from_user.id):
         try:
-            friend_id = int(friend_id)
+            friend_id = friend_id
             try:
                 detail = await client.get_users(user_id)
                 await client.send_message(friend_id, f"{await translate_async("Friend request from")} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
@@ -66,12 +66,13 @@ async def add_friend(client, query):
                 await query.message.reply_text(await translate_async("Friend request sent successfully!", language))
             except UserBlocked:
                 await query.message.reply_text(await translate_async("User has blocked the bot!", language))
-            except:
-                await query.message.reply_text(await translate_async("Unable to send friend request!", language))
+            except RPCError as rc:
+                await query.message.reply_text(await translate_async("Unable to send friend request! Please try again later.", language))
+                print("rc:", rc)
         except ValueError:
             await query.message.reply_text(await translate_async("Invalid ID!", language))
-        except:
-            await query.message.reply_text(await translate_async("Unable to send friend request!", language))
+        except Exception as e:
+            await query.message.reply_text(await translate_async("Unable to send friend request!\n\ne", language))
 
 @cbot.on_callback_query(filters.regex("accept_friend_"))
 async def accept_friend(client, query):
