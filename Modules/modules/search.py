@@ -108,7 +108,7 @@ async def start_search(client, message):
 
 
 async def apppend_id(user_id, language, gender, age_groups, interest):
-    asyncio.sleep(2)
+    await asyncio.sleep(2)
     searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
     return True
 
@@ -286,17 +286,22 @@ async def check_inactive_chats():
 # Define a function to get the last message time for a user
 async def get_last_message_time(user_id):
     # Get the chat history with the bot
-    history = await cbot.get_chat_history(user_id, limit=1)
+    history = cbot.get_chat_history(user_id, limit=1)
 
-    # Check if there are any messages in the history
-    if history.total_count == 0:
-        return None
-
-    # Get the last message
-    last_message = history.messages[0]
-    print(last_message.date)
-    # Return the last message time
-    return last_message.date
+    try:
+        # Check if there are any messages in the history
+        if history.total_count == 0:
+            return None
+    except:
+        pass
+    
+    # Iterate over the history using an async for loop
+    async for message in history:
+        # Get the last message
+        last_message = message
+        print(last_message.date)
+        # Return the last message time
+        return last_message.date
 
 # Schedule the task to run every 10 minutes
 scheduler.add_job(check_inactive_chats, 'interval', minutes=10)
