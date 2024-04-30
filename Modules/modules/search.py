@@ -32,16 +32,27 @@ message_timestamps = {}
 #dictionary to store start time
 start_stamp = {}
 
-#dictionary to store start time
-end_stamp = {}
-
 # Function to delete a pair
-def delete_pair(id_to_delete):
+async def delete_pair(id_to_delete):
     global chat_pairs
     for pair in chat_pairs:
         if id_to_delete in pair:
             user1, user2 = pair
-            print(user1, user2)
+            start_time1 = start_stamp.get(f"user_{user1}")
+            start_time2 = start_stamp.get(f"user_{user2}")
+            start_set_time1 = datetime.strptime(start_time1, "%Y-%m-%d %H:%M:%S")
+            start_set_time2 = datetime.strptime(start_time2, "%Y-%m-%d %H:%M:%S")
+            msg_time1 = message_timestamps.get(f"user_{user1}")
+            msg_time2 = message_timestamps.get(f"user_{user2}")
+            last_message_time1 = datetime.strptime(msg_time1, "%Y-%m-%d %H:%M:%S")
+            last_message_time2 = datetime.strptime(msg_time2, "%Y-%m-%d %H:%M:%S")
+            old_chat_time1 = await vip_users_details(user1, "chat_time") if await vip_users_details(user1, "chat_time") is not None else 0
+            old_chat_time2 = await vip_users_details(user2, "chat_time") if await vip_users_details(user2, "chat_time") is not None else 0
+            upate_chat_time1 = ((last_message_time1 - start_set_time1).seconds + old_chat_time1)
+            upate_chat_time2 = ((last_message_time2 - start_set_time2).seconds + old_chat_time2)
+            print(upate_chat_time1, upate_chat_time2)
+            await save_premium_user(user1, chat_time = upate_chat_time1)
+            await save_premium_user(user2, chat_time = upate_chat_time2)
     for i, pair in enumerate(chat_pairs):
         if id_to_delete in pair:
             del chat_pairs[i]
@@ -158,6 +169,18 @@ async def match_users():
                     (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
+                    motel = await vip_users_details(premium_user["user_id"], "total_dialog")
+                    motel2 = await vip_users_details(normal_user["user_id"], "total_dialog")
+                    if motel:
+                        total = motel
+                    else:
+                        total = 0
+                    if motel2:
+                        total2 = motel2
+                    else:
+                        total2 = 0                            
+                    await save_premium_user(premium_user["user_id"], total_dialog= total + 1)
+                    await save_premium_user(normal_user["user_id"], total_dialog= total2 + 1)
                     add_pair(new_pair)
                     start_stamp[f"user_{premium_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                     start_stamp[f"user_{normal_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
@@ -198,6 +221,18 @@ async def match_users():
                     message_timestamps[f"user_{premium_user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                     message_timestamps[f"user_{premium_user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                     add_pair(new_pair)
+                    motel = await vip_users_details(premium_user1["user_id"], "total_dialog")
+                    motel2 = await vip_users_details(premium_user2["user_id"], "total_dialog")
+                    if motel:
+                        total = motel
+                    else:
+                        total = 0
+                    if motel2:
+                        total2 = motel2
+                    else:
+                        total2 = 0                            
+                    await save_premium_user(premium_user1["user_id"], total_dialog= total + 1)
+                    await save_premium_user(premium_user2["user_id"], total_dialog= total2 + 1)
                     name1 = await get_user_name(premium_user1["user_id"])
                     name2 = await get_user_name(premium_user2["user_id"])
                     lang1 = find_language(premium_user1["user_id"])
@@ -237,10 +272,8 @@ async def match_users():
                             total2 = motel2
                         else:
                             total2 = 0                            
-                        print("before save:" ,total, total2)
                         await save_premium_user(user1, total_dialog= total + 1)
                         await save_premium_user(user2, total_dialog= total2 + 1)
-                        print("after saving:", await vip_users_details(user2, "total_dialog"))
                         add_pair(new_pair)
                         # Remove users from searching lists
                         searching_users.remove(user1)
@@ -317,7 +350,6 @@ async def check_inactive_chats():
         last_message_time1 = datetime.strptime(msg_time1, "%Y-%m-%d %H:%M:%S")
         last_message_time2 = datetime.strptime(msg_time2, "%Y-%m-%d %H:%M:%S")
         cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
-        print("ww", last_message_time1, last_message_time2)
         if last_message_time1 and last_message_time2:
             print((cr_time - last_message_time1).seconds)
             if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:

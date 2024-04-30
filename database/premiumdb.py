@@ -3,9 +3,8 @@ from config import EXTEND_HRS_REFER
 import time
 from datetime import datetime, timedelta
 
-async def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, frens: list = None):
+async def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
     try:
-        print(premium_status)
         # Check if the user already exists in the premium database
         existing_user = premiumdb.find_one({"_id": user_id})
         if existing_user:
@@ -27,6 +26,8 @@ async def save_premium_user(user_id: int, premium_status: bool = None, purchase_
                 update_dict["frens"] = frens
             if total_dialog != 0:
                 update_dict["total_dialog"] = total_dialog
+            if chat_time != 0:
+                update_dict["chat_time"] = chat_time
 
 
             if update_dict:
@@ -49,6 +50,7 @@ async def save_premium_user(user_id: int, premium_status: bool = None, purchase_
                 "age_groups": age_groups,
                 "room": room,
                 "total_dialog": total_dialog,
+                "chat_time": chat_time, 
                 "frens": frens
             }
             premiumdb.insert_one(doc)

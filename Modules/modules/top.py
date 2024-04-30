@@ -11,8 +11,8 @@ from langdb.get_msg import get_top_text, get_points_text, get_prize_text, get_no
 
 button_pattern = re.compile(r"^(🔝 (Top|Лучшие|Ən yuxarı) 🔝)$")
 
-@cbot.on_message(filters.private & filters.regex(button_pattern)  & subscribed & user_registered)
-async def get_top(client, message):
+@cbot.on_message((filters.command("top")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
+async def frens(client, message):
     lang = find_language(message.from_user.id)
     top_referers = await get_top_referers()
     if top_referers:
