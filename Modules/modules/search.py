@@ -273,8 +273,8 @@ async def check_inactive_chats():
     for pair in chat_pairs:
         user1, user2 = pair
         print(last_message_timestamps)
-        last_message_time1 = last_message_timestamps[f"{user1}"]
-        last_message_time2 = last_message_timestamps[f"{user2}"]
+        last_message_time1 = last_message_timestamps[str(user1)]
+        last_message_time2 = last_message_timestamps[str(user1)]
         print(last_message_time1, last_message_time2)
         if last_message_time1 and last_message_time2:
             if (datetime.utcnow() - datetime.strptime(last_message_time1, "%Y-%m-%d %H:%M:%S")).total_seconds() > 60 and (datetime.utcnow() - datetime.strptime(last_message_time2, "%Y-%m-%d %H:%M:%S")).total_seconds() > 60:
