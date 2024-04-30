@@ -280,7 +280,8 @@ async def check_inactive_chats():
         cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
         print("ww", last_message_time1, last_message_time2)
         if last_message_time1 and last_message_time2:
-            if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time1).seconds() > 60:
+            print(cr_time - last_message_time1).seconds 
+            if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds() > 60:
                 # Chat has been inactive for more than 10 minutes, end the chat
                 delete_pair(user1)
                 lang1 = find_language(user1)
