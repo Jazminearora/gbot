@@ -200,27 +200,28 @@ async def get_premium_users():
 
 async def get_top_chat_users(user_id: int = None):
     try:
-        print(premiumdb.find_one())
-        # Get all users sorted by chat_time in descending order
-        users = premiumdb.find().sort("chat_time", -1)
+        top_users = premiumdb.find().sort("chat_time", -1).limit(5)
+        top_users_list = []
+        for user in top_users:
+            top_users_list.append({"user_id": user["_id"], "chat_time": user["chat_time"]})
 
-        # Get the top 5 users
-        top_users = []
-        for user in users.limit(5):
-            top_users.append({"user_id": user["_id"], "chat_time": user["chat_time"]})
-
-        # If user_id is provided, find the position and chat time of that user
         if user_id:
-            user_position = 0
-            user_chat_time = 0
-            for i, user in enumerate(users):
-                if user["_id"] == user_id:
-                    user_position = i + 1
-                    user_chat_time = user["chat_time"]
-                    break
-            return top_users, user_position, user_chat_time
+            user_doc = premiumdb.find_one({"_id": user_id})
+            if user_doc:
+                user_chat_time = user_doc["chat_time"]
+                user_position = 1
+                for i, user in enumerate(top_users_list):
+                    if user["chat_time"] > user_chat_time:
+                        user_position += 1
+                    elif user["chat_time"] == user_chat_time:
+                        user_position += 0.5
+                    else:
+                        break
+                return top_users_list, user_position, user_chat_time
+            else:
+                return top_users_list, None, None
         else:
-            return top_users
+            return top_users_list
     except Exception as e:
         print("Error:", e)
-        return []
+        return {"error": str(e)}
