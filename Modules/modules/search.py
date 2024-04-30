@@ -14,6 +14,7 @@ from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
 from Modules import cbot
 from Modules.modules.register import get_user_name
+from database.premiumdb import save_premium_user, vip_users_details
 
 # Create a scheduler
 scheduler = aps.AsyncIOScheduler()
@@ -28,9 +29,19 @@ chat_pairs = []
 # Dictionary to store last message timestamps for each user
 message_timestamps = {}
 
+#dictionary to store start time
+start_stamp = {}
+
+#dictionary to store start time
+end_stamp = {}
+
 # Function to delete a pair
 def delete_pair(id_to_delete):
     global chat_pairs
+    for pair in chat_pairs:
+        if id_to_delete in pair:
+            user1, user2 = pair
+            print(user1, user2)
     for i, pair in enumerate(chat_pairs):
         if id_to_delete in pair:
             del chat_pairs[i]
@@ -148,6 +159,10 @@ async def match_users():
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user["user_id"], normal_user["user_id"])
                     add_pair(new_pair)
+                    start_stamp[f"user_{premium_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                    start_stamp[f"user_{normal_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                    message_timestamps[f"user_{normal_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                    message_timestamps[f"user_{premium_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                     name = await get_user_name(normal_user["user_id"])
                     lang1 = find_language(premium_user["user_id"])
                     cap1 = await interlocutor_vip_message(lang1, name, normal_user["gender"], normal_user["age_groups"])
@@ -178,6 +193,10 @@ async def match_users():
                     (premium_user2["room"] == premium_user1["room"] or premium_user2["room"] == "any")):
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (premium_user1["user_id"], premium_user2["user_id"])
+                    start_stamp[f"user_{premium_user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                    start_stamp[f"user_{premium_user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                    message_timestamps[f"user_{premium_user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                    message_timestamps[f"user_{premium_user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                     add_pair(new_pair)
                     name1 = await get_user_name(premium_user1["user_id"])
                     name2 = await get_user_name(premium_user2["user_id"])
@@ -204,6 +223,24 @@ async def match_users():
                         new_pair = (user1["user_id"], user2["user_id"])
                         lang1 = find_language(user1["user_id"])
                         lang2 = find_language(user2["user_id"])
+                        start_stamp[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                        start_stamp[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                        message_timestamps[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                        message_timestamps[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                        motel = await vip_users_details(user1, "total_dialog")
+                        motel2 = await vip_users_details(user2, "total_dialog")
+                        if motel:
+                            total = motel
+                        else:
+                            total = 0
+                        if motel2:
+                            total2 = motel2
+                        else:
+                            total2 = 0                            
+                        print("before save:" ,total, total2)
+                        await save_premium_user(user1, total_dialog= total + 1)
+                        await save_premium_user(user2, total_dialog= total2 + 1)
+                        print("after saving:", await vip_users_details(user2, "total_dialog"))
                         add_pair(new_pair)
                         # Remove users from searching lists
                         searching_users.remove(user1)
