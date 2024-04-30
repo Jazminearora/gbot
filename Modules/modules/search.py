@@ -24,6 +24,8 @@ searching_premium_users = []
 # List to store pairs of users for chatting
 chat_pairs = []
 
+# Dictionary to store last message timestamps for each user
+last_message_timestamps = {}
 
 # Function to delete a pair
 def delete_pair(id_to_delete):
@@ -245,6 +247,7 @@ async def forward_message(client, message):
             lang2 = find_language(user2)
             if message.from_user.id == user1:
                 is_premium, _ = await is_user_premium(user1)
+                last_message_timestamps[user1] = message.date
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
@@ -254,6 +257,7 @@ async def forward_message(client, message):
                         await cbot.send_message(user1, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang1))
             elif message.from_user.id == user2:
                 is_premium, _ = await is_user_premium(user2)
+                last_message_timestamps[user2] = message.date
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
@@ -261,7 +265,6 @@ async def forward_message(client, message):
                         await cbot.copy_message(user1, message.chat.id, message.id)
                     else:
                         await cbot.send_message(user2, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang2))
-
             break
 
 
@@ -269,39 +272,20 @@ async def forward_message(client, message):
 async def check_inactive_chats():
     for pair in chat_pairs:
         user1, user2 = pair
-        last_message_time1 = await get_last_message_time(user1)
-        last_message_time2 = await get_last_message_time(user2)
-        if (datetime.now() - last_message_time1).total_seconds() > 600 and (datetime.now() - last_message_time2).total_seconds() > 40:
-            # Chat has been inactive for more than 10 minutes, end the chat
-            delete_pair(user1)
-            lang1 = find_language(user1)
-            lang2 = find_language(user2)
-            reply_markup1 = await get_reply_markup(lang1)
-            reply_markup2 = await get_reply_markup(lang2)
-            caption1 = await translate_async("Chat has been ended due to inactivity.", lang1)
-            caption2 = await translate_async("Chat has been ended due to inactivity.", lang2)
-            await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
-            await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
-
-# Define a function to get the last message time for a user
-async def get_last_message_time(user_id):
-    # Get the chat history with the bot
-    history = cbot.get_chat_history(user_id, limit=1)
-
-    try:
-        # Check if there are any messages in the history
-        if history.total_count == 0:
-            return None
-    except:
-        pass
-    
-    # Iterate over the history using an async for loop
-    async for message in history:
-        # Get the last message
-        last_message = message
-        print(last_message.date)
-        # Return the last message time
-        return last_message.date
+        last_message_time1 = last_message_timestamps.get(user1)
+        last_message_time2 = last_message_timestamps.get(user2)
+        if last_message_time1 and last_message_time2:
+            if (datetime.now() - last_message_time1).total_seconds() > 600 and (datetime.now() - last_message_time2).total_seconds() > 600:
+                # Chat has been inactive for more than 10 minutes, end the chat
+                delete_pair(user1)
+                lang1 = find_language(user1)
+                lang2 = find_language(user2)
+                reply_markup1 = await get_reply_markup(lang1)
+                reply_markup2 = await get_reply_markup(lang2)
+                caption1 = await translate_async("Chat has been ended due to inactivity.", lang1)
+                caption2 = await translate_async("Chat has been ended due to inactivity.", lang2)
+                await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
+                await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
 
 # Schedule the task to run every 10 minutes
 scheduler.add_job(check_inactive_chats, 'interval', minutes=10)
