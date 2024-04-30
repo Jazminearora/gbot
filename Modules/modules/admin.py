@@ -56,7 +56,7 @@ async def admin_panel(_, message):
     await message.reply_text('Please choose an option:', reply_markup=reply_markup)
 
 @cbot.on_callback_query(filters.regex(r'^newsletter$'))
-async def newsletter_handler(_, message):
+async def newsletter_handler(_, query):
 
 
     global preview_mode
@@ -68,7 +68,7 @@ async def newsletter_handler(_, message):
             InlineKeyboardButton("Preview Mode Off", callback_data='preview_off'),
         ]
     ])
-    await message.reply_text(f'Preview mode: {preview_mode}\n\nPlease choose a preview mode:', reply_markup=reply_markup)
+    await query.message.reply_text(f'Preview mode: {preview_mode}\n\nPlease choose a preview mode:', reply_markup=reply_markup)
 
 @cbot.on_callback_query(filters.regex(r'^preview_(on|off)$'))
 async def preview_handler(_, query):
