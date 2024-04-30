@@ -275,6 +275,7 @@ async def check_inactive_chats():
         user1, user2 = pair
         last_message_time1 = last_message_timestamps.get(user1)
         last_message_time2 = last_message_timestamps.get(user2)
+        print(last_message_time1, last_message_time2)
         if last_message_time1 and last_message_time2:
             if (time.time() - last_message_time1).total_seconds() > 600 and (datetime.now() - last_message_time2).total_seconds() > 600:
                 # Chat has been inactive for more than 10 minutes, end the chat
