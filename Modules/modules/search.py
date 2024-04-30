@@ -53,6 +53,7 @@ async def delete_pair(id_to_delete):
             print(upate_chat_time1, upate_chat_time2)
             await save_premium_user(user1, chat_time = upate_chat_time1)
             await save_premium_user(user2, chat_time = upate_chat_time2)
+            print(await vip_users_details(user2, "chat_time"), await vip_users_details(user2, "chat_time"), "final" )
     for i, pair in enumerate(chat_pairs):
         if id_to_delete in pair:
             del chat_pairs[i]
@@ -302,10 +303,11 @@ async def cancel(_, message):
             caption = await translate_async("Chat has been Ended by the other user.", other_user_lang)
             await cbot.send_message(other_user_id, caption, reply_markup=reply_markup2)
             break
-    # Find the chat pair and delete it
-    if delete_pair(user_id):
         reply_markup = await get_reply_markup(language)
         await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
+    # Find the chat pair and delete it
+    if await delete_pair(user_id):
+        pass
 
 
 # Handle incoming messages
@@ -354,7 +356,7 @@ async def check_inactive_chats():
             print((cr_time - last_message_time1).seconds)
             if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:
                 # Chat has been inactive for more than 10 minutes, end the chat
-                delete_pair(user1)
+                await delete_pair(user1)
                 lang1 = find_language(user1)
                 lang2 = find_language(user2)
                 reply_markup1 = await get_reply_markup(lang1)
