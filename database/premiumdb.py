@@ -186,6 +186,7 @@ async def get_premium_users():
             if is_premium:
                 premium_user_ids.append(user_id)
                 total_premium_users += 1
+        print(premium_user_ids)
         return premium_user_ids, total_premium_users
     except Exception as e:
         print("Error:", e)

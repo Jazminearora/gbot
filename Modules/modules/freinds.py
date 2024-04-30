@@ -30,7 +30,7 @@ async def frens(client, message):
             frens_text += f"{detail.mention}({friend_id})\n"
         await message.reply_text(frens_text, reply_markup=keyboard)
     else:
-        tr_txt = f"f{await translate_async(f"You don't have any friends yet!", language)}\n\n{await translate_async("Add your friends now!", language)}"
+        tr_txt = f"f{await translate_async("You don't have any friends yet!", language)}\n\n{await translate_async("Add your friends now!", language)}"
         await message.reply_text(tr_txt, reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex("add_friend"))

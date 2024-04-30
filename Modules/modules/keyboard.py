@@ -12,7 +12,7 @@ from Modules.modules.register import get_user_name
 from helpers.forcesub import subscribed, user_registered
 from database.referdb import get_top_referers
 from helpers.helper import get_profile, find_language, get_interest
-from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
+from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change, get_no_referers_text, get_points_text, get_prize_text, get_top_text
 from helpers.translator import translate_async
 from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
 
@@ -86,37 +86,7 @@ async def handle_keyboard_response(client, message):
             # Send a message to the user if there are no top referers
             await message.reply(get_no_referers_text(lang), parse_mode=ParseMode.HTML)
 
-def get_points_text(lang):
-    if lang == "English":
-        return "points"
-    elif lang == "Russian":
-        return "баллов"
-    elif lang == "Azerbejani":
-        return "nökbələri"
 
-def get_top_text(lang):
-    if lang == "English":
-        return "Top Referers"
-    elif lang == "Russian":
-        return "Лучшие Рефералы"
-    elif lang == "Azerbejani":
-        return "Ən yaxşı referans verənlər"
-
-def get_prize_text(lang):
-    if lang == "English":
-        return "Top referers get additional prizes like premium membership for free!"
-    elif lang == " Russian":
-        return "Лучшие рефералы получают дополнительные призы, такие как премиум-подписка бесплатно!"
-    elif lang == "Azerbejani":
-        return "Ən yaxşı referans verənlər premium üyvlİğİn daha ətraflı məlumatları üçün heç bir qiymətə qəbul edə bilərlər!"
-
-def get_no_referers_text(lang):
-    if lang == "English":
-        return "There are no top referers yet. Keep inviting your friends to get rewards!"
-    elif lang == "Russian":
-        return "Пока нет лучших рефералов. Продолжайте приглашать своих друзей, чтобы получать награды!"
-    elif lang == "Azerbejani":
-        return "İndiyorlar mövcuddur. Dostlarınızı davam etmək üçün davet edin. Ödüllər almaq üçün!"
 
 
 @cbot.on_callback_query(filters.regex("^close_profile$"))

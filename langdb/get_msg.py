@@ -377,3 +377,36 @@ async def interlocutor_normal_message(language):
         keyboard = None
     
     return message, keyboard
+
+
+def get_points_text(lang):
+    if lang == "English":
+        return "points"
+    elif lang == "Russian":
+        return "баллов"
+    elif lang == "Azerbejani":
+        return "nökbələri"
+
+def get_top_text(lang):
+    if lang == "English":
+        return "Top Referers"
+    elif lang == "Russian":
+        return "Лучшие Рефералы"
+    elif lang == "Azerbejani":
+        return "Ən yaxşı referans verənlər"
+
+def get_prize_text(lang):
+    if lang == "English":
+        return "Top referers get additional prizes like premium membership for free!"
+    elif lang == "Russian":
+        return "Лучшие рефералы получают дополнительные призы, такие как премиум-подписка бесплатно!"
+    elif lang == "Azerbejani":
+        return "Ən yaxşı referans verənlər premium üyvlİğİn daha ətraflı məlumatları üçün heç bir qiymətə qəbul edə bilərlər!"
+
+def get_no_referers_text(lang):
+    if lang == "English":
+        return "There are no top referers yet. Keep inviting your friends to get rewards!"
+    elif lang == "Russian":
+        return "Пока нет лучших рефералов. Продолжайте приглашать своих друзей, чтобы получать награды!"
+    elif lang == "Azerbejani":
+        return "İndiyorlar mövcuddur. Dostlarınızı davam etmək üçün davet edin. Ödüllər almaq üçün!"

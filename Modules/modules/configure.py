@@ -22,22 +22,26 @@ async def get_age_groups_text(user_id, lang):
 async def configure_search(client, message):
     lang = find_language(message.from_user.id)
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(await translate_async("Gender", lang), callback_data="cgndr"),
-         InlineKeyboardButton(await translate_async("Age", lang), callback_data="cage"),
-         InlineKeyboardButton(await translate_async("Room", lang), callback_data="crm")]
+        [InlineKeyboardButton(await translate_async("Gender🚻", lang), callback_data="cgndr"),
+         InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
+         InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
     ])
-    await message.reply(await translate_async("Please select an option:", lang), reply_markup=markup)
+    await message.reply(await translate_async("""🔍 Search Configuration 🔍
+
+Please select an option for your search configuration:""", lang), reply_markup=markup)
 
 @cbot.on_callback_query(filters.regex("cgndr"))
 async def gender_callback(client, callback_query):
     lang = find_language(callback_query.from_user.id)
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(await translate_async("Male", lang), callback_data="cmle"),
-         InlineKeyboardButton(await translate_async("Female", lang), callback_data="cfem")],
-        [InlineKeyboardButton(await translate_async("Any gender", lang), callback_data="cany_gndr"),
-         InlineKeyboardButton(await translate_async("Go back", lang), callback_data="cgoback")]
+        [InlineKeyboardButton(await translate_async("👨Male", lang), callback_data="cmle"),
+         InlineKeyboardButton(await translate_async("👩Female", lang), callback_data="cfem")],
+        [InlineKeyboardButton(await translate_async("👤Any gender", lang), callback_data="cany_gndr"),
+         InlineKeyboardButton(await translate_async("⬅️Go back", lang), callback_data="cgoback")]
     ])
-    await callback_query.message.edit_caption(await translate_async("Please select your gender:", lang), reply_markup=markup)
+    await callback_query.message.edit_caption(await translate_async("""🌐 Gender Selection 🌐
+                                                                    
+Please select your gender:""", lang), reply_markup=markup)
 
 @cbot.on_callback_query(filters.regex("cmle"))
 async def male_callback(client, callback_query):
@@ -91,7 +95,7 @@ async def age_callback(client, callback_query):
          InlineKeyboardButton(await translate_async("18-24", lang), callback_data="c18_24"),
          InlineKeyboardButton(await translate_async("25-34", lang), callback_data="c25_34"),
          InlineKeyboardButton(await translate_async("Above-35", lang), callback_data="cabv_35"),
-         InlineKeyboardButton(await translate_async("Go back", lang), callback_data="agoback")]
+         InlineKeyboardButton(await translate_async("Configure & back", lang), callback_data="agoback")]
     ])
     await callback_query.message.edit_caption(await translate_async("Please select your age group(s) and click back to configure:\n\n" + f"Current configuration: {age_text}", lang), reply_markup=markup)
 

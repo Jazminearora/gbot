@@ -183,15 +183,18 @@ async def referral_handler(_, query):
 @cbot.on_callback_query(filters.regex(r'^vip_users$'))
 async def vip_users_handler(_, query):
     premium_user_ids, total_premium_users = await get_premium_users()
-    data = {'Premium Users': list(premium_user_ids)}
-    filename = 'premium_users.txt'
-    save_file(data, filename)
-    await query.message.reply_document(
-        document="premium_users.txt",
-        caption=f"Here is the detailed list of premium users!\n\nTotal Premium users: {total_premium_users}"
-    )
+    if total_premium_users != 0:
+        data = {'Premium Users': list(premium_user_ids)}
+        filename = 'premium_users.txt'
+        save_file(data, filename)
+        await query.message.reply_document(
+            document="premium_users.txt",
+            caption=f"Here is the detailed list of premium users!\n\nTotal Premium users: {total_premium_users}"
+        )
+    else:
+        await query.message.reply_text("There are no premium users at the moment.")
 
-async def save_file(data, filename):
+def save_file(data, filename):
     try:
         with open(filename, 'w') as file:
             # Write data to the file
@@ -272,7 +275,9 @@ async def delete_inactive_handler(_, query):
         numbera = numb
     except:
         numbera = 0
-    await query.message.edit_text(text=f"You are about to delete {numbera} inactive users. This action is irreversible. Are you sure?", reply_markup=confirm_markup)
+    if numbera == 0:
+        await query.message.reply_text("No inactive users found at the moment.\n\nNote: For the user ids, when it fails to send the newsletter, user id is considered as inactive users.")
+    await query.message.edit_text(text=f"Note: For the user ids, when it fails to send the newsletter, user id is considered as inactive users. \n\nYou are about to delete {numbera} inactive users. This action is irreversible. Are you sure?", reply_markup=confirm_markup)
 
 @cbot.on_callback_query(filters.regex(r'^confirm_delete_inactive$'))
 async def confirm_delete_inactive_handler(_, query):

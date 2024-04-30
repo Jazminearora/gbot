@@ -99,12 +99,17 @@ async def start_search(client, message):
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
-        # sleep for 1 sec
-        await asyncio.sleep(1) 
-        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
-        for _ in range(1):
+        chk = await apppend_id(user_id, language, gender, age_groups, interest)
+        if chk:
             await match_users()
-            await asyncio.sleep(3) 
+        else:
+            await message.reply(await translate_async("failed to search.", language), reply_markup=keyboard)
+
+
+async def apppend_id(user_id, language, gender, age_groups, interest):
+    asyncio.sleep(2)
+    searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
+    return True
 
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
@@ -210,7 +215,7 @@ async def match_users():
             count += 1
 
 # Handle cancel button
-@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Terminate Conversation") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır") & subscribed & user_registered)
 async def cancel(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
