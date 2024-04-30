@@ -192,8 +192,34 @@ async def get_premium_users():
             if is_premium:
                 premium_user_ids.append(user_id)
                 total_premium_users += 1
-        print(premium_user_ids)
         return premium_user_ids, total_premium_users
     except Exception as e:
         print("Error:", e)
         return [], 0
+
+
+async def get_top_chat_users(user_id: int = None):
+    try:
+        # Get all users sorted by chat_time in descending order
+        users = premiumdb.find().sort("chat_time", -1)
+
+        # Get the top 5 users
+        top_users = []
+        for user in users.limit(5):
+            top_users.append({"user_id": user["_id"], "chat_time": user["chat_time"]})
+
+        # If user_id is provided, find the position and chat time of that user
+        if user_id:
+            user_position = 0
+            user_chat_time = 0
+            for i, user in enumerate(users):
+                if user["_id"] == user_id:
+                    user_position = i + 1
+                    user_chat_time = user["chat_time"]
+                    break
+            return top_users, user_position, user_chat_time
+        else:
+            return top_users
+    except Exception as e:
+        print("Error:", e)
+        return []
