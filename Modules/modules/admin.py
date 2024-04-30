@@ -67,7 +67,7 @@ async def newsletter_handler(_, query):
         ]
     ]
     lang_markup = InlineKeyboardMarkup(lang_buttons)
-    await query.message.edit_text(text="Select the language for the newsletter:", reply_markup=lang_markup)
+    await query.message.reply_text(text="Please choose the language for the newsletter recipients:", reply_markup=lang_markup)
 
 async def wait_for_10_seconds():
     await asyncio.sleep(10)
@@ -84,7 +84,7 @@ async def newsletter_language_handler(_, query):
         users = get_users_list(lang)
         stop_broadcast_button = InlineKeyboardButton("Stop Broadcasting", callback_data="stop_broadcast")
         stop_broadcast_markup = InlineKeyboardMarkup([[stop_broadcast_button]])
-        sts_msg = await cbot.send_message(query.from_user.id, text="Sending newsletter in 10 seconds...", reply_markup=stop_broadcast_markup)
+        sts_msg = await cbot.send_message(query.from_user.id, text="Starting process of Sending newsletter in 10 seconds...", reply_markup=stop_broadcast_markup)
 
         # Wait for 10 seconds
         if await wait_for_10_seconds():
@@ -277,7 +277,8 @@ async def delete_inactive_handler(_, query):
         numbera = 0
     if numbera == 0:
         await query.message.reply_text("No inactive users found at the moment.\n\nNote: For the user ids, when it fails to send the newsletter, user id is considered as inactive users.")
-    await query.message.edit_text(text=f"Note: For the user ids, when it fails to send the newsletter, user id is considered as inactive users. \n\nYou are about to delete {numbera} inactive users. This action is irreversible. Are you sure?", reply_markup=confirm_markup)
+        return
+    await query.message.reply_text(text=f"Note: For the user ids, when it fails to send the newsletter, user id is considered as inactive users. \n\nYou are about to delete {numbera} inactive users. This action is irreversible. Are you sure?", reply_markup=confirm_markup)
 
 @cbot.on_callback_query(filters.regex(r'^confirm_delete_inactive$'))
 async def confirm_delete_inactive_handler(_, query):

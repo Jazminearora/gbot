@@ -1,20 +1,21 @@
+import asyncio
+import datetime
+import re
+import apscheduler.schedulers.asyncio as aps
 from pyrogram import filters
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup
-import re
-from helpers.helper import find_language, get_gender, get_age_group, get_interest
-from helpers.forcesub import user_registered, subscribed
-from database.premiumdb import is_user_premium, vip_users_details
-from langdb.get_msg import get_reply_markup, interlocutor_vip_message, interlocutor_normal_message
-from helpers.translator import translate_async
-from Modules.modules.register import get_user_name
-import asyncio
-from Modules import cbot
-from config import ADMINS
-import concurrent.futures
-import apscheduler.schedulers.asyncio as aps
 
-# Create a ThreadPoolExecutor with 1 worker
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+from config import ADMINS
+from database.premiumdb import is_user_premium, vip_users_details
+from helpers.forcesub import subscribed, user_registered
+from helpers.helper import find_language, get_age_group, get_gender, get_interest
+from helpers.translator import translate_async
+from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
+from Modules import cbot
+from Modules.modules.register import get_user_name
+
+# Create a scheduler
+scheduler = aps.AsyncIOScheduler()
 
 # List to store users searching for an interlocutor
 searching_users = []
@@ -215,7 +216,7 @@ async def match_users():
             count += 1
 
 # Handle cancel button
-@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır|Завершить чат") & subscribed & user_registered)
 async def cancel(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
@@ -262,3 +263,43 @@ async def forward_message(client, message):
                         await cbot.send_message(user2, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang2))
 
             break
+
+
+# function to check for inactive chats
+async def check_inactive_chats():
+    for pair in chat_pairs:
+        user1, user2 = pair
+        last_message_time1 = await get_last_message_time(user1)
+        last_message_time2 = await get_last_message_time(user2)
+        if (datetime.now() - last_message_time1).total_seconds() > 600 and (datetime.now() - last_message_time2).total_seconds() > 40:
+            # Chat has been inactive for more than 10 minutes, end the chat
+            delete_pair(user1)
+            lang1 = find_language(user1)
+            lang2 = find_language(user2)
+            reply_markup1 = await get_reply_markup(lang1)
+            reply_markup2 = await get_reply_markup(lang2)
+            caption1 = await translate_async("Chat has been ended due to inactivity.", lang1)
+            caption2 = await translate_async("Chat has been ended due to inactivity.", lang2)
+            await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
+            await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
+
+# Define a function to get the last message time for a user
+async def get_last_message_time(user_id):
+    # Get the chat history with the bot
+    history = await cbot.get_chat_history(user_id, limit=1)
+
+    # Check if there are any messages in the history
+    if history.total_count == 0:
+        return None
+
+    # Get the last message
+    last_message = history.messages[0]
+    print(last_message.date)
+    # Return the last message time
+    return last_message.date
+
+# Schedule the task to run every 10 minutes
+scheduler.add_job(check_inactive_chats, 'interval', minutes=10)
+
+# Start the scheduler
+scheduler.start()
