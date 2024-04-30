@@ -248,7 +248,7 @@ async def forward_message(client, message):
             lang2 = find_language(user2)
             if message.from_user.id == user1:
                 is_premium, _ = await is_user_premium(user1)
-                last_message_timestamps[user1] = message.date
+                last_message_timestamps[user1] = time.time()
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
@@ -258,7 +258,7 @@ async def forward_message(client, message):
                         await cbot.send_message(user1, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang1))
             elif message.from_user.id == user2:
                 is_premium, _ = await is_user_premium(user2)
-                last_message_timestamps[user2] = message.date
+                last_message_timestamps[user2] = time.time()
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
@@ -289,7 +289,7 @@ async def check_inactive_chats():
                 await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
 
 # Schedule the task to run every 10 minutes
-scheduler.add_job(check_inactive_chats, 'interval', minutes=10)
+scheduler.add_job(check_inactive_chats, 'interval', minutes=5)
 
 # Start the scheduler
 scheduler.start()
