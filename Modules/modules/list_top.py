@@ -2,6 +2,7 @@ import re
 from pyrogram.errors import PeerIdInvalid
 from pyrogram.enums import ParseMode
 from pyrogram import filters
+from datetime import timedelta
 
 from Modules import cbot
 from helpers.forcesub import subscribed, user_registered
@@ -57,7 +58,7 @@ async def frens(client, message):
     # Send the message
     await message.reply_text(msg, parse_mode=ParseMode.HTML)
 
-    
+
 
 
 
