@@ -200,6 +200,7 @@ async def get_premium_users():
 
 async def get_top_chat_users(user_id: int = None):
     try:
+        print(premiumdb.find_one())
         # Get all users sorted by chat_time in descending order
         users = premiumdb.find().sort("chat_time", -1)
 
