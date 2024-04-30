@@ -51,7 +51,7 @@ async def premium_free_callback(bot, update):
     caption, share_txt = await get_text(total_points, referral_link, user_lang)
     
     encoded_share_txt = urllib.parse.quote(share_txt)
-    share_link = f"https://t.me/share/url?url={referral_link}&text={encoded_share_txt}"
+    share_link = f"https://t.me/share/url?text={encoded_share_txt}url={referral_link}&"
     print("share link:", share_link)
     
     refer_button_text = await translate_async("Refer your Friend", target_language=user_lang)

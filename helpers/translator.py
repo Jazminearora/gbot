@@ -24,4 +24,4 @@ async def translate_async(text, target_language):
         return translation.text
     except Exception as e:
         print(f'Error occurred during translation: {e}')
-        return None
+        translate_text(text, target_language)

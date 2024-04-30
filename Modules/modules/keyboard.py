@@ -25,18 +25,19 @@ async def start_command(client, message):
         user_id = message.from_user.id
         language = find_language(user_id)
         reply_markup = await get_reply_markup(language)
+        photo = "https://iili.io/JgY8Fls.jpg"
         try:
             text = await translate_async("Please select an option:", language)
         except:
             text = "Please select an option:"
-        await message.reply_text(text, reply_markup=reply_markup)
+        await message.reply_photo(text, photo, reply_markup=reply_markup)
     except Exception as e:
         print (e)
         await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
 
 
 # Define a regex pattern to match the button texts for all three languages
-button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|🔝 (Top|Лучшие|Ən yuxarı) 🔝|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥$")
+button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥$")
 
 @cbot.on_message(filters.private & filters.regex(button_pattern))
 async def handle_keyboard_response(client, message):

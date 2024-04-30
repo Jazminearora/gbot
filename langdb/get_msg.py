@@ -1,5 +1,5 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
-
+from helpers.helper import get_total_users
 # Registration message for register.py file
 async def get_registration_text(language, step):
     if language == "English":
@@ -8,7 +8,18 @@ async def get_registration_text(language, step):
                 [InlineKeyboardButton("Male👦", callback_data=f"register_gender_{language}_male")],
                 [InlineKeyboardButton("Female👧", callback_data=f"register_gender_{language}_female")]])
         elif step == "age":
-            return "Choose your age group:", InlineKeyboardMarkup([
+            caption = f"""Welcome to the chat for anonymous communication ❤‍🔥
+
+- look for new acquaintances
+- communicate based on interests
+- have fun 🤪
+- 🔞Acquaintance (18+)
+
+ 👩🏼 online: {get_total_users("female")}
+ 🧑🏻 online: {get_total_users("male")}
+
+Choose your gender """
+            return caption , InlineKeyboardMarkup([
                 [InlineKeyboardButton("Below 18", callback_data=f"register_age_{language}_below-18")],
                 [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
                 [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
@@ -24,7 +35,18 @@ async def get_registration_text(language, step):
             return None, None
     elif language == "Russian":
         if step == "gender":
-            return "Выберите свой пол:", InlineKeyboardMarkup([
+            caption = f"""Добро пожаловать в чат для анонимного общения ❤‍🔥
+
+- ищите новых знакомств
+- общайтесь на основе интересов
+- веселитесь 🤪
+- 🔞Знакомства (18+)
+
+ 👩🏼 онлайн: {get_total_users("female")}
+ 🧑🏻 онлайн: {get_total_users("male")}
+
+Выберите свой пол"""
+            return caption , InlineKeyboardMarkup([
                 [InlineKeyboardButton("Мужчина👦", callback_data=f"register_gender_{language}_male")],
                 [InlineKeyboardButton("Женщина👧", callback_data=f"register_gender_{language}_female")]])
         elif step == "age":
@@ -49,7 +71,18 @@ async def get_registration_text(language, step):
                 [InlineKeyboardButton("Kişi👦", callback_data=f"register_gender_{language}_male")],
                 [InlineKeyboardButton("Qadın👧", callback_data=f"register_gender_{language}_female")]])
         elif step == "age":
-            return "Yaş qrupunuzu seçin:", InlineKeyboardMarkup([
+            caption = f"""Anonim kommunikasiya üçün söhbətə xoş gəlmisiniz ❤‍🔥
+
+- yeni tanışlıqlar axtarın
+- maraqlara əsasən kommunikasiya edin
+- əylənəsiniz 🤪
+- 🔞Tanışlıqlar (18+)
+
+ 👩🏼 onlayn: {get_total_users("female")}
+ 🧑🏻 onlayn: {get_total_users("male")}
+
+Cinsinizi seçin """
+            return caption , InlineKeyboardMarkup([
                 [InlineKeyboardButton("18 yaşdan kiçik", callback_data=f"register_age_{language}_below-18")],
                 [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
                 [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],

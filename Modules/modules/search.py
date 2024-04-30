@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+import time
 import re
 import apscheduler.schedulers.asyncio as aps
 from pyrogram import filters
@@ -25,7 +26,7 @@ searching_premium_users = []
 chat_pairs = []
 
 # Dictionary to store last message timestamps for each user
-last_message_timestamps = {}
+message_timestamps = {}
 
 # Function to delete a pair
 def delete_pair(id_to_delete):
@@ -247,7 +248,7 @@ async def forward_message(client, message):
             lang2 = find_language(user2)
             if message.from_user.id == user1:
                 is_premium, _ = await is_user_premium(user1)
-                last_message_timestamps[f"{user1}"] = datetime.utcnow()
+                message_timestamps[f"user_{user1}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
@@ -257,7 +258,7 @@ async def forward_message(client, message):
                         await cbot.send_message(user1, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang1))
             elif message.from_user.id == user2:
                 is_premium, _ = await is_user_premium(user2)
-                last_message_timestamps[f"{user2}"] = datetime.utcnow()
+                message_timestamps[f"user_{user2}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
@@ -272,12 +273,14 @@ async def forward_message(client, message):
 async def check_inactive_chats():
     for pair in chat_pairs:
         user1, user2 = pair
-        print(last_message_timestamps)
-        last_message_time1 = last_message_timestamps[str(user1)]
-        last_message_time2 = last_message_timestamps[str(user1)]
-        print(last_message_time1, last_message_time2)
+        msg_time1 = message_timestamps.get(f"user_{user1}")
+        msg_time2 = message_timestamps.get(f"user_{user2}")
+        last_message_time1 = datetime.strptime(msg_time1, "%Y-%m-%d %H:%M:%S")
+        last_message_time2 = datetime.strptime(msg_time2, "%Y-%m-%d %H:%M:%S")
+        cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
+        print("ww", last_message_time1, last_message_time2)
         if last_message_time1 and last_message_time2:
-            if (datetime.strptime(datetime.utcnow(), "%Y-%m-%d %H:%M:%S") - datetime.strptime(last_message_time1, "%Y-%m-%d %H:%M:%S")).total_seconds() > 60 and (datetime.strptime(datetime.utcnow(), "%Y-%m-%d %H:%M:%S") - datetime.strptime(last_message_time2, "%Y-%m-%d %H:%M:%S")).total_seconds() > 60:
+            if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time1).seconds() > 60:
                 # Chat has been inactive for more than 10 minutes, end the chat
                 delete_pair(user1)
                 lang1 = find_language(user1)
