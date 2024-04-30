@@ -200,14 +200,15 @@ async def get_premium_users():
 
 async def get_top_chat_users(user_id: int = None):
     try:
-        top_users = premiumdb.find().sort("chat_time", -1).limit(5)
+        print(premiumdb.find())
+        top_users = premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1).limit(5)
         top_users_list = []
         for user in top_users:
             top_users_list.append({"user_id": user["_id"], "chat_time": user["chat_time"]})
 
         if user_id:
             user_doc = premiumdb.find_one({"_id": user_id})
-            if user_doc:
+            if user_doc and "chat_time" in user_doc and user_doc["chat_time"] > 0:
                 user_chat_time = user_doc["chat_time"]
                 user_position = 1
                 for i, user in enumerate(top_users_list):
