@@ -1,5 +1,5 @@
 import asyncio
-import time
+from datetime import datetime
 import re
 import apscheduler.schedulers.asyncio as aps
 from pyrogram import filters
@@ -247,7 +247,7 @@ async def forward_message(client, message):
             lang2 = find_language(user2)
             if message.from_user.id == user1:
                 is_premium, _ = await is_user_premium(user1)
-                last_message_timestamps[user1] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                last_message_timestamps[user1] = datetime.utcnow()
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
@@ -257,7 +257,7 @@ async def forward_message(client, message):
                         await cbot.send_message(user1, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang1))
             elif message.from_user.id == user2:
                 is_premium, _ = await is_user_premium(user2)
-                last_message_timestamps[user2] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                last_message_timestamps[user2] = datetime.utcnow()
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
@@ -276,7 +276,7 @@ async def check_inactive_chats():
         last_message_time2 = last_message_timestamps[user2]
         print(last_message_time1, last_message_time2)
         if last_message_time1 and last_message_time2:
-            if (time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) - last_message_time1).total_seconds() > 60 and (time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) - last_message_time2).total_seconds() > 60:
+            if (datetime.utcnow() - datetime.strptime(last_message_time1, "%Y-%m-%d %H:%M:%S")).total_seconds() > 60 and (datetime.utcnow() - datetime.strptime(last_message_time2, "%Y-%m-%d %H:%M:%S")).total_seconds() > 60:
                 # Chat has been inactive for more than 10 minutes, end the chat
                 delete_pair(user1)
                 lang1 = find_language(user1)
