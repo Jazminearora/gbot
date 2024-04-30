@@ -16,48 +16,48 @@ button_pattern = re.compile(r"^(🔝 (Top|Лучшие|Ən yuxarı) 🔝)$")
 @cbot.on_message((filters.command("top")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
 async def frens(client, message):
     # Get the top chat users
-    top_users = await get_top_chat_users()
+    top_users, user_position, user_chat_time = await get_top_chat_users(message.from_user.id)
+    print(await get_top_chat_users(message.from_user.id))
 
-    # Get the user's position and chat time
-    user_position = 0
-    user_chat_time = 0
-    for i, user in enumerate(top_users):
-        if user["user_id"] == message.from_user.id:
-            user_position = i + 1
-            user_chat_time = user["chat_time"]
+    # Format the chat time for the users
+    formatted_top_users = []
+    for user in top_users:
+        formatted_chat_time = str(timedelta(seconds=user["chat_time"]))
+        formatted_top_users.append(f"{user['user_id']} - in dialogues {formatted_chat_time}")
 
-    # Format the chat time
-    formatted_user_chat_time = str(timedelta(seconds=user_chat_time))
-
-    # Prepare the message
-    msg = f"<b>Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM</b>\n\n"
-    msg += "Everyone takes part automatically, the drawing period is every week from Monday to Sunday\n"
-    msg += "Summing up and distribution of prizes every Sunday at 20:00 Moscow time.\n\n"
-    msg += "Prizes:\n"
-    msg += "🥇1st place - free subscription for 3 days\n"
-    msg += "🥈2nd place - free subscription for 2 days\n"
-    msg += "🥉3rd place - free subscription for 1 day\n\n"
-    msg += "Current leaders:\n"
+    # Create the message
+    message_text = (
+        "🏆 **Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM**\n\n"
+        "📅 **Everyone takes part automatically, the drawing period is every week from Monday to Sunday**\n\n"
+        "⏳ **Summing up and distribution of prizes every Sunday at 20:00 Moscow time.**\n\n"
+        "🏆 **Prizes:**\n"
+        "🥇 **1st place** - free subscription for 3 days\n"
+        "🥈 **2nd place** - free subscription for 2 days\n"
+        "🥉 **3rd place** - free subscription for 1 day\n\n"
+        "📊 **Current leaders:**\n"
+    )
 
     # Add the top users to the message
-    for i, user in enumerate(top_users):
-        if i < 3:
-            formatted_user_chat_time = str(timedelta(seconds=user["chat_time"]))
-            msg += f"{i+1}. {user['user_id']} - in dialogues {formatted_user_chat_time}\n"
-        else:
-            break
+    for i, user in enumerate(formatted_top_users):
+        message_text += f"{i + 1}. {user}\n"
 
     # Add the user's position to the message
     if user_position == 0:
-        msg += "Your position:\n"
+        message_text += "\n👤 **Your position:**\n"
+        message_text += "📵🚭🔇 - in dialogues 20s"
     else:
-        msg += f"Your position:\n{user_position}. {message.from_user.first_name} - in dialogues {formatted_user_chat_time}\n"
+        message_text += f"\n👤 **Your position:**\n"
+        message_text += f"{user_position}. {message.from_user.id} - in dialogues {str(timedelta(seconds=user_chat_time))}"
 
-    msg += "\n❕ Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP."
+    message_text += "\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**"
 
     # Send the message
-    await message.reply_text(msg, parse_mode=ParseMode.HTML)
-
+    await client.send_message(
+        chat_id=message.chat.id,
+        text=message_text,
+        parse_mode=ParseMode.MARKDOWN,
+        disable_web_page_preview=True,
+    )
 
 
 
