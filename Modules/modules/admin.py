@@ -11,7 +11,7 @@ from Modules import cbot, logger
 from Modules import mongodb as collection
 from config import key
 from helpers.helper import get_total_users, get_users_list, find_language, get_detailed_user_list
-from database.premiumdb import get_premium_users
+from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
 
 pyrostep.listen(cbot)
@@ -400,3 +400,30 @@ async def back_menu(_, query):
         await query.message.edit_text('Please choose an option:', reply_markup=reply_markup)  
     except Exception as e:
         print("Error in back_profile:", e)
+
+
+@cbot.on_message(filters.command("add_vip", prefixes='/') & filters.user(ADMIN_IDS))
+async def add_vip(client, message):
+    try:
+        command = message.text
+        print(command)
+        user_id = int(command[1])
+        extend_hrs = int(command[2])
+        if not user_id or extend_hrs:
+            await message.reply_text("Invalid command usage.\n\nFormat: /add_vip user_id extend_hrs")
+            return
+        # Check if the user exists
+        user = await cbot.get_users(user_id)
+        if not user:
+            await message.reply_text("User does not exist.")
+            return
+        try:
+            # Extend the user's premium hours
+            await extend_premium_user_hrs(user_id, extend_hrs)
+            await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
+            await cbot.send_message(user_id, f"Received premium membership from admin for {extend_hrs} hours.")
+        except Exception as e:
+            await message.reply_text(f"Failed to extend premium!\n\nException: {e}")
+
+    except Exception as e:
+        await message.reply_text(f"Error: {e}")

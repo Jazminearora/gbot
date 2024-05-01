@@ -98,7 +98,7 @@ async def age_callback(client, callback_query):
          InlineKeyboardButton(f"🧑🏽 {await translate_async('Above-35', lang)}", callback_data="cabv_35")],
         [ InlineKeyboardButton(f"⚙️ {await translate_async('Configure & back', lang)}", callback_data="agoback")]
     ])
-    await callback_query.message.edit_caption(await translate_async("Please select your age group(s) and click back to configure:\n\n" + f"Current configuration: {age_text}" + f"\n\nNote: The configuration will update after you select and click Configure & back button!", lang), reply_markup=markup)
+    await callback_query.message.edit_caption(await translate_async("Please select your age group(s) and click back to configure:\n\n" + f"Current configuration:\n{age_text}" + f"\n\nNote: The configuration will update after you select and click Configure & back button!", lang), reply_markup=markup)
 
 
 age_groups = {}
