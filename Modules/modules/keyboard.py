@@ -27,7 +27,7 @@ async def start_command(client, message):
         reply_markup = await get_reply_markup(language)
         photo = "https://iili.io/JgY8Fls.jpg"
         try:
-            text = await translate_async("Please select an option:", language)
+            text = "Please select an option:"
         except:
             text = "Please select an option:"
         await message.reply_photo(text, photo, reply_markup=reply_markup)
