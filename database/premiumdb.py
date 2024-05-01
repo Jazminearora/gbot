@@ -128,7 +128,7 @@ async def extend_premium_user_hrs(user_id: int, extend_hrs: int):
         is_premium, expiry_time = await is_user_premium(user_id)
         if is_premium:
             # If user is premium, extend the expiry time by 2 hours
-            new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=extend_hrs)).strftime("%Y-%m-%d %H:%M:%S")
+            new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=int(extend_hrs))).strftime("%Y-%m-%d %H:%M:%S")
             premiumdb.update_one(
                 {"_id": user_id},
                 {"$set": {"premium_expiry_time": new_expiry_time}}
