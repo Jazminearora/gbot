@@ -26,11 +26,8 @@ async def start_command(client, message):
         language = find_language(user_id)
         reply_markup = await get_reply_markup(language)
         photo = "https://iili.io/JgY8Fls.jpg"
-        try:
-            text = "Please select an option:"
-        except:
-            text = "Please select an option:"
-        await message.reply_photo(text, photo, reply_markup=reply_markup)
+        text = await translate_async("Please select an option:", language)
+        await message.reply_photo(photo, text, reply_markup=reply_markup)
     except Exception as e:
         print (e)
         await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
