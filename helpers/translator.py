@@ -1,9 +1,11 @@
 from gpytranslate import SyncTranslator, Translator
 
+from googletrans import Translator
+
 def translate_text(text, target_language):
     try:
-        t = SyncTranslator()
-        translation = t.translate(text, targetlang=target_language)
+        translator = Translator()
+        translation = translator.translate(text, dest=target_language)
         return translation.text
     except Exception as e:
         print(f'Error occurred during translation: {e}')
@@ -24,4 +26,4 @@ async def translate_async(text, target_language):
         return translation.text
     except Exception as e:
         print(f'Error occurred during translation: {e}')
-        translate_text(text, target_language)
+        translate_text(text, tr_lang)
