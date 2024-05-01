@@ -407,8 +407,8 @@ async def add_vip(client, message):
     try:
         command = message.text
         print(command)
-        user_id = int(command[1])
-        extend_hrs = int(command[2])
+        user_id = command.split()[1]
+        extend_hrs = command.split()[2]
         if not user_id or extend_hrs:
             await message.reply_text("Invalid command usage.\n\nFormat: /add_vip user_id extend_hrs")
             return
