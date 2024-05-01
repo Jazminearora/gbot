@@ -10,7 +10,7 @@ from config import  ADMINS as ADMIN_IDS
 from Modules import cbot, logger
 from Modules import mongodb as collection
 from config import key
-from helpers.helper import get_total_users, get_users_list, find_language
+from helpers.helper import get_total_users, get_users_list, find_language, get_detailed_user_list
 from database.premiumdb import get_premium_users
 from database.registerdb import remove_user_id
 
@@ -203,18 +203,58 @@ async def statistics_handler(_, query):
     azerbejani_users = get_total_users("Azerbejani") or 0
     total_users = eng_users + russian_users + azerbejani_users
 
+    # Get the detailed user list for each language
+    eng_detailed_list = get_detailed_user_list("English")
+    russian_detailed_list = get_detailed_user_list("Russian")
+    azerbejani_detailed_list = get_detailed_user_list("Azerbejani")
+
     # Format the statistics text using string formatting
     stats_text = (
         "--Total stats of Bot--\n"
         f"Total users: {total_users} \n"
         f"English users: {eng_users}\n"
         f"Russian users: {russian_users}\n"
-        f"Azerbejani users: {azerbejani_users}"
+        f"Azerbejani users: {azerbejani_users}\n\n\n"
+        "Detailed user list:\n"
     )
+
+    # Add the detailed user list to the statistics text
+    if eng_detailed_list:
+        stats_text += "English:\n"
+        stats_text += await format_detailed_user_list(eng_detailed_list)
+        stats_text += "\n\n"
+    if russian_detailed_list:
+        stats_text += "Russian:\n"
+        stats_text += await format_detailed_user_list(russian_detailed_list)
+        stats_text += "\n\n"
+    if azerbejani_detailed_list:
+        stats_text += "Azerbejani:\n"
+        stats_text += await format_detailed_user_list(azerbejani_detailed_list)
+        stats_text += "\n\n"
+
     # Edit the message to display the statistics
     await query.message.edit_text(text=stats_text, reply_markup = home_btn)
 
+
+async def format_detailed_user_list(detailed_list):
+    if detailed_list:
+        output = "Detailed User List:\n\n"
+        output += "Total Users: {}\n\n".format(detailed_list["Total Users"])
+        output += "Gender:\n"
+        for gender, count in detailed_list["Gender"].items():
+            output += "  {0}: {1}\n".format(gender, count)
+        output += "\nAge Group:\n"
+        for age_group, count in detailed_list["Age Group"].items():
+            output += "  {0}: {1}\n".format(age_group, count)
+        output += "\nInterest:\n"
+        for interest, count in detailed_list["Interest"].items():
+            output += "  {0}: {1}\n".format(interest, count)
+        return output
+    else:
+        return "No users found."
     
+
+
 @cbot.on_callback_query(filters.regex(r'^referral$'))
 async def referral_handler(_, query):
     await query.message.edit_text(text="You selected Referral link.")

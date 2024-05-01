@@ -89,7 +89,36 @@ def is_user_registered(user_id):
     else:    
         return False
 
-
+def get_detailed_user_list(language):
+    try:
+        detailed_list = {}
+        users_list = get_users_list(language)
+        if users_list:
+            detailed_list["Total Users"] = len(users_list)
+            detailed_list["Gender"] = {}
+            detailed_list["Age Group"] = {}
+            detailed_list["Interest"] = {}
+            
+            for user_id in users_list:
+                gender = get_gender(user_id, language)
+                age_group = get_age_group(user_id, language)
+                interest = get_interest(user_id, language)
+                
+                if gender:
+                    detailed_list["Gender"][gender] = detailed_list["Gender"].get(gender, 0) + 1
+                if age_group:
+                    detailed_list["Age Group"][age_group] = detailed_list["Age Group"].get(age_group, 0) + 1
+                if interest:
+                    detailed_list["Interest"][interest] = detailed_list["Interest"].get(interest, 0) + 1
+            
+            return detailed_list
+        else:
+            return None
+    except Exception as e:
+        print(f'Error in getting detailed user list for {language}:', e)
+        return None
+    
+    
 async def get_profile(user_id, language):
     premium, time = await is_user_premium(user_id)
     if premium:
