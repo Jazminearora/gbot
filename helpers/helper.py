@@ -93,6 +93,7 @@ def get_detailed_user_list(language):
     try:
         detailed_list = {}
         users_list = get_users_list(language)
+        print(users_list)
         if users_list:
             detailed_list["Total Users"] = len(users_list)
             detailed_list["Gender"] = {}
@@ -118,7 +119,7 @@ def get_detailed_user_list(language):
         print(f'Error in getting detailed user list for {language}:', e)
         return None
     
-    
+
 async def get_profile(user_id, language):
     premium, time = await is_user_premium(user_id)
     if premium:
