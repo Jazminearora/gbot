@@ -197,6 +197,7 @@ async def impressions_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^statistics$'))
 async def statistics_handler(_, query):
+    await query.message.edit_text(text="fetching...", reply_markup = home_btn)
     # Get the user counts for each language
     eng_users = get_total_users("English") or 0
     russian_users = get_total_users("Russian") or 0
@@ -210,48 +211,46 @@ async def statistics_handler(_, query):
 
     # Format the statistics text using string formatting
     stats_text = (
-        "--Total stats of Bot--\n"
-        f"Total users: {total_users} \n"
-        f"English users: {eng_users}\n"
-        f"Russian users: {russian_users}\n"
-        f"Azerbejani users: {azerbejani_users}\n\n\n"
-        "Detailed user list:\n"
+        "--📊 Total stats of Bot--\n"
+        f"👥 Total users: {total_users} \n"
+        f"🇬🇧 English users: {eng_users}\n"
+        f"🇷🇺 Russian users: {russian_users}\n"
+        f"🇦🇿 Azerbejani users: {azerbejani_users}\n\n\n"
+        "--👥 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐥𝐢𝐳𝐞𝐝 𝐮𝐬𝐞𝐫 𝐥𝐢𝐬𝐭--:\n\n"
     )
 
     # Add the detailed user list to the statistics text
     if eng_detailed_list:
-        stats_text += "English:\n"
+        stats_text += "--🇬🇧 English--:\n"
         stats_text += await format_detailed_user_list(eng_detailed_list)
         stats_text += "\n\n"
     if russian_detailed_list:
-        stats_text += "Russian:\n"
+        stats_text += "--🇷🇺 Russian--:\n"
         stats_text += await format_detailed_user_list(russian_detailed_list)
         stats_text += "\n\n"
     if azerbejani_detailed_list:
-        stats_text += "Azerbejani:\n"
+        stats_text += "--🇦🇿 Azerbejani--:\n"
         stats_text += await format_detailed_user_list(azerbejani_detailed_list)
         stats_text += "\n\n"
-
     # Edit the message to display the statistics
     await query.message.edit_text(text=stats_text, reply_markup = home_btn)
 
 
 async def format_detailed_user_list(detailed_list):
     if detailed_list:
-        output = "Detailed User List:\n\n"
-        output += "Total Users: {}\n\n".format(detailed_list["Total Users"])
-        output += "Gender:\n"
+        output = "\n👥 Total Users: {}\n\n".format(detailed_list["Total Users"])
+        output += "👩‍♀️ Gender:\n"
         for gender, count in detailed_list["Gender"].items():
             output += "  {0}: {1}\n".format(gender, count)
-        output += "\nAge Group:\n"
+        output += "\n📆 Age Group:\n"
         for age_group, count in detailed_list["Age Group"].items():
             output += "  {0}: {1}\n".format(age_group, count)
-        output += "\nInterest:\n"
+        output += "\n💡 Interest:\n"
         for interest, count in detailed_list["Interest"].items():
             output += "  {0}: {1}\n".format(interest, count)
         return output
     else:
-        return "No users found."
+        return "No users found. 😔"
     
 
 
