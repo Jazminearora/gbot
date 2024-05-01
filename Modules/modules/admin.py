@@ -408,7 +408,7 @@ async def add_vip(client, message):
         command = message.text
         print(command)
         user_id = command.split()[1]
-        extend_hrs = command.split()[2]
+        extend_hrs = int(command.split()[2])
         print(user_id, extend_hrs)
         # Check if the user exists
         user = await cbot.get_users(user_id)
