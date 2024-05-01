@@ -59,8 +59,6 @@ async def handle_keyboard_response(client, message):
         markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add me to your group", url = f"https://t.me/{bot}?startgroup=true")]])
         await message.reply_text("Adding to group...", reply_markup = markup)
-    elif "Friends" in text or "Друзья" in text or "Dostlar" in text:
-        await message.reply_text("Viewing friends...")
     
     
     elif "Top" in text or "Лучшие" in text or "Ən yuxarı" in text:
