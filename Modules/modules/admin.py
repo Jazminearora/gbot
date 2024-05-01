@@ -409,9 +409,7 @@ async def add_vip(client, message):
         print(command)
         user_id = command.split()[1]
         extend_hrs = command.split()[2]
-        if not user_id or extend_hrs:
-            await message.reply_text("Invalid command usage.\n\nFormat: /add_vip user_id extend_hrs")
-            return
+        print(user_id, extend_hrs)
         # Check if the user exists
         user = await cbot.get_users(user_id)
         if not user:
