@@ -19,7 +19,7 @@ try:
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
-key = "fulala"
+key = "sundar"
 DEV_USER = []
 SUDO_USERS = os.environ.get("SUDO_USERS")
 EXTEND_HRS_REFER = os.environ.get("EXTEND_HRS_REFER")
