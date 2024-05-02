@@ -3,7 +3,7 @@ from config import EXTEND_HRS_REFER
 import time
 from datetime import datetime, timedelta
 
-async def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
+def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
     try:
         # Check if the user already exists in the premium database
         existing_user = premiumdb.find_one({"_id": user_id})
@@ -58,7 +58,7 @@ async def save_premium_user(user_id: int, premium_status: bool = None, purchase_
         print("Error:", e)
 
 
-async def is_user_premium(user_id: int):
+def is_user_premium(user_id: int):
     try:
         # Retrieve the user document from the premium database
         user = premiumdb.find_one({"_id": user_id})
@@ -89,7 +89,7 @@ async def is_user_premium(user_id: int):
         return False, None
     
 
-async def vip_users_details(user_id: int, field: str):
+def vip_users_details(user_id: int, field: str):
     try:
         # Retrieve the user document from the premium database
         user = premiumdb.find_one({"_id": user_id})
@@ -101,10 +101,10 @@ async def vip_users_details(user_id: int, field: str):
         print("Error:", e)
         return None
     
-async def extend_premium_user(user_id: int):
+def extend_premium_user(user_id: int):
     try:
         # Check if the user is already premium
-        is_premium, expiry_time = await is_user_premium(user_id)
+        is_premium, expiry_time = is_user_premium(user_id)
         if is_premium:
             # If user is premium, extend the expiry time by 2 hours
             new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=EXTEND_HRS_REFER)).strftime("%Y-%m-%d %H:%M:%S")
@@ -117,16 +117,16 @@ async def extend_premium_user(user_id: int):
             # If user is not premium, add them as a new premium user
             current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
             expiry_time = (datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
-            await save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
+            save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
             print(f"User {user_id} added as premium until {expiry_time}.")
     except Exception as e:
         print("Error:", e)
 
-async def extend_premium_user_hrs(user_id: int, extend_hrs: int):
+def extend_premium_user_hrs(user_id: int, extend_hrs: int):
     try:
         print(extend_hrs)
         # Check if the user is already premium
-        is_premium, expiry_time = await is_user_premium(user_id)
+        is_premium, expiry_time = is_user_premium(user_id)
         if is_premium:
             # If user is premium, extend the expiry time by 2 hours
             new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=extend_hrs)).strftime("%Y-%m-%d %H:%M:%S")
@@ -139,12 +139,12 @@ async def extend_premium_user_hrs(user_id: int, extend_hrs: int):
             # If user is not premium, add them as a new premium user
             current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
             expiry_time = (datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=extend_hrs)).strftime("%Y-%m-%d %H:%M:%S")
-            await save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
+            save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
             print(f"User {user_id} added as premium until {expiry_time}.")
     except Exception as e:
         print("Error:", e)
 
-async def calculate_remaining_time(expiry_time):
+def calculate_remaining_time(expiry_time):
     expiry_datetime = datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S")
     current_time = datetime.utcnow()
     time_difference = expiry_datetime - current_time
@@ -153,7 +153,7 @@ async def calculate_remaining_time(expiry_time):
     remaining_time = timedelta(days=time_difference.days, seconds=time_difference.seconds)
     return remaining_time
 
-async def remove_item_from_field(user_id: int, field: str, item: any):
+def remove_item_from_field(user_id: int, field: str, item: any):
     try:
         # Retrieve the user document from the premium database
         user = premiumdb.find_one({"_id": user_id})
@@ -182,14 +182,14 @@ async def remove_item_from_field(user_id: int, field: str, item: any):
         print("Error:", e)
 
 
-async def get_premium_users():
+def get_premium_users():
     try:
         premium_users = premiumdb.find({})
         premium_user_ids = []
         total_premium_users = 0
         for user in premium_users:
             user_id = user["_id"]
-            is_premium, _ = await is_user_premium(user_id)
+            is_premium, _ = is_user_premium(user_id)
             if is_premium:
                 premium_user_ids.append(user_id)
                 total_premium_users += 1
@@ -199,7 +199,7 @@ async def get_premium_users():
         return [], 0
 
 
-async def get_top_chat_users(user_id: int = None):
+def get_top_chat_users(user_id: int = None):
     try:
         print(premiumdb.find())
         top_users = premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1).limit(5)

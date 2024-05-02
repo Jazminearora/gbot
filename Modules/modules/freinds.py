@@ -1,4 +1,4 @@
-from pyrogram import filters, Client
+from pyrogram import filters
 from pyrogram.errors import UserBlocked, UserIdInvalid, PeerIdInvalid, RPCError
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import re
@@ -18,7 +18,7 @@ button_pattern = re.compile(r"^(👫 (Friends|Друзья|Dostlar) 👫)$")
 async def frens(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    frens_list = await vip_users_details(user_id, "frens")
+    frens_list = vip_users_details(user_id, "frens")
     keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton(await translate_async("Add friend", language), callback_data="add_friend")]
         ])
@@ -40,7 +40,7 @@ async def add_friend(client, query):
     await query.message.edit_text(await translate_async("Enter the ID of the friend you want to add:", language))
     friend_id_input = await pyrostep.wait_for(user_id)
     friend_id = friend_id_input.text
-    frens_list = await vip_users_details(user_id, "frens")
+    frens_list = vip_users_details(user_id, "frens")
 
     if frens_list is not  None:
         for id in frens_list:
@@ -79,7 +79,7 @@ async def accept_friend(client, query):
     user_id = int(query.data.split("_")[2])
     language = find_language(user_id)
     friend_id = query.from_user.id
-    frens_list = await vip_users_details(user_id, "frens")
+    frens_list = vip_users_details(user_id, "frens")
     if frens_list is not  None:
         for id in frens_list:
             if id == friend_id:
@@ -88,8 +88,8 @@ async def accept_friend(client, query):
     await query.message.reply_text(await translate_async("You have accepted the friend request!", language))
     detail = await client.get_users(user_id)
     await cbot.send_message(user_id, f"{detail.mention} {await translate_async("has accepted your friend request!")}")
-    await save_premium_user(user_id, frens=[friend_id])
-    await save_premium_user(friend_id, frens=[user_id])
+    save_premium_user(user_id, frens=[friend_id])
+    save_premium_user(friend_id, frens=[user_id])
 
 @cbot.on_callback_query(filters.regex("decline_friend"))
 async def decline_friend(client, query):

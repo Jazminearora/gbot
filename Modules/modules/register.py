@@ -115,7 +115,7 @@ async def register_user(client, message):
                                 # Default to English if the language is not recognized
                                 message_text = f"You are successfully referred by {name}."
                             await message.reply_text(message_text)
-                            await extend_premium_user(referer_user_id)
+                            extend_premium_user(referer_user_id)
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
                             total_points =await (get_point(referer_user_id))

@@ -121,7 +121,7 @@ def get_detailed_user_list(language):
     
 
 async def get_profile(user_id, language):
-    premium, time = await is_user_premium(user_id)
+    premium, time = is_user_premium(user_id)
     if premium:
         expiry = await calculate_remaining_time(time)
     try:

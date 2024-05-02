@@ -12,7 +12,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 button_pattern = re.compile(r"^(🔧 (Configure search|Настроить поиск|Axtarışı tənzimlə) 🔧)$")
 
 async def get_age_groups_text(user_id, lang):
-    age_groups_list = await vip_users_details(user_id, "age_groups")
+    age_groups_list = vip_users_details(user_id, "age_groups")
     if age_groups_list:
         return "\n".join([f"• {age_group}" for age_group in age_groups_list])
     else:
@@ -46,10 +46,10 @@ Please select your gender:""", lang), reply_markup=markup)
 @cbot.on_callback_query(filters.regex("cmle"))
 async def male_callback(client, callback_query):
     user_id = callback_query.from_user.id
-    is_premium, _ = await is_user_premium(user_id)
+    is_premium, _ = is_user_premium(user_id)
     lang = find_language(user_id)
     if is_premium:
-        await save_premium_user(user_id, gender="male")
+        save_premium_user(user_id, gender="male")
         await callback_query.answer(await translate_async("Your gender has been updated to male.", lang), show_alert=True)
     else:
         await callback_query.answer(await translate_async("You need to be a premium user to update your gender.", lang), show_alert=True)
@@ -58,9 +58,9 @@ async def male_callback(client, callback_query):
 async def female_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
-    is_premium, _ = await is_user_premium(user_id)
+    is_premium, _ = is_user_premium(user_id)
     if is_premium:
-        await save_premium_user(user_id, gender="female")
+        save_premium_user(user_id, gender="female")
         await callback_query.answer(await translate_async("Your gender has been updated to female.", lang), show_alert=True)
     else:
         await callback_query.answer(await translate_async("You need to be a premium user to update your gender.", lang), show_alert=True)
@@ -68,10 +68,10 @@ async def female_callback(client, callback_query):
 @cbot.on_callback_query(filters.regex("cany_gndr"))
 async def any_gender_callback(client, callback_query):
     user_id = callback_query.from_user.id
-    is_premium, _ = await is_user_premium(user_id)
+    is_premium, _ = is_user_premium(user_id)
     lang = find_language(user_id)
     if is_premium:
-        await save_premium_user(user_id, gender="any gender")
+        save_premium_user(user_id, gender="any gender")
         await callback_query.answer(await translate_async("Your gender has been updated to any gender.", lang), show_alert=True)
     else:
         await callback_query.answer(await translate_async("You need to be a premium user to update your gender.", lang), show_alert=True)
@@ -131,9 +131,9 @@ async def back_callback(client, callback_query):
             ])
     if user_id in age_groups:
         age_groups_list = age_groups.pop(user_id)
-        is_premium, _ = await is_user_premium(user_id)
+        is_premium, _ = is_user_premium(user_id)
         if is_premium:
-            await save_premium_user(user_id, age_groups=age_groups_list)
+            save_premium_user(user_id, age_groups=age_groups_list)
             await callback_query.answer(await translate_async("Your age groups have been updated.", lang), show_alert=True)
             await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)
 
@@ -148,7 +148,7 @@ async def back_callback(client, callback_query):
 async def room_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
-    cr_room = await vip_users_details(user_id, "room")
+    cr_room = vip_users_details(user_id, "room")
     reply_markup = InlineKeyboardMarkup([
     [InlineKeyboardButton(await translate_async("👥 Communication", lang), callback_data="config_communication")],
     [InlineKeyboardButton(await translate_async("💕 Intimacy", lang), callback_data="config_intimacy")],
@@ -166,5 +166,5 @@ async def room_configuration_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     room_type = callback_query.data.replace("config_", "")
-    await save_premium_user(user_id, room=room_type)
+    save_premium_user(user_id, room=room_type)
     await callback_query.answer(await translate_async(f"Your room configuration has been updated to {room_type}.", lang), show_alert=True)

@@ -133,7 +133,7 @@ async def check_payment_callback(client, callback_query):
     # Check the payment status using the order ID
     payment_info = await aaio.get_payment_info(order_id)
     if payment_info.is_success():
-        await extend_premium_user_hrs(user_id, hrs)
+        extend_premium_user_hrs(user_id, hrs)
         await callback_query.message.delete()
         await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))
     else:

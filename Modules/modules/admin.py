@@ -260,7 +260,7 @@ async def referral_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^vip_users$'))
 async def vip_users_handler(_, query):
-    premium_user_ids, total_premium_users = await get_premium_users()
+    premium_user_ids, total_premium_users = get_premium_users()
     if total_premium_users != 0:
         data = {'Premium Users': list(premium_user_ids)}
         filename = 'premium_users.txt'
@@ -417,7 +417,7 @@ async def add_vip(client, message):
             return
         try:
             # Extend the user's premium hours
-            await extend_premium_user_hrs(user_id, extend_hrs)
+            extend_premium_user_hrs(user_id, extend_hrs)
             await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
             await cbot.send_message(user_id, f"Received premium membership from admin for {extend_hrs} hours.")
         except Exception as e:

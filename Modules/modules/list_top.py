@@ -16,8 +16,8 @@ button_pattern = re.compile(r"^(🔝 (Top|Лучшие|Ən yuxarı) 🔝)$")
 @cbot.on_message((filters.command("top")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
 async def frens(client, message):
     # Get the top chat users
-    top_users, user_position, user_chat_time = await get_top_chat_users(message.from_user.id)
-    print(await get_top_chat_users(message.from_user.id))
+    top_users, user_position, user_chat_time = get_top_chat_users(message.from_user.id)
+    print(get_top_chat_users(message.from_user.id))
 
     # Format the chat time for the users
     formatted_top_users = []
