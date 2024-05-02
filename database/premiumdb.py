@@ -62,6 +62,7 @@ def is_user_premium(user_id: int):
     try:
         # Retrieve the user document from the premium database
         user = premiumdb.find_one({"_id": user_id})
+        print(user)
         if user:
             premium_status = user.get("premium_status", False)
             expiry_time = user.get("premium_expiry_time", None)
@@ -70,6 +71,7 @@ def is_user_premium(user_id: int):
                 current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 # If expiry time is not over
                 if expiry_time and expiry_time > current_time:
+                    print(expiry_time, premium_status)
                     return True, expiry_time
                 else:
                     # If expiry time is over, update premium status to False
