@@ -93,8 +93,8 @@ async def cback_callback(client, callback_query):
                                                                     
 --Current Configuration--:
 Gender: \n{vip_users_details(callback_query.from_user.id, "gender")}
-Age Group(s): {await get_age_groups_text(callback_query.from_user.id.from_user.id, lang)}  
-Room: {vip_users_details(callback_query.from_user.id.from_user.id, "room")}                                                                     
+Age Group(s): {await get_age_groups_text(callback_query.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
 
