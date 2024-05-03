@@ -60,18 +60,32 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
 
 def is_user_premium(user_id: int):
     try:
-        user = next((u for u in premiumdb.find() if u["_id"] == user_id), None)
-        if user:
-            premium_status = user.get("premium_status")
-            expiry_time = user.get("premium_expiry_time")
-            current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        # Retrieve the whole premium db document
+        premium_users = list(premiumdb.find())
 
-            if premium_status and expiry_time > current_time:
-                return True, expiry_time
-            else:
-                premiumdb.update_one({"_id": user_id}, {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}})
-                return False, None
-        return False, None
+        # Search for the user in the retrieved document
+        for user in premium_users:
+            if user["_id"] == user_id:
+                premium_status = user.get("premium_status")
+                expiry_time = user.get("premium_expiry_time")
+                current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
+                # If user is premium
+                if premium_status:
+                    # If expiry time is not over
+                    if expiry_time and expiry_time > current_time:
+                        return True, expiry_time
+                    else:
+                        # If expiry time is over, update premium status to False
+                        premiumdb.update_one(
+                            {"_id": user_id},
+                            {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
+                        )
+                        return False, None
+                else:
+                    return False, None
+            # If user does not exist, return False
+            return False, None
     except Exception as e:
         return False, None
         
