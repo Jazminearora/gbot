@@ -63,7 +63,7 @@ def is_user_premium(user_id: int):
         # Retrieve the whole premium db document
         premium_users = list(premiumdb.find())
         print("users_list:", premium_users)
-        
+
         # Search for the user in the retrieved document
         for user in premium_users:
             if user["_id"] == user_id:
@@ -73,7 +73,7 @@ def is_user_premium(user_id: int):
                 print("expiry time:", expiry_time)
                 current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 print("current time:", current_time)
-                
+
                 # If user is premium
                 if premium_status:
                     # If expiry time is not over
@@ -84,13 +84,12 @@ def is_user_premium(user_id: int):
                         # If expiry time is over, update premium status to False
                         premiumdb.update_one(
                             {"_id": user_id},
-                            {"$set": {"premium_status": False}}
+                            {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
                         )
                         return False, None
                 else:
-                    # If user is not premium, return False
                     return False, None
-        
+
         # If user does not exist, return False
         return False, None
     except Exception as e:
