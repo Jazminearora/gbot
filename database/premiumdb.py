@@ -65,7 +65,7 @@ def is_user_premium(user_id: int):
 
         # Search for the user in the retrieved document
         for user in premium_users:
-            if user["_id"] == user_id:
+            if str(user_id) == user["_id"]:
                 premium_status = user.get("premium_status")
                 expiry_time = user.get("premium_expiry_time")
                 current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
