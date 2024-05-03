@@ -152,6 +152,7 @@ async def match_genral():
         print("function called")
         for i, user1 in enumerate(searching_users.copy()):
             for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
+                count += 1
                 if user1["language"] == user2["language"]:
                     # Match found, add pair to chat_pairs and notify users
                     new_pair = (user1["user_id"], user2["user_id"])
@@ -185,6 +186,8 @@ async def match_genral():
                     break  # Break out of inner loop if match found
             if matched:  # Break out of outer loop if match found
                 break
+        count += 1
+    count += 1
     if not matched:
         count += 1
 
