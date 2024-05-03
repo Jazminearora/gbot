@@ -9,7 +9,6 @@ from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
-from helpers.matcher import match_users
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
 from Modules import cbot
 from Modules.modules.register import get_user_name
@@ -107,7 +106,7 @@ async def normal_search(client, message):
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
         chk = await apppend_id(user_id, language, gender, age_groups, interest)
         if chk:
-            await match_users()
+            await match_genral()
         else:
             await message.reply(await translate_async("failed to search.", language), reply_markup=keyboard)
     except Exception as e:
