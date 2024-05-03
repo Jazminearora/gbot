@@ -386,4 +386,8 @@ async def match_premium(**kwargs):
                     break  # Break out of inner loop if match found
             if matched:  # Break out of outer loop if match found
                 break
+        count += 1
+    count += 1
+    if not matched:
+        count += 1
 
