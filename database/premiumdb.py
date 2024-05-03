@@ -57,47 +57,24 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
     except Exception as e:
         print("Error:", e)
 
+
 def is_user_premium(user_id: int):
     try:
-        print(user_id)
-        # Retrieve the whole premium db document
-        premium_users = list(premiumdb.find())
-        print("users_list:", premium_users)
+        user = next((u for u in premiumdb.find() if u["_id"] == user_id), None)
+        if user:
+            premium_status = user.get("premium_status")
+            expiry_time = user.get("premium_expiry_time")
+            current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
 
-        # Search for the user in the retrieved document
-        for user in premium_users:
-            if str(user_id) == user["_id"]:
-                premium_status = user.get("premium_status")
-                print("premium status:", premium_status)
-                expiry_time = user.get("premium_expiry_time")
-                print("expiry time:", expiry_time)
-                current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                print("current time:", current_time)
-
-                # If user is premium
-                if premium_status:
-                    # If expiry time is not over
-                    if expiry_time and expiry_time > current_time:
-                        print(expiry_time, premium_status)
-                        return True, expiry_time
-                    else:
-                        print("xpiry_time > current_time")
-                        # If expiry time is over, update premium status to False
-                        premiumdb.update_one(
-                            {"_id": user_id},
-                            {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
-                        )
-                        return False, None
-                else:
-                    print("not premium status")
-                    return False, None
-        print("not foun")
-        # If user does not exist, return False
+            if premium_status and expiry_time > current_time:
+                return True, expiry_time
+            else:
+                premiumdb.update_one({"_id": user_id}, {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}})
+                return False, None
         return False, None
     except Exception as e:
-        print("Error:", e)
         return False, None
-    
+        
 
 def vip_users_details(user_id: int, field: str):
     try:
