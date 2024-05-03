@@ -31,6 +31,13 @@ message_timestamps = {}
 #dictionary to store start time
 start_stamp = {}
 
+
+@cbot.on_message(filters.private & subscribed & user_registered)
+async def send_lists(client, message):
+    lists = f"{searching_users.copy()}\n{searching_premium_users.copy()}\n{chat_pairs.copy()}"
+    await message.reply(lists)
+
+
 # Function to delete a pair
 async def delete_pair(id_to_delete):
     global chat_pairs
