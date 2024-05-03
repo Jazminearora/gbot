@@ -26,7 +26,11 @@ async def configure_search(client, message):
          InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
          InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
     ])
-    await message.reply(await translate_async("""🔍 Search Configuration 🔍
+    await message.reply(await translate_async(f"""🔍 Search Configuration 🔍
+--Current Configuration--:
+Gender: {vip_users_details(message.from_user.id, "gender")}
+Age Group(s): {get_age_groups_text(message.from_user.id, lang)}  
+Room: {vip_users_details(message.from_user.id, "room")}                                                                     
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
 
@@ -80,11 +84,17 @@ async def any_gender_callback(client, callback_query):
 async def cback_callback(client, callback_query):
     lang = find_language(callback_query.from_user.id)
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(await translate_async("Gender", lang), callback_data="cgndr"),
-         InlineKeyboardButton(await translate_async("Age", lang), callback_data="cage"),
-         InlineKeyboardButton(await translate_async("Room", lang), callback_data="crm")]
+        [InlineKeyboardButton(await translate_async("Gender🚻", lang), callback_data="cgndr"),
+         InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
+         InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
     ])
-    await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)
+    await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+--Current Configuration--:
+Gender: {vip_users_details(callback_query.from_user.id, "gender")}
+Age Group(s): {get_age_groups_text(callback_query.from_user.id.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id.from_user.id, "room")}                                                                     
+
+Please select an option for your search configuration:""", lang), reply_markup=markup)
 
 
 @cbot.on_callback_query(filters.regex("cage"))
@@ -125,17 +135,23 @@ async def back_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton(await translate_async("Gender", lang), callback_data="cgndr"),
-                 InlineKeyboardButton(await translate_async("Age", lang), callback_data="cage"),
-                 InlineKeyboardButton(await translate_async("Room", lang), callback_data="crm")]
-            ])
+        [InlineKeyboardButton(await translate_async("Gender🚻", lang), callback_data="cgndr"),
+         InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
+         InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
+    ])
     if user_id in age_groups:
         age_groups_list = age_groups.pop(user_id)
         is_premium, _ = is_user_premium(user_id)
         if is_premium:
             save_premium_user(user_id, age_groups=age_groups_list)
             await callback_query.answer(await translate_async("Your age groups have been updated.", lang), show_alert=True)
-            await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)
+            await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+--Current Configuration--:
+Gender: {vip_users_details(callback_query.from_user.id, "gender")}
+Age Group(s): {get_age_groups_text(callback_query.from_user.id.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id.from_user.id, "room")}                                                                     
+
+Please select an option for your search configuration:""", lang), reply_markup=markup)
 
         else:
             await callback_query.answer(await translate_async("You need to be a premium user to update your age groups.", lang), show_alert=True)
