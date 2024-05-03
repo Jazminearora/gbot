@@ -79,10 +79,10 @@ async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
     # Create keyboard with start searching button
     keyboard = ReplyKeyboardMarkup(([
-    [KeyboardButton(await translate_async("Normal Search", user_language))], 
-    [KeyboardButton(await translate_async("Configured Search", user_language))],
+    [KeyboardButton(await translate_async("Normal Search", user_language)), 
+    KeyboardButton(await translate_async("Configured Search", user_language))],
     [KeyboardButton(await translate_async("Find a Guy", user_language))],
-    [KeyboardButton(await translate_async("Find a Girl", user_language))]]),
+    KeyboardButton(await translate_async("Find a Girl", user_language))]),
     resize_keyboard=True)
     caption = await translate_async(f"Your language:{user_language}\nChoose the button below to find an interlocutor.", user_language)
     await message.reply(caption, reply_markup=keyboard)
@@ -112,6 +112,7 @@ async def normal_search(client, message):
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
         chk = await apppend_id(user_id, language, gender, age_groups, interest)
+        print("chking")
         if chk:
             await match_genral()
         else:
@@ -144,6 +145,7 @@ async def apppend_id(user_id, language, gender, age_groups, interest):
 
 # Function to match users and start chatting
 async def match_genral():
+    print("function called!!")
     count = 2
     matched = False
     while count < 1:
