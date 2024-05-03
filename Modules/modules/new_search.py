@@ -138,9 +138,9 @@ async def apppend_id(user_id, language, gender, age_groups, interest):
 # Function to match users and start chatting
 async def match_genral():
     count = 2
+    matched = False
     while count < 1:
         print("function called")
-        matched = False
         for i, user1 in enumerate(searching_users.copy()):
             for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
                 if user1["language"] == user2["language"]:
