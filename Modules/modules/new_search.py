@@ -115,10 +115,10 @@ async def normal_search(client, message):
         await message.reply(await translate_async("Searching for a Male interlocutor...", language), reply_markup=keyboard)
         chk = searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         print("chking")
-        if chk:
+        try:
             match_premium(gender="male", language="english")
-        else:
-            await message.reply(await translate_async("failed to search.", language), reply_markup=keyboard)
+        except Exception as e:
+            await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
         await message.reply(f"Error: {e}")
 
