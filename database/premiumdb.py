@@ -81,6 +81,7 @@ def is_user_premium(user_id: int):
                         print(expiry_time, premium_status)
                         return True, expiry_time
                     else:
+                        print("xpiry_time > current_time")
                         # If expiry time is over, update premium status to False
                         premiumdb.update_one(
                             {"_id": user_id},
@@ -88,8 +89,9 @@ def is_user_premium(user_id: int):
                         )
                         return False, None
                 else:
+                    print("not premium status")
                     return False, None
-
+        print("not foun")
         # If user does not exist, return False
         return False, None
     except Exception as e:
