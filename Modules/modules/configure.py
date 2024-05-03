@@ -27,9 +27,10 @@ async def configure_search(client, message):
          InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
     ])
     await message.reply(await translate_async(f"""🔍 Search Configuration 🔍
+                                              
 --Current Configuration--:
 Gender: {vip_users_details(message.from_user.id, "gender")}
-Age Group(s): {get_age_groups_text(message.from_user.id, lang)}  
+Age Group(s): \n{get_age_groups_text(message.from_user.id, lang)}  
 Room: {vip_users_details(message.from_user.id, "room")}                                                                     
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
@@ -89,8 +90,9 @@ async def cback_callback(client, callback_query):
          InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
     ])
     await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+                                                                    
 --Current Configuration--:
-Gender: {vip_users_details(callback_query.from_user.id, "gender")}
+Gender: \n{vip_users_details(callback_query.from_user.id, "gender")}
 Age Group(s): {get_age_groups_text(callback_query.from_user.id.from_user.id, lang)}  
 Room: {vip_users_details(callback_query.from_user.id.from_user.id, "room")}                                                                     
 
@@ -146,10 +148,11 @@ async def back_callback(client, callback_query):
             save_premium_user(user_id, age_groups=age_groups_list)
             await callback_query.answer(await translate_async("Your age groups have been updated.", lang), show_alert=True)
             await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+
 --Current Configuration--:
 Gender: {vip_users_details(callback_query.from_user.id, "gender")}
-Age Group(s): {get_age_groups_text(callback_query.from_user.id.from_user.id, lang)}  
-Room: {vip_users_details(callback_query.from_user.id.from_user.id, "room")}                                                                     
+Age Group(s): \n{get_age_groups_text(callback_query.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
 
