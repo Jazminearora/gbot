@@ -35,7 +35,7 @@ cbot = Client(
 client = MongoClient(MONGO_URI)
 db = client["cboSot-primer"]
 referdb = db["referdb"]
-premiumdb = db["premiumdb"]
+premiumdb = db["premiumb"]
 mongodb = db["tgtbot"]
 
 ADMIN_IDS = ADMIN_IDS
