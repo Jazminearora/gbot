@@ -59,18 +59,23 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
 
 def is_user_premium(user_id: int):
     try:
+        print(user_id)
         # Retrieve the whole premium db document
         premium_users = list(premiumdb.find())
+        print("users_list:", premium_users)
         
         # Search for the user in the retrieved document
         for user in premium_users:
             if user["_id"] == user_id:
-                premium_status = user.get("premium_status", False)
-                expiry_time = user.get("premium_expiry_time", None)
+                premium_status = user.get("premium_status")
+                print("premium status:", premium_status)
+                expiry_time = user.get("premium_expiry_time")
+                print("expiry time:", expiry_time)
+                current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                print("current time:", current_time)
                 
                 # If user is premium
                 if premium_status:
-                    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                     # If expiry time is not over
                     if expiry_time and expiry_time > current_time:
                         print(expiry_time, premium_status)
