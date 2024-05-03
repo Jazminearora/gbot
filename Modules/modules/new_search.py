@@ -95,6 +95,9 @@ async def search_interlocutor(client, message):
 async def normal_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
+    if is_user_premium(user_id):
+        await message.reply(await translate_async("Purchase premium first!", language))
+        return
     try:
         # Check if user is already in a chat
         for pair in chat_pairs:
@@ -336,7 +339,8 @@ scheduler.start()
 
 async def match_premium(**kwargs):
     count = 0
-    while count < 1:
+    matched = False
+    while count < 2:
         print("function called")
         matched = False  # Flag to check if any match occurred in this iteration
         # Match premium users with normal users
