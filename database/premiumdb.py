@@ -125,7 +125,6 @@ def extend_premium_user(user_id: int):
 
 def extend_premium_user_hrs(user_id: int, extend_hrs: int):
     try:
-        print(extend_hrs)
         # Check if the user is already premium
         is_premium, expiry_time = is_user_premium(user_id)
         if is_premium:

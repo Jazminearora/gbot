@@ -9,8 +9,9 @@ from langdb.get_msg import get_registration_text, get_reply_markup
 from helpers.translator import translate_text
 from database.registerdb import add_user_id
 from database.referdb import save_id, is_served_user, get_point
-from database.premiumdb import extend_premium_user
+from database.premiumdb import extend_premium_user_hrs
 from helpers.forcesub import subscribed, user_registered
+from config import EXTEND_HRS_REFER
 
 
 
@@ -115,7 +116,7 @@ async def register_user(client, message):
                                 # Default to English if the language is not recognized
                                 message_text = f"You are successfully referred by {name}."
                             await message.reply_text(message_text)
-                            extend_premium_user(referer_user_id)
+                            extend_premium_user_hrs(referer_user_id, EXTEND_HRS_REFER)
                             referer_lang = find_language(referer_user_id)
                             referred_name = await get_user_name(user_id)
                             total_points =await (get_point(referer_user_id))
