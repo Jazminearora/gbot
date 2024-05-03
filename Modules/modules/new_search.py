@@ -32,7 +32,7 @@ message_timestamps = {}
 start_stamp = {}
 
 
-@cbot.on_message(filters.private & subscribed & user_registered)
+@cbot.on_message(filters.command("hlo"), filters.private & subscribed & user_registered)
 async def send_lists(client, message):
     lists = f"{searching_users.copy()}\n{searching_premium_users.copy()}\n{chat_pairs.copy()}"
     await message.reply(lists)
