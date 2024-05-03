@@ -95,7 +95,9 @@ async def search_interlocutor(client, message):
 async def normal_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    if is_user_premium(user_id):
+    prem_stat, _ = is_user_premium(user_id)
+    print(prem_stat)
+    if not prem_stat:
         await message.reply(await translate_async("Purchase premium first!", language))
         return
     try:
