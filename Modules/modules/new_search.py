@@ -257,14 +257,31 @@ def is_match(user1, user2):
 async def process_match(user1, user2):
     new_pair = (user1["user_id"], user2["user_id"])
     add_pair(new_pair)
-    for user in searching_premium_users:
-        if user["user_id"] == user1["user_id"]:    
-            searching_premium_users.remove(user1["user_id"])
-        else:
-            searching_users.remove(user1["user_id"])    
-    searching_users.remove(user2["user_id"])
+    
+    # Remove user from searching list
+    for i, user in enumerate(searching_users):
+        if user["user_id"] == user1["user_id"]:
+            del searching_users[i]
+            break  # Exit the loop once user is found and removed
+    else:
+        for i, vip_user in enumerate(searching_premium_users):
+            if vip_user["user_id"] == user1["user_id"]:
+                del searching_premium_users[i]
+                break  # Exit the loop once user is found and removed
+
+    for i, user in enumerate(searching_users):
+        if user["user_id"] == user2["user_id"]:
+            del searching_users[i]
+            break  # Exit the loop once user is found and removed
+    else:
+        for i, vip_user in enumerate(searching_premium_users):
+            if vip_user["user_id"] == user2["user_id"]:
+                del searching_premium_users[i]
+                break  # Exit the loop once user is found and removed
+
     await update_user_dialogs(user1, user2)
     await send_match_messages(user1, user2)
+
 
 async def update_user_dialogs(user1, user2):
     motel1 = vip_users_details(user1["user_id"], "total_dialog")
