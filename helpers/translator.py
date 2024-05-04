@@ -10,7 +10,6 @@ def translate_text(text, target_language):
         return None
     
 async def translate_async(text, target_language):
-    print(target_language)
     try:
         if target_language == 'English':
             tr_lang = "en"
@@ -24,4 +23,5 @@ async def translate_async(text, target_language):
         translation = await t.translate(text, targetlang=tr_lang)
         return translation.text
     except Exception as e:
+        print(target_language)
         return f'Error occurred during translation: {e}'
