@@ -7,6 +7,7 @@ from datetime import timedelta
 from Modules import cbot
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language
+from helpers.translator import translate_async
 from database.referdb import get_top_referers
 from database.premiumdb import get_top_chat_users
 from langdb.get_msg import get_top_text, get_points_text, get_prize_text, get_no_referers_text
@@ -69,6 +70,8 @@ async def frens(client, message):
 
 
 
+from database.referdb import get_point
+from .. import BOT_USERNAME
 
 
 
@@ -83,7 +86,20 @@ async def referals_command(client, message):
     caption , share_txt = await get_text(total_points, referral_link, user_lang)
 
 
-
+async def get_text(total_points, referral_link, language):
+    msg = "Invite users using your link and receive 👑VIP status for 1 hour for each!\n\nInvited:"
+    msg2 = "Your personal link:\n👉"
+    share_txt = "Hey buddy!!\n\n Try this amazing bot for getting connected with strangers from the world!"
+    
+    translated_msg = await translate_async(msg, target_language=language)
+    translated_msg2 = await translate_async(msg2, target_language=language)
+    translated_share_txt = await translate_async(share_txt, target_language=language)
+    
+    message = (
+        translated_msg + str(total_points) + "\n\n" +
+        translated_msg2 + referral_link
+    )
+    return message, translated_share_txt
 
 
 
