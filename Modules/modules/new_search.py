@@ -250,29 +250,41 @@ def is_match(user1, user2):
 
 async def process_match(user1, user2):
     new_pair = (user1["user_id"], user2["user_id"])
+    add_pair(new_pair)
+    await update_user_dialogs(user1, user2)
+    await send_match_messages(user1, user2)
+
+async def update_user_dialogs(user1, user2):
     motel1 = vip_users_details(user1["user_id"], "total_dialog")
     motel2 = vip_users_details(user2["user_id"], "total_dialog")
     total1 = motel1 if motel1 else 0
     total2 = motel2 if motel2 else 0
     save_premium_user(user1["user_id"], total_dialog=total1 + 1)
     save_premium_user(user2["user_id"], total_dialog=total2 + 1)
-    add_pair(new_pair)
-    start_stamp[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    start_stamp[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    message_timestamps[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    message_timestamps[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    start_stamp[f"user_{user1['user_id']}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    start_stamp[f"user_{user2['user_id']}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    message_timestamps[f"user_{user1['user_id']}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    message_timestamps[f"user_{user2['user_id']}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
+async def send_match_messages(user1, user2):
     lang1 = find_language(user1["user_id"])
     lang2 = find_language(user2["user_id"])
+    is_vip1, _ = is_user_premium(user1["user_id"])
+    is_vip2, _ = is_user_premium(user2["user_id"])
     name = await get_user_name(user2["user_id"])
-    cap1 = await interlocutor_vip_message(lang1, name, user2["gender"], user2["age_groups"])
+    if is_vip1:
+        cap1 = await interlocutor_vip_message(lang1, name, user2["gender"], user2["age_groups"])
+    else:
+        cap1 = await interlocutor_normal_message(lang1)
     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     await cbot.send_message(user1["user_id"], cap1, reply_markup=keyboard)
-    caption, markup = await interlocutor_normal_message(lang2)
+    if is_vip2:
+        caption, markup = await interlocutor_vip_message(lang2, name, user1["gender"], user1["age_groups"])
+    else:
+        caption, markup = await interlocutor_normal_message(lang2)
     await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
     searching_premium_users.remove(user1)
     searching_users.remove(user2)
-
-
 
 
 # Handle cancel button
