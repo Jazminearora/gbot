@@ -147,7 +147,10 @@ async def back_callback(client, callback_query):
         if is_premium:
             save_premium_user(user_id, age_groups=age_groups_list)
             await callback_query.answer(await translate_async("Your age groups have been updated.", lang), show_alert=True)
-            await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+        else:
+            await callback_query.answer(await translate_async("You need to be a premium user to update your age groups.", lang), show_alert=True)
+
+    await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
 
 --Current Configuration--:
 Gender: {vip_users_details(callback_query.from_user.id, "gender")}
@@ -155,13 +158,6 @@ Age Group(s): \n{await get_age_groups_text(callback_query.from_user.id, lang)}
 Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
-
-        else:
-            await callback_query.answer(await translate_async("You need to be a premium user to update your age groups.", lang), show_alert=True)
-            await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)
-    else:
-        await callback_query.message.edit_caption(await translate_async("Please select an option:", lang), reply_markup=markup)        
-
 
 @cbot.on_callback_query(filters.regex("crm"))
 async def room_callback(client, callback_query):
