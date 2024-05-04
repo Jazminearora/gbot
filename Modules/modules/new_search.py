@@ -251,6 +251,8 @@ def is_match(user1, user2):
 async def process_match(user1, user2):
     new_pair = (user1["user_id"], user2["user_id"])
     add_pair(new_pair)
+    searching_premium_users.remove(user1["user_id"])
+    searching_users.remove(user2["user_id"])
     await update_user_dialogs(user1, user2)
     await send_match_messages(user1, user2)
 
@@ -272,19 +274,17 @@ async def send_match_messages(user1, user2):
     is_vip1, _ = is_user_premium(user1["user_id"])
     is_vip2, _ = is_user_premium(user2["user_id"])
     name = await get_user_name(user2["user_id"])
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     if is_vip1:
         cap1 = await interlocutor_vip_message(lang1, name, user2["gender"], user2["age_groups"])
     else:
         cap1 = await interlocutor_normal_message(lang1)
-    keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     await cbot.send_message(user1["user_id"], cap1, reply_markup=keyboard)
     if is_vip2:
-        caption, markup = await interlocutor_vip_message(lang2, name, user1["gender"], user1["age_groups"])
+        caption = await interlocutor_vip_message(lang2, name, user1["gender"], user1["age_groups"])
     else:
-        caption, markup = await interlocutor_normal_message(lang2)
-    await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
-    searching_premium_users.remove(user1)
-    searching_users.remove(user2)
+        caption = await interlocutor_normal_message(lang2)
+    await cbot.send_message(user2["user_id"], caption, reply_markup=keyboard)
 
 
 # Handle cancel button

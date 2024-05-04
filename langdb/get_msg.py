@@ -383,33 +383,14 @@ async def interlocutor_vip_message(language, name, gender, age_group):
 async def interlocutor_normal_message(language):
     if language == "English":
         message = "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now."
-        keyboard = ReplyKeyboardMarkup(
-            [
-                [KeyboardButton("End chat")]
-            ],
-            resize_keyboard=True
-        )
     elif language == "Russian":
         message = "Собеседник найден!\nКупите Premium, чтобы узнать подробности о собеседнике😈! \n\nТеперь вы можете начать общение."
-        keyboard = ReplyKeyboardMarkup(
-            [
-                [KeyboardButton("Завершить чат")]
-            ],
-            resize_keyboard=True
-        )
     elif language == "Azerbejani":
         message = "Müşayiətçi tapıldı!\nMəlumatlarını öyrənmək üçün Premium alın😈! \n\nSiz artıq söhbətə başlaya bilərsiniz."
-        keyboard = ReplyKeyboardMarkup(
-            [
-                [KeyboardButton("Söhbəti sonlandır")]
-            ],
-            resize_keyboard=True
-        )
     else:
         message = "Language not supported."
-        keyboard = None
     
-    return message, keyboard
+    return message
 
 
 def get_points_text(lang):
