@@ -90,7 +90,45 @@ async def search_interlocutor(client, message):
     await message.reply(caption, reply_markup=keyboard)
 
 
-#Normal search
+#premium search for finding a female user
+@cbot.on_message(filters.private & filters.regex("Find a Girl|Найди себе девушку|Bir qız tapın") & subscribed & user_registered)
+async def normal_search(client, message):
+    user_id = message.from_user.id
+    language = find_language(user_id)
+    prem_stat, _ = is_user_premium(user_id)
+    print(prem_stat)
+    if not prem_stat:
+        await message.reply(await translate_async("Purchase premium first!", language))
+        return
+    try:
+        # Check if user is already in a chat
+        for pair in chat_pairs:
+            if user_id in pair:
+                await message.reply(await translate_async("You are already in a chat.", language))
+                return
+        # Check if user is already searching
+        for user in searching_users:
+            if user["user_id"] == user_id:
+                await message.reply("You are already searching.")
+                return
+        # Get normal user's details
+        gender = get_gender(user_id, "huls")
+        age_groups = get_age_group(user_id, "huls")
+        room = get_interest(user_id, "huls")
+        language = find_language(user_id)
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+        await message.reply(await translate_async("Searching for a Female interlocutor...", language), reply_markup=keyboard)
+        chk = searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        print("chking")
+        try:
+            await match_premium(gender="female", language=language)
+        except Exception as e:
+            await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
+    except Exception as e:
+        await message.reply(f"Error: {e}")
+
+
+#premium search for finding a male user
 @cbot.on_message(filters.private & filters.regex("Find a Guy|Найди парня|Bir Oğlan tapın") & subscribed & user_registered)
 async def normal_search(client, message):
     user_id = message.from_user.id
@@ -121,7 +159,7 @@ async def normal_search(client, message):
         chk = searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         print("chking")
         try:
-            await match_premium(gender="male", language="english")
+            await match_premium(gender="male", language=language)
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -342,8 +380,8 @@ scheduler.start()
 async def match_premium(**kwargs):
     count = 0
     matched = False
-    while count < 2:
-        print("function called")
+    while count < 30:
+        print("function called...")
         matched = False  # Flag to check if any match occurred in this iteration
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
@@ -388,6 +426,7 @@ async def match_premium(**kwargs):
                     break  # Break out of inner loop if match found
             if matched:  # Break out of outer loop if match found
                 break
+        time.sleep(3)
         count += 1
     count += 1
     if not matched:
