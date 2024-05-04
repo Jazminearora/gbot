@@ -111,17 +111,13 @@ async def normal_search(client, message):
             if user["user_id"] == user_id:
                 await message.reply("You are already searching.")
                 return
-        # Get normal user's details
-        gender = get_gender(user_id, "huls")
-        age_groups = get_age_group(user_id, "huls")
-        room = get_interest(user_id, "huls")
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for a Female interlocutor...", language), reply_markup=keyboard)
-        chk = searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         print("chking")
         try:
-            await match_premium(gender="female", language=language)
+            await match_users()
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -134,7 +130,6 @@ async def normal_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     prem_stat, _ = is_user_premium(user_id)
-    print(prem_stat)
     if not prem_stat:
         await message.reply(await translate_async("Purchase premium first!", language))
         return
@@ -149,17 +144,13 @@ async def normal_search(client, message):
             if user["user_id"] == user_id:
                 await message.reply("You are already searching.")
                 return
-        # Get normal user's details
-        gender = get_gender(user_id, "huls")
-        age_groups = get_age_group(user_id, "huls")
-        room = get_interest(user_id, "huls")
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for a Male interlocutor...", language), reply_markup=keyboard)
-        chk = searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        searching_premium_users.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
         print("chking")
         try:
-            await match_premium(gender="male", language=language)
+            await match_users()
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -191,7 +182,7 @@ async def normal_search(client, message):
         chk = await apppend_id(user_id, language, gender, age_groups, interest)
         print("chking")
         if chk:
-            await match_genral()
+            await match_users()
         else:
             await message.reply(await translate_async("failed to search.", language), reply_markup=keyboard)
     except Exception as e:
@@ -220,53 +211,69 @@ async def apppend_id(user_id, language, gender, age_groups, interest):
     searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
     return True
 
-# Function to match users and start chatting
-async def match_genral():
-    print("function called!!")
+async def match_users():
     count = 0
-    matched = False
-    while count < 2:
+    while count < 1:
         print("function called")
-        for i, user1 in enumerate(searching_users.copy()):
-            for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
-                count += 1
-                if user1["language"] == user2["language"]:
-                    # Match found, add pair to chat_pairs and notify users
-                    new_pair = (user1["user_id"], user2["user_id"])
-                    lang1 = find_language(user1["user_id"])
-                    lang2 = find_language(user2["user_id"])
-                    start_stamp[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    start_stamp[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    message_timestamps[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    message_timestamps[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    motel = vip_users_details(user1, "total_dialog")
-                    motel2 = vip_users_details(user2, "total_dialog")
-                    if motel:
-                        total = motel
-                    else:
-                        total = 0
-                    if motel2:
-                        total2 = motel2
-                    else:
-                        total2 = 0                            
-                    save_premium_user(user1, total_dialog= total + 1)
-                    save_premium_user(user2, total_dialog= total2 + 1)
-                    add_pair(new_pair)
-                    # Remove users from searching lists
-                    searching_users.remove(user1)
-                    searching_users.remove(user2)
-                    caption, markup = await interlocutor_normal_message(lang2)
-                    caption1, markup1 = await interlocutor_normal_message(lang1)
-                    await cbot.send_message(user1["user_id"], caption1, reply_markup=markup1)
-                    await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
-                    matched = True  # Set flag to True
-                    break  # Break out of inner loop if match found
-            if matched:  # Break out of outer loop if match found
+        matched = False
+        # Match premium users with normal users
+        for premium_user in searching_premium_users.copy():
+            for normal_user in searching_users.copy():
+                if is_match(premium_user, normal_user):
+                    await process_match(premium_user, normal_user)
+                    matched = True
+                    break
+            if matched:
                 break
-        count += 1
-    count += 1
-    if not matched:
-        count += 1
+
+        # Match normal users with other normal users
+        if not matched:
+            for i, user1 in enumerate(searching_users.copy()):
+                for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
+                    if user1["language"] == user2["language"]:
+                        await process_match(user1, user2)
+                        matched = True
+                        break
+                if matched:
+                    break
+
+        if not matched:
+            count += 1
+
+
+def is_match(user1, user2):
+    return (user1["language"] == user2["language"] and
+            (user1["gender"] == user2["gender"] or user1["gender"] == "any gender" or user1["gender"] is None) and
+            (user1["age_groups"] is None or user2["age_groups"] in user1["age_groups"] if user1["age_groups"] is not None else True) and
+            (user1["room"] == user2["room"] or user1["room"] == "any" or user1["room"] is None))
+
+
+async def process_match(user1, user2):
+    new_pair = (user1["user_id"], user2["user_id"])
+    motel1 = vip_users_details(user1["user_id"], "total_dialog")
+    motel2 = vip_users_details(user2["user_id"], "total_dialog")
+    total1 = motel1 if motel1 else 0
+    total2 = motel2 if motel2 else 0
+    save_premium_user(user1["user_id"], total_dialog=total1 + 1)
+    save_premium_user(user2["user_id"], total_dialog=total2 + 1)
+    add_pair(new_pair)
+    start_stamp[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    start_stamp[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    message_timestamps[f"user_{user1["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    message_timestamps[f"user_{user2["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    lang1 = find_language(user1["user_id"])
+    lang2 = find_language(user2["user_id"])
+    name = await get_user_name(user2["user_id"])
+    cap1 = await interlocutor_vip_message(lang1, name, user2["gender"], user2["age_groups"])
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
+    await cbot.send_message(user1["user_id"], cap1, reply_markup=keyboard)
+    caption, markup = await interlocutor_normal_message(lang2)
+    await cbot.send_message(user2["user_id"], caption, reply_markup=markup)
+    searching_premium_users.remove(user1)
+    searching_users.remove(user2)
+
+
+
 
 # Handle cancel button
 @cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır|Завершить чат") & subscribed & user_registered)
@@ -375,60 +382,3 @@ scheduler.add_job(check_inactive_chats, 'interval', minutes=1)
 
 # Start the scheduler
 scheduler.start()
-
-
-async def match_premium(**kwargs):
-    count = 0
-    matched = False
-    while count < 30:
-        print("function called...")
-        matched = False  # Flag to check if any match occurred in this iteration
-        # Match premium users with normal users
-        for premium_user in searching_premium_users.copy():
-            for normal_user in searching_users.copy():
-                match_fields = kwargs.keys()  # Get the fields to match from the kwargs
-                match = all(
-                    premium_user.get(field) == normal_user.get(field) or premium_user.get(field) in (None, "any")
-                    for field in match_fields
-                )
-                if match:
-                    # Match found, add pair to chat_pairs and notify users
-                    new_pair = (premium_user["user_id"], normal_user["user_id"])
-                    motel = vip_users_details(premium_user["user_id"], "total_dialog")
-                    motel2 = vip_users_details(normal_user["user_id"], "total_dialog")
-                    if motel:
-                        total = motel
-                    else:
-                        total = 0
-                    if motel2:
-                        total2 = motel2
-                    else:
-                        total2 = 0                            
-                    save_premium_user(premium_user["user_id"], total_dialog= total + 1)
-                    save_premium_user(normal_user["user_id"], total_dialog= total2 + 1)
-                    add_pair(new_pair)
-                    start_stamp[f"user_{premium_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    start_stamp[f"user_{normal_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    message_timestamps[f"user_{normal_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    message_timestamps[f"user_{premium_user["user_id"]}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-                    name = await get_user_name(normal_user["user_id"])
-                    lang1 = find_language(premium_user["user_id"])
-                    cap1 = await interlocutor_vip_message(lang1, name, normal_user["gender"], normal_user["age_groups"])
-                    lang2 = find_language(normal_user["user_id"])
-                    keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
-                    await cbot.send_message(premium_user["user_id"], cap1, reply_markup= keyboard)
-                    caption, markup =await interlocutor_normal_message(lang2)
-                    await cbot.send_message(normal_user["user_id"],caption, reply_markup= markup)
-                    # Remove users from searching lists
-                    searching_premium_users.remove(premium_user)
-                    searching_users.remove(normal_user)
-                    matched = True  # Set flag to True
-                    break  # Break out of inner loop if match found
-            if matched:  # Break out of outer loop if match found
-                break
-        time.sleep(3)
-        count += 1
-    count += 1
-    if not matched:
-        count += 1
-
