@@ -107,10 +107,9 @@ async def normal_search(client, message):
                 await message.reply(await translate_async("You are already in a chat.", language))
                 return
         # Check if user is already searching
-        for user in searching_users:
-            if user["user_id"] == user_id:
-                await message.reply("You are already searching.")
-                return
+        if await is_user_searching(user_id):
+            await message.reply("You are already searching.")
+            return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for a Female interlocutor...", language), reply_markup=keyboard)
@@ -140,10 +139,9 @@ async def normal_search(client, message):
                 await message.reply(await translate_async("You are already in a chat.", language))
                 return
         # Check if user is already searching
-        for user in searching_users:
-            if user["user_id"] == user_id:
-                await message.reply("You are already searching.")
-                return
+        if await is_user_searching(user_id):
+            await message.reply("You are already searching.")
+            return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for a Male interlocutor...", language), reply_markup=keyboard)
@@ -168,10 +166,9 @@ async def normal_search(client, message):
                 await message.reply(await translate_async("You are already in a chat.", language))
                 return
         # Check if user is already searching
-        for user in searching_users:
-            if user["user_id"] == user_id:
-                await message.reply("You are already searching.")
-                return
+        if await is_user_searching(user_id):
+            await message.reply("You are already searching.")
+            return
         # Get normal user's details
         gender = get_gender(user_id, "huls")
         age_groups = get_age_group(user_id, "huls")
@@ -240,6 +237,15 @@ async def match_users():
         if not matched:
             count += 1
 
+async def is_user_searching(user_id):
+    for user in searching_users:
+        if user["user_id"] == user_id:
+            return True
+    for user in searching_premium_users:
+        if user["user_id"] == user_id:
+            return True
+    return False
+
 
 def is_match(user1, user2):
     return (user1["language"] == user2["language"] and
@@ -251,7 +257,11 @@ def is_match(user1, user2):
 async def process_match(user1, user2):
     new_pair = (user1["user_id"], user2["user_id"])
     add_pair(new_pair)
-    searching_premium_users.remove(user1["user_id"])
+    for user in searching_premium_users:
+        if user["user_id"] == user1["user_id"]:    
+            searching_premium_users.remove(user1["user_id"])
+        else:
+            searching_users.remove(user1["user_id"])    
     searching_users.remove(user2["user_id"])
     await update_user_dialogs(user1, user2)
     await send_match_messages(user1, user2)
