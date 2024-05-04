@@ -65,6 +65,7 @@ async def premium_free_callback(bot, update):
 
 @cbot.on_message(filters.command(["referals"]) & filters.private)
 async def referals_command(client, message):
+    print("referals")
     user_id = message.from_user.id
     total_points = await get_point(user_id)
     referral_link = f"https://t.me/{BOT_USERNAME}?start=r{user_id}"
