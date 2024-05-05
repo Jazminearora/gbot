@@ -6,7 +6,7 @@ import time
 import re
 import apscheduler.schedulers.asyncio as aps
 from pyrogram import filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
@@ -16,6 +16,7 @@ from Modules import cbot
 from Modules.modules.register import get_user_name
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
+from database.chatdb import save_user
 
 
 # Create a scheduler
@@ -368,7 +369,7 @@ async def send_match_messages(user1, user2):
 
 # Handle cancel button
 @cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır|Завершить чат") & subscribed & user_registered)
-async def cancel(_, message):
+async def end_chat(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     # Find the other user in the pair and inform them
@@ -383,7 +384,30 @@ async def cancel(_, message):
             await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
     # Find the chat pair and delete it
     await delete_pair(user_id)
+    await message.reply(await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(other_user_id))
+    await cbot.send_message(other_user_id, await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(user_id))
 
+
+async def get_rating_markup(user_id):
+    rating_emojis = ["🤩", "😊", "😐", "😕", "😠"]
+    buttons = [
+        InlineKeyboardButton(f"{emoji}", callback_data=f"emoji_{emoji}_{user_id}")
+        for emoji in rating_emojis
+    ]
+    reply_markup = InlineKeyboardMarkup([buttons])
+    return reply_markup
+
+    # Handle the rating response
+@cbot.on_callback_query(filters.private & filters.regex(r"emoji_.*") & subscribed & user_registered)
+async def handle_rating(_, query):
+    user_id = query.from_user.id
+    language = find_language(user_id)
+    rating_emoji = query.data.split("_")[1]
+    other_user_id = query.data.split("_")[2]
+    rating = {rating_emoji: 1}
+    print(rating, other_user_id)
+    save_user(other_user_id, rating=rating)
+    await query.message.edit_text(await translate_async("Thank you for your feedback!", language))
 
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)
