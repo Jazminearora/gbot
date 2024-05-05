@@ -398,7 +398,7 @@ async def get_rating_markup(user_id):
     return reply_markup
 
     # Handle the rating response
-@cbot.on_callback_query(filters.private & filters.regex(r"emoji_.*") & subscribed & user_registered)
+@cbot.on_callback_query(filters.regex(r"emoji_.*") & subscribed & user_registered)
 async def handle_rating(_, query):
     user_id = query.from_user.id
     language = find_language(user_id)
