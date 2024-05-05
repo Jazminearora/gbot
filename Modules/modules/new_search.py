@@ -258,15 +258,16 @@ async def match_users():
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
             for normal_user in searching_users.copy():
-                if (user1["language"] == user2["language"] and
-                    (user1["gender"] == user2["gender"] or user1["gender"] == "any gender" or user1["gender"] is None) and
-                    (user1["age_groups"] is None or user2["age_groups"] in user1["age_groups"] if user1["age_groups"] is not None else True) and
-                    (user1["room"] == user2["room"] or user1["room"] == "any" or user1["room"] is None)):
+                if (premium_user["language"] == normal_user["language"] and
+                    (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
+                    (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and
+                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
                     await process_match(premium_user, normal_user)
                     matched = True
                     break
             if matched:
                 break
+
 
         # Match normal users with other normal users
         if not matched:
