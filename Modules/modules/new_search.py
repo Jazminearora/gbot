@@ -390,14 +390,19 @@ async def end_chat(_, message):
 
 async def get_rating_markup(user_id):
     rating_emojis = ["🤩", "😊", "😐", "😕", "😠"]
+    lang = find_language(user_id) 
+    # Buttons for rating emojis
     buttons = [
-        InlineKeyboardButton(f"{emoji}", callback_data=f"emoji_{emoji}_{user_id}")
+        [InlineKeyboardButton(f"{emoji}", callback_data=f"emoji_{emoji}_{user_id}")]
         for emoji in rating_emojis
     ]
-    reply_markup = InlineKeyboardMarkup([buttons])
+    
+    # Add skip button in a separate row
+    buttons.append([InlineKeyboardButton(translate_async("Skip", lang), callback_data=f"skip_handle")])
+    reply_markup = InlineKeyboardMarkup(buttons)
     return reply_markup
 
-    # Handle the rating response
+# Handle the rating response
 @cbot.on_callback_query(filters.regex(r"emoji_.*") & subscribed & user_registered)
 async def handle_rating(_, query):
     user_id = query.from_user.id
@@ -408,6 +413,15 @@ async def handle_rating(_, query):
     print(rating, other_user_id)
     save_user(other_user_id, rating=rating)
     await query.message.edit_text(await translate_async("Thank you for your feedback!", language))
+
+@cbot.on_callback_query(filters.regex(r"skip_handle") & subscribed & user_registered)
+async def handle_skip(_, query):
+    try:
+        # Delete the callback message
+        await query.message.delete()
+    except Exception as e:
+        print("Error in close_profile:", e)
+
 
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)

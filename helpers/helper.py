@@ -3,6 +3,7 @@ from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text
 from database.premiumdb import is_user_premium, calculate_remaining_time
+from database.chatdb import users_chat_details
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def find_language(user_id):
@@ -128,11 +129,17 @@ async def get_profile(user_id, language):
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
+        rating = users_chat_details(user_id, "rating")
         if language == "English":
             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
             message += f"\nPremium Status: {premium}"
             if premium:
                 message += f"\nPremium Expiry: {expiry}"
+            if rating:
+                rating_text = "\nRating:"
+                for emoji, count in rating.items():
+                    rating_text += f"{emoji}: {count}, "
+                    message += rating_text
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":
