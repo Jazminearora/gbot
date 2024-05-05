@@ -89,6 +89,47 @@ async def search_interlocutor(client, message):
     caption = await translate_async(f"Your language:{user_language}\nChoose the button below to find an interlocutor.", user_language)
     await message.reply(caption, reply_markup=keyboard)
 
+@cbot.on_message(filters.private & filters.regex("Configured Search|Настроенный поиск|Konfiqurasiya edilmiş Axtarış") & subscribed & user_registered)
+async def configured_search(client, message):
+    user_id = message.from_user.id
+    language = find_language(user_id)
+    prem_stat, _ = is_user_premium(user_id)
+    if not prem_stat:
+        await message.reply(await translate_async("Purchase premium first!", language))
+        return
+    try:
+        # Check if user is already in a chat
+        for pair in chat_pairs:
+            if user_id in pair:
+                await message.reply(await translate_async("You are already in a chat.", language))
+                return
+        # Check if user is already searching
+        if await is_user_searching(user_id):
+            await message.reply("You are already searching.")
+            return
+        language = find_language(user_id)
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+        await message.reply(await translate_async("Searching for a interlocutor based on your configuration...", language), reply_markup=keyboard)
+        gender = vip_users_details(message.from_user.id, "gender")
+        age_groups = vip_users_details(message.from_user.id, "age_groups")
+        room = vip_users_details(message.from_user.id, "room")
+            # Send the current configuration message
+        await message.reply(await translate_async(f"""Searching for a interlocutor based on your configuration...
+
+
+--Current Configuration--:
+                                                  
+Gender: {gender if gender else "Any"} 
+Age Group(s): { {"/n" + age_groups} if age_groups else "Any"}
+Room: {room if room else "Any"} """ ))
+        searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        try:
+            await match_users()
+        except Exception as e:
+            await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
+    except Exception as e:
+        await message.reply(f"Error: {e}")
+
 
 #premium search for finding a female user
 @cbot.on_message(filters.private & filters.regex("Find a Girl|Найди себе девушку|Bir qız tapın") & subscribed & user_registered)
@@ -389,32 +430,6 @@ async def check_inactive_chats():
                 await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
                 await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
 
-
-
-# function to check for inactive chats
-async def check_inactive_chats():
-    for pair in chat_pairs:
-        if not pair:
-            return
-        user1, user2 = pair
-        msg_time1 = message_timestamps.get(f"user_{user1}")
-        msg_time2 = message_timestamps.get(f"user_{user2}")
-        last_message_time1 = datetime.strptime(msg_time1, "%Y-%m-%d %H:%M:%S")
-        last_message_time2 = datetime.strptime(msg_time2, "%Y-%m-%d %H:%M:%S")
-        cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
-        if last_message_time1 and last_message_time2:
-            print((cr_time - last_message_time1).seconds)
-            if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:
-                # Chat has been inactive for more than 10 minutes, end the chat
-                await delete_pair(user1)
-                lang1 = find_language(user1)
-                lang2 = find_language(user2)
-                reply_markup1 = await get_reply_markup(lang1)
-                reply_markup2 = await get_reply_markup(lang2)
-                caption1 = await translate_async("Chat has been ended due to inactivity.", lang1)
-                caption2 = await translate_async("Chat has been ended due to inactivity.", lang2)
-                await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
-                await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
 
 # Schedule the task to run every 10 minutes
 scheduler.add_job(check_inactive_chats, 'interval', minutes=1)
