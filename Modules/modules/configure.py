@@ -16,7 +16,7 @@ async def get_age_groups_text(user_id, lang):
     if age_groups_list:
         return "\n".join([f"• {age_group}" for age_group in age_groups_list])
     else:
-        return await translate_async("No age groups selected yet.", lang)
+        return await translate_async("Any.", lang)
 
 @cbot.on_message(((filters.regex(button_pattern)) | (filters.command("configure"))) & filters.private  & subscribed & user_registered)
 async def configure_search(client, message):

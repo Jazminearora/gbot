@@ -14,6 +14,7 @@ from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
 from Modules import cbot
 from Modules.modules.register import get_user_name
+from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 
 
@@ -120,8 +121,8 @@ async def configured_search(client, message):
 --Current Configuration--:
                                                   
 Gender: {gender if gender else "Any"} 
-Age Group(s): { {"/n" + age_groups} if age_groups else "Any"}
-Room: {room if room else "Any"} """ ))
+Age Group(s): \n{await get_age_groups_text(message.from_user.id, language)}  
+Room: {room if room else "Any"} """, language))
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         try:
             await match_users()
