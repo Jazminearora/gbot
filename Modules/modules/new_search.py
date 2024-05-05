@@ -257,31 +257,37 @@ async def match_users():
         matched = False
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
+            print(f"Processing premium user {premium_user['user_id']}...")
             for normal_user in searching_users.copy():
+                print(f"Processing normal user {normal_user['user_id']}...")
                 if (premium_user["language"] == normal_user["language"] and
                     (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
                     (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and
                     (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
+                    print(f"Match found between premium user {premium_user['user_id']} and normal user {normal_user['user_id']}.")
                     await process_match(premium_user, normal_user)
                     matched = True
-                    break
             if matched:
+                print(f"Match found for premium user {premium_user['user_id']}. Exiting loop...")
                 break
-
-
-        # Match normal users with other normal users
         if not matched:
+            # Match normal users with other normal users
             for i, user1 in enumerate(searching_users.copy()):
+                print(f"Processing normal user {user1['user_id']}...")
                 for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
+                    print(f"Processing normal user {user2['user_id']}...")
                     if user1["language"] == user2["language"]:
+                        print(f"Match found between normal user {user1['user_id']} and normal user {user2['user_id']}.")
                         await process_match(user1, user2)
                         matched = True
                         break
                 if matched:
+                    print(f"Match found for normal user {user1['user_id']}. Exiting loop...")
                     break
 
         if not matched:
             count += 1
+            print(f"No matches found after {count} iterations. Exiting loop...")
 
 async def is_user_searching(user_id):
     for user in searching_users:
