@@ -129,17 +129,15 @@ async def get_profile(user_id, language):
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
-        rating = users_chat_details(user_id, "rating")
+        chat_details = users_chat_details(5131723020, "rating")
+        rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
         if language == "English":
             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
             message += f"\nPremium Status: {premium}"
             if premium:
                 message += f"\nPremium Expiry: {expiry}"
             if rating:
-                rating_text = "\nRating:"
-                for emoji, count in rating.items():
-                    rating_text += f"{emoji}: {count}, "
-                    message += rating_text
+                message += rating
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":

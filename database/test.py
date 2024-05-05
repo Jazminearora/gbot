@@ -1,5 +1,10 @@
-from Modules import chatdb
-from pymongo.errors import PyMongoError
+from pymongo import MongoClient
+from bson.son import SON
+import pymongo
+
+client = MongoClient("mongodb+srv://MRDAXX:MRDAXX@mrdaxx.prky3aj.mongodb.net/?retryWrites=true&w=majority")
+db = client["cboSot-primer"]
+chatdb = db["chatdb"]
 
 def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
     try:
@@ -36,7 +41,7 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
                 "frens": frens or []
             }
             chatdb.insert_one(doc)
-    except PyMongoError as e:
+    except pymongo.errors.PyMongoError as e:
         print("Error:", e)
 
 
@@ -47,12 +52,20 @@ def users_chat_details(user_id: int, field: str):
             return user.get(field, {})
         else:
             return {}
-    except PyMongoError as e:
+    except pymongo.errors.PyMongoError as e:
         print("Error:", e)
         return {}
-    
+
+# save_user(5131723020, rating={"💩": 1})
+chat_details = users_chat_details(5131723020, "rating")
+result = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
+print(result)
+
+
 def reset_ratings(user_id: int):
     try:
         chatdb.update_one({"_id": user_id}, {"$set": {"rating": {}}})
-    except PyMongoError as e:
+    except pymongo.errors.PyMongoError as e:
         print("Error:", e)
+
+reset_ratings(5131723020)
