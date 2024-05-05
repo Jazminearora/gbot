@@ -214,7 +214,7 @@ async def normal_search(client, message):
         # Get normal user's details
         gender = get_gender(user_id, "huls")
         age_groups = get_age_group(user_id, "huls")
-        interest = get_interest(user_id, "huls").lower
+        interest = get_interest(user_id, "huls").lower()
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
