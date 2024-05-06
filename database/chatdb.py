@@ -39,7 +39,7 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
                 "frens": frens or []
             }
             chatdb.insert_one(doc)
-    except pymongo.errors.PyMongoError as e:
+    except PyMongoError as e:
         print("Error:", e)
 
 
