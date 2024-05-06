@@ -54,33 +54,35 @@ async def add_callback(_, callback_query):
 
     if msg.text:
         title, url = msg.text.split("\n")
-        try:
-            keyboard = metadata.reply_markup
-            if keyboard:
-                new_keyboard = keyboard.inline_keyboard
-            else:
-                new_keyboard = []
-            print(metadata.chat.id, ":", metadata.id)
-            new_keyboard.append([InlineKeyboardButton(title, url=url)])
-            keyboard = InlineKeyboardMarkup(new_keyboard)
-            sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
-            message_id = sent.id
-            await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
-            save_button = InlineKeyboardButton("Save", callback_data=f"save_{sent.id}_{sent.chat.id}")
-            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{sent.id}_{sent.chat.id}")
-            reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
-            await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
+        # try:
+        keyboard = metadata.reply_markup
+        if keyboard:
+            new_keyboard = keyboard.inline_keyboard
+        else:
+            new_keyboard = []
+        print(metadata.chat.id, ":", metadata.id)
+        new_keyboard.append([InlineKeyboardButton(title, url=url)])
+        keyboard = InlineKeyboardMarkup(new_keyboard)
+        sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
+        message_id = sent.id
+        await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
+        save_button = InlineKeyboardButton("Save", callback_data=f"save_{sent.id}_{sent.chat.id}")
+        add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{sent.id}_{sent.chat.id}")
+        reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
+        await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
 
-        except RPCError as e:
-            print(f"Error editing message: {e}")
-            return
+        # except RPCError as e:
+        #     print(f"Error editing message: {e}")
+        #     return
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
+    print(PROMO_MSG)
+    await message.reply_text(PROMO_MSG)
     # Create a new file with PROMO_MSG content
     with open("promo_msg.txt", "w") as f:
-        with open("promo_msg.txt", "w") as f:
-            f.write(" ".join(PROMO_MSG))
+        for msg in PROMO_MSG:
+            f.write(str(msg) + "\n")
 
     # Send the file as a message
     await message.reply_document("promo_msg.txt")
