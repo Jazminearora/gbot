@@ -409,9 +409,9 @@ async def handle_rating(_, query):
     language = find_language(user_id)
     rating_emoji = query.data.split("_")[1]
     other_user_id = query.data.split("_")[2]
-    rating = {rating_emoji: 1}
+    rating = {str(rating_emoji): 1}
     print(rating, other_user_id)
-    await save_user(other_user_id, rating=rating)
+    save_user(other_user_id, rating=rating)
     await query.message.edit_text(await translate_async("Thank you for your feedback!", language))
 
 @cbot.on_callback_query(filters.regex(r"skip_handle") & subscribed & user_registered)
