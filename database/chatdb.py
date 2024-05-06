@@ -4,7 +4,7 @@ from pymongo.errors import PyMongoError
 async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
     print("save user called", user_id, ":", rating)
     try:
-        existing_user = chatdb.find_one({"_id": user_id})
+        existing_user = chatdb.find_one({"_id": int(user_id)})
         if existing_user:
             update_ops = {"$inc": {}}
             if total_chat!= 0:
@@ -27,7 +27,7 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
                 chatdb.update_one({"_id": user_id}, update_ops)
         else:
             doc = {
-                "_id": user_id,
+                "_id": int(user_id),
                 "total_chat": total_chat,
                 "total_message": total_message,
                 "total_dialogues": total_dialogues,
@@ -43,7 +43,8 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
 
 def users_chat_details(user_id: int, field: str):
     try:
-        user = chatdb.find_one({"_id": user_id})
+        user = chatdb.find_one({"_id": int(user_id)})
+        print("user:", user)
         if user and field in user:
             return user.get(field, {})
         else:

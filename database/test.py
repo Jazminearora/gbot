@@ -60,6 +60,7 @@ save_user(1567526737, rating={"😐": 1})
 chat_details = users_chat_details(1567526737, "rating")
 result = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
 print(result)
+print(chatdb.find_one({"_id": 1567526737}))
 
 
 # def reset_ratings(user_id: int):
