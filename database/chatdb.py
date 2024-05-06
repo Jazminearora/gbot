@@ -24,6 +24,7 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
             if frens:
                 update_ops["$addToSet"]["frens"] = {"$each": frens}
 
+            print("update ops:", update_ops)
             if update_ops:
                 result = chatdb.update_one({"_id": user_id}, update_ops)
                 print("update result:", result.modified_count)
