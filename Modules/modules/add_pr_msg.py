@@ -66,7 +66,7 @@ async def add_callback(_, callback_query):
         sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
         message_id = sent.id
         try:
-            await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
+            await cbot.edit_message_reply_markup(chat_id=sent.chat.id, message_id=message_id, reply_markup=keyboard)
         except RPCError as r:
             print("error:", r)
         save_button = InlineKeyboardButton("Save", callback_data=f"save_{sent.id}_{sent.chat.id}")
