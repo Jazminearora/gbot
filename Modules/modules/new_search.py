@@ -385,21 +385,26 @@ async def end_chat(_, message):
             await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
     # Find the chat pair and delete it
     await delete_pair(user_id)
-    await message.reply(await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(other_user_id))
+    await message.reply(await translate_async("Can you leave a review about your interlocutor?", language), reply_markup= await get_rating_markup(other_user_id))
     await cbot.send_message(other_user_id, await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(user_id))
 
 
 async def get_rating_markup(user_id):
-    rating_emojis = ["🤩", "😊", "😐", "😕", "😠"]
     lang = find_language(user_id) 
     # Buttons for rating emojis
     buttons = [
-        [InlineKeyboardButton(f"{emoji}", callback_data=f"emoji_{emoji}_{user_id}")]
-        for emoji in rating_emojis
+        [
+            InlineKeyboardButton(await translate_async("👍 Good", lang), callback_data=f"emoji_👍_{user_id}"),
+            InlineKeyboardButton(await translate_async("👎 Bad", lang), callback_data=f"emoji_👎_{user_id}")
+        ],
+        [
+            InlineKeyboardButton(await translate_async("⛔ Fraudster/Scam/Advertising", lang), callback_data=f"emoji_⛔_{user_id}")
+        ],
+        [
+            InlineKeyboardButton(await translate_async("Skip for now!", lang), callback_data=f"skip_handle")
+        ]
     ]
     
-    # Add skip button in a separate row
-    buttons.append([InlineKeyboardButton(await translate_async("Skip", lang), callback_data=f"skip_handle")])
     reply_markup = InlineKeyboardMarkup(buttons)
     return reply_markup
 

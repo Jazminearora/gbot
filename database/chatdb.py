@@ -4,7 +4,6 @@ from pymongo.errors import PyMongoError
 def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
     try:
         existing_user = chatdb.find_one({"_id": str(user_id)})
-        print("existing user:", existing_user)
         if existing_user:
             update_ops = {"$inc": {}}
             if total_chat!= 0:
@@ -17,18 +16,14 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
                 update_ops["$inc"]["profanity_score"] = profanity_score
             if rating:
                 for emoji, count in rating.items():
-                    print("rating key:", emoji, "count:", count)
                     update_ops["$inc"][f"rating.{emoji}"] = count
             if chat_time!= 0:
                 update_ops["$inc"]["chat_time"] = chat_time
             if frens:
                 update_ops["$addToSet"]["frens"] = {"$each": frens}
 
-            print("update ops:", update_ops)
             if update_ops:
                 result = chatdb.update_one({"_id": str(user_id)}, update_ops)
-                print("update result:", result.raw_result)
-                print("update result:", result.raw_result())
         else:
             doc = {
                 "_id": str(user_id),
@@ -36,7 +31,7 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
                 "total_message": total_message,
                 "total_dialogues": total_dialogues,
                 "profanity_score": profanity_score,
-                "rating": rating or {"🤩": 0, "😊": 0, "😐": 0, "😕": 0, "😠": 0},
+                "rating": rating or {"👍": 0, "👎": 0, "⛔": 0},
                 "chat_time": chat_time,
                 "frens": frens or []
             }
@@ -48,7 +43,6 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
 def users_chat_details(user_id: int, field: str):
     try:
         user = chatdb.find_one({"_id": str(user_id)})
-        print("user:", user)
         if user and field in user:
             return user.get(field, {})
         else:
@@ -60,6 +54,5 @@ def users_chat_details(user_id: int, field: str):
 def reset_ratings(user_id: int):
     try:
         result = chatdb.update_one({"_id": str(user_id)}, {"$set": {"rating": {}}})
-        print("reset ratings result:", result.modified_count)
     except PyMongoError as e:
         print("Error:", e)
