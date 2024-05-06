@@ -1,10 +1,9 @@
 from Modules import chatdb
 from pymongo.errors import PyMongoError
 
-async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
-    print("save user called", user_id, ":", rating)
+def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
     try:
-        existing_user = chatdb.find_one({"_id": int(user_id)})
+        existing_user = chatdb.find_one({"_id": user_id})
         print("existing user:", existing_user)
         if existing_user:
             update_ops = {"$inc": {}}
@@ -17,21 +16,20 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
             if profanity_score!= 0:
                 update_ops["$inc"]["profanity_score"] = profanity_score
             if rating:
+                print("rating key:", emoji, "count:", count)
                 for emoji, count in rating.items():
-                    print("rating key:", emoji, "count:", count)
-                    update_ops["$inc"]["rating"] = {emoji: count} 
+                    update_ops["$inc"][f"rating.{emoji}"] = count
             if chat_time!= 0:
                 update_ops["$inc"]["chat_time"] = chat_time
             if frens:
                 update_ops["$addToSet"]["frens"] = {"$each": frens}
 
-            print("update ops:", update_ops)
             if update_ops:
                 result = chatdb.update_one({"_id": user_id}, update_ops)
                 print("update result:", result.modified_count)
         else:
             doc = {
-                "_id": int(user_id),
+                "_id": user_id,
                 "total_chat": total_chat,
                 "total_message": total_message,
                 "total_dialogues": total_dialogues,
@@ -40,9 +38,8 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
                 "chat_time": chat_time,
                 "frens": frens or []
             }
-            print("inserting doc:", doc)
             chatdb.insert_one(doc)
-    except PyMongoError as e:
+    except pymongo.errors.PyMongoError as e:
         print("Error:", e)
 
 
