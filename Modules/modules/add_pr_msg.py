@@ -74,26 +74,25 @@ async def lang_callback(_, callback_query):
         
         # Upload the photo to Telegraph and get the link
         photo_link = await upload_image(photo_path)
-        os.remove(photo_path)
     else:
         photo_link = None
     # Store the photo link along with the text and markup
     if lang == "ENGLISH":
         English[f"message_{metadata.id}"] = {
-            "text": metadata.text,
+            "text": metadata.caption if photo_link else metadata.text,
             "reply_markup": metadata.reply_markup,
             "photo_link": photo_link
         }
     elif lang == "RUSSIAN":
         Russian[f"message_{metadata.id}"] = {
-            "text": metadata.text,
+            "text": metadata.caption if photo_link else metadata.text,
             "reply_markup": metadata.reply_markup,
             "photo_link": photo_link
         }
     elif lang == "AZERBAIJANI":
         Azerbejani[f"message_{metadata.id}"] = {
             "text": metadata.text,
-            "reply_markup": metadata.reply_markup,
+            "text": metadata.caption if photo_link else metadata.text,
             "photo_link": photo_link
         }
     await callback_query.answer("Message saved.", show_alert=True)
@@ -137,25 +136,25 @@ async def add_callback(_, callback_query):
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
-    # Create a new file with PROMO_MSG content
     all_messages = {
         'english': English,
         'russian': Russian,
         'azerbaijani': Azerbejani
     }
 
-    # Convert InlineKeyboardMarkup objects to dictionaries
+    # Convert InlineKeyboardMarkup objects to formatted text
     for lang in all_messages:
         if isinstance(all_messages[lang], InlineKeyboardMarkup):
-            all_messages[lang] = all_messages[lang].to_dict()
+            formatted_text = ""
+            for row in all_messages[lang].inline_keyboard:
+                for button in row:
+                    formatted_text += f"{button.text} ({button.url})\n"
+            all_messages[lang] = formatted_text
 
     # Write the data to a text file
     with open('all_messages.txt', 'w') as f:
         for lang, msg in all_messages.items():
-            f.write(f"{lang}: {str(msg)}\n")
+            f.write(f"{lang}: {msg}\n")
 
     # Send the file as a message
     await message.reply_document("all_messages.txt")
-
-    # Remove the file from the file system
-    os.remove("all_messages.txt")
