@@ -47,7 +47,7 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
 
 def users_chat_details(user_id: int, field: str):
     try:
-        user = chatdb.find_one({"_id": int(user_id)})
+        user = chatdb.find_one({"_id": str(user_id)})
         print("user:", user)
         if user and field in user:
             return user.get(field, {})

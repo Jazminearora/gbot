@@ -37,7 +37,7 @@ db = client["cboSot-primer"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
 mongodb = db["tgtbot"]
-chatdb = db["chatsdb"]
+chatdb = db["chatdbs"]
 
 ADMIN_IDS = ADMIN_IDS
 

@@ -1,10 +1,11 @@
 from pymongo import MongoClient
 from bson.son import SON
 import pymongo
+import pymongo.errors
 
 client = MongoClient("mongodb+srv://MRDAXX:MRDAXX@mrdaxx.prky3aj.mongodb.net/?retryWrites=true&w=majority")
 db = client["cboSot-primer"]
-chatdb = db["chatdb"]
+chatdb = db["chatsdb"]
 
 def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
     try:
@@ -47,7 +48,8 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
 
 def users_chat_details(user_id: int, field: str):
     try:
-        user = chatdb.find_one({"_id": user_id})
+        user = chatdb.find_one({"_id": str(user_id)})
+        print("user:", user)
         if user and field in user:
             return user.get(field, {})
         else:
@@ -56,12 +58,22 @@ def users_chat_details(user_id: int, field: str):
         print("Error:", e)
         return {}
 
-# save_user(5131723020, rating={"😐": 1})
+print(users_chat_details(5131723020, "rating"))
 chat_details = users_chat_details(5131723020, "rating")
-chatdb.find_one({"_id": user_id})
-result = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
-print(result)
-print(chatdb.find_one({"_id": 5131723020}))
+rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
+print(rating)
+# save_user(5131723020, rating={"😐": 1})
+# chat_details = users_chat_details(5131723020, "rating")
+# # chatdb.find_one({"_id": user_id})
+# result = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
+# print(result)
+# Get a list of all collections in the database
+# collections = chatdb.find({})
+
+# # Iterate over each collection and print its contents
+# for document in collections:
+#     print(document)
+# {"_id": 5131723020}
 
 
 # def reset_ratings(user_id: int):

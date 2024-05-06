@@ -90,6 +90,7 @@ async def search_interlocutor(client, message):
         resize_keyboard=True)
     caption = await translate_async(f"Your language:{user_language}\nChoose the button below to find an interlocutor.", user_language)
     await message.reply(caption, reply_markup=keyboard)
+    save_user(message.from_user.id)
 
 @cbot.on_message(filters.private & filters.regex("Configured Search|Настроенный поиск|Konfiqurasiya edilmiş Axtarış") & subscribed & user_registered)
 async def configured_search(client, message):
@@ -409,7 +410,6 @@ async def handle_rating(_, query):
     language = find_language(user_id)
     rating_emoji = query.data.split("_")[1]
     other_user_id = query.data.split("_")[2]
-    save_user(other_user_id)
     rating = {str(rating_emoji): 1}
     print(rating, other_user_id)
     save_user(other_user_id, rating=rating)
