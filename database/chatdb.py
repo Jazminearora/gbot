@@ -5,6 +5,7 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
     print("save user called", user_id, ":", rating)
     try:
         existing_user = chatdb.find_one({"_id": int(user_id)})
+        print("existing user:", existing_user)
         if existing_user:
             update_ops = {"$inc": {}}
             if total_chat!= 0:
@@ -17,14 +18,17 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
                 update_ops["$inc"]["profanity_score"] = profanity_score
             if rating:
                 for emoji, count in rating.items():
-                    update_ops["$inc"][f"rating.{emoji}"] = count
+                    print("rating key:", emoji, "count:", count)
+                    update_ops["$inc"][f"rating.{str(emoji)}"] = count 
             if chat_time!= 0:
                 update_ops["$inc"]["chat_time"] = chat_time
             if frens:
                 update_ops["$addToSet"]["frens"] = {"$each": frens}
 
+            print("update ops:", update_ops)
             if update_ops:
-                chatdb.update_one({"_id": user_id}, update_ops)
+                result = chatdb.update_one({"_id": user_id}, update_ops)
+                print("update result:", result.modified_count)
         else:
             doc = {
                 "_id": int(user_id),
@@ -36,6 +40,7 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
                 "chat_time": chat_time,
                 "frens": frens or []
             }
+            print("inserting doc:", doc)
             chatdb.insert_one(doc)
     except PyMongoError as e:
         print("Error:", e)
@@ -55,6 +60,7 @@ def users_chat_details(user_id: int, field: str):
     
 def reset_ratings(user_id: int):
     try:
-        chatdb.update_one({"_id": user_id}, {"$set": {"rating": {}}})
+        result = chatdb.update_one({"_id": user_id}, {"$set": {"rating": {}}})
+        print("reset ratings result:", result.modified_count)
     except PyMongoError as e:
         print("Error:", e)
