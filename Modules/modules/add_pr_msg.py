@@ -33,12 +33,13 @@ async def add_msg(_, message):
 
 @cbot.on_callback_query(filters.regex(r"save_(.+)_(.+)"))
 async def save_callback(_, callback_query):
+    await callback_query.message.delete()
     data = callback_query.data.split("_")
     msg_id = int(data[1])
     chat_id = int(data[2])
     metadata = await cbot.get_messages(chat_id, msg_id)
     PROMO_MSG.append(metadata)
-    await callback_query.answer("Message saved.")
+    await callback_query.answer("Message saved.", show_alert=True)
 
 @cbot.on_callback_query(filters.regex(r"add_(.+)_(.+)"))
 async def add_callback(_, callback_query):
@@ -64,13 +65,7 @@ async def add_callback(_, callback_query):
             keyboard = InlineKeyboardMarkup(new_keyboard)
             sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
             message_id = sent.id
-            try:
-                 # update reply markup in metadata
-                updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
-            except RPCError as e:
-                print(f"Error editing message: {e}")
-            #send the upated msg with new inline button
-            updated_metadata.copy(callback_query.message.chat.id)
+            await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
             save_button = InlineKeyboardButton("Save", callback_data=f"save_{sent.id}_{sent.chat.id}")
             add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{sent.id}_{sent.chat.id}")
             reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
@@ -84,7 +79,8 @@ async def add_callback(_, callback_query):
 async def get_msg(_, message):
     # Create a new file with PROMO_MSG content
     with open("promo_msg.txt", "w") as f:
-        f.write(PROMO_MSG)
+        with open("promo_msg.txt", "w") as f:
+            f.write(" ".join(PROMO_MSG))
 
     # Send the file as a message
     await message.reply_document("promo_msg.txt")
