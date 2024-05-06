@@ -19,7 +19,7 @@ async def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, t
             if rating:
                 for emoji, count in rating.items():
                     print("rating key:", emoji, "count:", count)
-                    update_ops["$inc"][f"rating.{str(emoji)}"] = count 
+                    update_ops["$inc"]["rating"] = {emoji: count} 
             if chat_time!= 0:
                 update_ops["$inc"]["chat_time"] = chat_time
             if frens:
