@@ -5,7 +5,7 @@ import pyrostep
 
 from .. import cbot, BOT_USERNAME, ADMIN_IDS
 from database.prdb import PROMO_MSG
-from pathlib import Path
+import os
 
 pyrostep.listen(cbot)
 
@@ -64,8 +64,11 @@ async def add_callback(_, callback_query):
             keyboard = InlineKeyboardMarkup(new_keyboard)
             sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
             message_id = sent.id
-            # update reply markup in metadata
-            updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
+            try:
+                 # update reply markup in metadata
+                updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
+            except RPCError as e:
+                print(f"Error editing message: {e}")
             #send the upated msg with new inline button
             updated_metadata.copy(callback_query.message.chat.id)
             save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.id}_{updated_metadata.chat.id}")
@@ -79,10 +82,12 @@ async def add_callback(_, callback_query):
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
-    prdb_file = Path("database/prdb")
-    if prdb_file.exists() and prdb_file.is_file():
-        with open(prdb_file, "r") as f:
-            prdb_content = f.read()
-        await message.reply_text(prdb_content)
-    else:
-        await message.reply_text("The prdb file does not exist or is not a valid file.")
+    # Create a new file with PROMO_MSG content
+    with open("promo_msg.txt", "w") as f:
+        f.write(PROMO_MSG)
+
+    # Send the file as a message
+    await message.reply_document("promo_msg.txt")
+
+    # Remove the file from the file system
+    os.remove("promo_msg.txt")
