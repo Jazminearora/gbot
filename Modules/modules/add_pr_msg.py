@@ -58,11 +58,13 @@ async def add_callback(_, callback_query):
                 new_keyboard = keyboard.inline_keyboard
             else:
                 new_keyboard = []
-
+            print(metadata.chat.id, ":", metadata.id)
             new_keyboard.append([InlineKeyboardButton(title, url=url)])
             keyboard = InlineKeyboardMarkup(new_keyboard)
+            sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
+            message_id = sent.id
             # update reply markup in metadata
-            updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=metadata.id, reply_markup=keyboard)
+            updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
             #send the upated msg with new inline button
             updated_metadata.copy(callback_query.message.chat.id)
             save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.message_id}_{updated_metadata.chat.id}")
