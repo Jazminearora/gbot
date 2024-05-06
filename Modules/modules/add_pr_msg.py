@@ -3,12 +3,24 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import RPCError
 import pyrostep
 import os
+from telegraph import upload_file
 import json
 
 from .. import cbot, BOT_USERNAME, ADMIN_IDS
 from database.prdb import English, Russian, Azerbejani
 
 pyrostep.listen(cbot)
+
+
+async def upload_image(path):
+    try:
+        link = upload_file(path)
+        generated_link = "https://telegra.ph" + "".join(link)
+        return generated_link
+    except Exception as e:
+        print(f"Error uploading image: {e}")
+        return None
+    
 
 @cbot.on_message(filters.command("add_msg") & filters.user(ADMIN_IDS))
 async def add_msg(_, message):
@@ -56,22 +68,34 @@ async def lang_callback(_, callback_query):
     
     metadata = await cbot.get_messages(chat_id, msg_id)
     
+    if metadata.photo:
+        # Download the photo
+        photo_path = await cbot.download_media(message=metadata, file_name=f"image/photo1.jpg")
+        
+        # Upload the photo to Telegraph and get the link
+        photo_link = await upload_image(photo_path)
+        os.remove(photo_path)
+    else:
+        photo_link = None
+    # Store the photo link along with the text and markup
     if lang == "ENGLISH":
         English[f"message_{metadata.id}"] = {
             "text": metadata.text,
-            "reply_markup": metadata.reply_markup
+            "reply_markup": metadata.reply_markup,
+            "photo_link": photo_link
         }
     elif lang == "RUSSIAN":
         Russian[f"message_{metadata.id}"] = {
             "text": metadata.text,
-            "reply_markup": metadata.reply_markup
+            "reply_markup": metadata.reply_markup,
+            "photo_link": photo_link
         }
     elif lang == "AZERBAIJANI":
         Azerbejani[f"message_{metadata.id}"] = {
             "text": metadata.text,
-            "reply_markup": metadata.reply_markup
+            "reply_markup": metadata.reply_markup,
+            "photo_link": photo_link
         }
-    
     await callback_query.answer("Message saved.", show_alert=True)
     await callback_query.message.delete()
 

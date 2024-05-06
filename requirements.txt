@@ -13,3 +13,4 @@ AaioAPI
 aiohttp
 apscheduler
 googletrans
+telegraph
