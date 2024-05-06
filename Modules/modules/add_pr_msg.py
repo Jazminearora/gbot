@@ -41,6 +41,7 @@ async def save_callback(_, callback_query):
 
 @cbot.on_callback_query(filters.regex(r"add_(.+)_(.+)"))
 async def add_callback(_, callback_query):
+    await callback_query.message.delete()
     data = callback_query.data.split("_")
     msg_id = int(data[1])
     chat_id = int(data[2])
@@ -60,14 +61,12 @@ async def add_callback(_, callback_query):
 
             new_keyboard.append([InlineKeyboardButton(title, url=url)])
             keyboard = InlineKeyboardMarkup(new_keyboard)
-            # Update the reply_markup field in the metadata
-            metadata.reply_markup = keyboard
-            await metadata.save()  # Save the changes to the message
-
-            # Send the updated message with the new inline button
-            await metadata.copy(callback_query.message.chat.id)
-            save_button = InlineKeyboardButton("Save", callback_data=f"save_{metadata.message_id}_{metadata.chat.id}")
-            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{metadata.message_id}_{metadata.chat.id}")
+            # update reply markup in metadata
+            updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=metadata.id, reply_markup=keyboard)
+            #send the upated msg with new inline button
+            updated_metadata.copy(callback_query.message.chat.id)
+            save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.message_id}_{updated_metadata.chat.id}")
+            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{updated_metadata.message_id}_{updated_metadata.chat.id}")
             reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
             await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
 
