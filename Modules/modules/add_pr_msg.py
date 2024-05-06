@@ -146,14 +146,16 @@ async def get_msg(_, message):
 
     # Convert InlineKeyboardMarkup objects to dictionaries
     for lang in all_messages:
-        if isinstance(all_messages[lang], InlineKeyboardMarkup):
+if isinstance(all_messages[lang], InlineKeyboardMarkup):
             all_messages[lang] = all_messages[lang].to_dict()
 
-    with open('all_messages.json', 'w') as f:
-        json.dump(all_messages, f, indent=4)
+    # Write the data to a text file
+    with open('all_messages.txt', 'w') as f:
+        for lang, msg in all_messages.items():
+            f.write(f"{lang}: {str(msg)}\n")
 
     # Send the file as a message
-    await message.reply_document("all_messages.json")
+    await message.reply_document("all_messages.txt")
 
     # Remove the file from the file system
-    os.remove("all_messages.json")
+    os.remove("all_messages.txt")
