@@ -146,7 +146,7 @@ async def get_msg(_, message):
 
     # Convert InlineKeyboardMarkup objects to dictionaries
     for lang in all_messages:
-if isinstance(all_messages[lang], InlineKeyboardMarkup):
+        if isinstance(all_messages[lang], InlineKeyboardMarkup):
             all_messages[lang] = all_messages[lang].to_dict()
 
     # Write the data to a text file
