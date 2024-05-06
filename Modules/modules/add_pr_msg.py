@@ -80,7 +80,6 @@ async def add_callback(_, callback_query):
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
-    print(PROMO_MSG)
     await message.reply_text(PROMO_MSG)
     # Create a new file with PROMO_MSG content
     with open("promo_msg.txt", "w") as f:
