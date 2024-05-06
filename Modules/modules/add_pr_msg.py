@@ -5,6 +5,7 @@ import pyrostep
 
 from .. import cbot, BOT_USERNAME, ADMIN_IDS
 from database.prdb import PROMO_MSG
+from pathlib import Path
 
 pyrostep.listen(cbot)
 
@@ -47,7 +48,7 @@ async def add_callback(_, callback_query):
     chat_id = int(data[2])
     metadata = await cbot.get_messages(chat_id, msg_id)
 
-    await cbot.send_message(callback_query.message.chat.id, "❇ Enter data for the URL/SHARE-button.\n\n➠ For example to create «Share» button with the link to our help bot enter:\nShare\nhttps://t.me/share/url?url=t.me/MenuBuilderHelpBot\n\nℹ Data shall go in TWO LINES:\nBUTTON TITLE\nURL/Share address")
+    await cbot.send_message(callback_query.message.chat.id, f"❇ Enter data for the URL/SHARE-button.\n\n➠ For example to create «Share» button with the link to our help bot enter:\nShare\nhttps://t.me/share/url?url=t.me/{BOT_USERNAME}\n\nℹ Data shall go in TWO LINES:\nBUTTON TITLE\nURL/Share address")
     msg = await pyrostep.wait_for(callback_query.message.chat.id)
 
     if msg.text:
@@ -67,11 +68,21 @@ async def add_callback(_, callback_query):
             updated_metadata = await cbot.edit_message_reply_markup(chat_id=metadata.chat.id, message_id=message_id, reply_markup=keyboard)
             #send the upated msg with new inline button
             updated_metadata.copy(callback_query.message.chat.id)
-            save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.message_id}_{updated_metadata.chat.id}")
-            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{updated_metadata.message_id}_{updated_metadata.chat.id}")
+            save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.id}_{updated_metadata.chat.id}")
+            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{updated_metadata.id}_{updated_metadata.chat.id}")
             reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
             await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
 
         except RPCError as e:
             print(f"Error editing message: {e}")
             return
+
+@cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
+async def get_msg(_, message):
+    prdb_file = Path("database/prdb")
+    if prdb_file.exists() and prdb_file.is_file():
+        with open(prdb_file, "r") as f:
+            prdb_content = f.read()
+        await message.reply_text(prdb_content)
+    else:
+        await message.reply_text("The prdb file does not exist or is not a valid file.")
