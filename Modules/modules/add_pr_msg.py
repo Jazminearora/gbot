@@ -60,12 +60,16 @@ async def add_callback(_, callback_query):
 
             new_keyboard.append([InlineKeyboardButton(title, url=url)])
             keyboard = InlineKeyboardMarkup(new_keyboard)
-            updated_metadata = await metadata.edit(reply_markup=keyboard)
+            # Update the reply_markup field in the metadata
+            metadata.reply_markup = keyboard
+            await metadata.save()  # Save the changes to the message
 
-            save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.message_id}_{updated_metadata.chat.id}")
-            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{updated_metadata.message_id}_{updated_metadata.chat.id}")
-            keyboard = InlineKeyboardMarkup([[save_button, add_button]])
-            await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=keyboard)
+            # Send the updated message with the new inline button
+            await metadata.copy(callback_query.message.chat.id)
+            save_button = InlineKeyboardButton("Save", callback_data=f"save_{metadata.message_id}_{metadata.chat.id}")
+            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{metadata.message_id}_{metadata.chat.id}")
+            reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
+            await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
 
         except RPCError as e:
             print(f"Error editing message: {e}")
