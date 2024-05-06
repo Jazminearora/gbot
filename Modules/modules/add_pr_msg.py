@@ -71,8 +71,8 @@ async def add_callback(_, callback_query):
                 print(f"Error editing message: {e}")
             #send the upated msg with new inline button
             updated_metadata.copy(callback_query.message.chat.id)
-            save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.id}_{updated_metadata.chat.id}")
-            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{updated_metadata.id}_{updated_metadata.chat.id}")
+            save_button = InlineKeyboardButton("Save", callback_data=f"save_{sent.id}_{sent.chat.id}")
+            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{sent.id}_{sent.chat.id}")
             reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
             await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
 
