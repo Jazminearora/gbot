@@ -56,16 +56,16 @@ def users_chat_details(user_id: int, field: str):
         print("Error:", e)
         return {}
 
-# save_user(5131723020, rating={"💩": 1})
+save_user(5131723020, rating={"💩": 1})
 chat_details = users_chat_details(5131723020, "rating")
 result = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
 print(result)
 
 
-def reset_ratings(user_id: int):
-    try:
-        chatdb.update_one({"_id": user_id}, {"$set": {"rating": {}}})
-    except pymongo.errors.PyMongoError as e:
-        print("Error:", e)
+# def reset_ratings(user_id: int):
+#     try:
+#         chatdb.update_one({"_id": user_id}, {"$set": {"rating": {}}})
+#     except pymongo.errors.PyMongoError as e:
+#         print("Error:", e)
 
-reset_ratings(5131723020)
+# reset_ratings(5131723020)

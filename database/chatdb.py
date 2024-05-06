@@ -2,6 +2,7 @@ from Modules import chatdb
 from pymongo.errors import PyMongoError
 
 def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_dialogues: int = 0, profanity_score: int = 0, rating: dict = None, chat_time: int = 0, frens: list = None):
+    print("save user called", user_id, ":", rating)
     try:
         existing_user = chatdb.find_one({"_id": user_id})
         if existing_user:

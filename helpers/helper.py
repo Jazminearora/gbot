@@ -137,7 +137,7 @@ async def get_profile(user_id, language):
             if premium:
                 message += f"\nPremium Expiry: {expiry}"
             if rating:
-                message += rating
+                message += "\n" + rating
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":

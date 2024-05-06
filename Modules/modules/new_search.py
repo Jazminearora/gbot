@@ -398,7 +398,7 @@ async def get_rating_markup(user_id):
     ]
     
     # Add skip button in a separate row
-    buttons.append([InlineKeyboardButton(translate_async("Skip", lang), callback_data=f"skip_handle")])
+    buttons.append([InlineKeyboardButton(await translate_async("Skip", lang), callback_data=f"skip_handle")])
     reply_markup = InlineKeyboardMarkup(buttons)
     return reply_markup
 
