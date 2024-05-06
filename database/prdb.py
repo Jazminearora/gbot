@@ -1,1 +1,3 @@
-PROMO_MSG= []
+English = {}
+Russian = {}
+Azerbejani = {}
