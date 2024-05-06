@@ -120,6 +120,11 @@ async def get_msg(_, message):
         'azerbaijani': Azerbejani
     }
 
+    # Convert InlineKeyboardMarkup objects to dictionaries
+    for lang in all_messages:
+        if isinstance(all_messages[lang], InlineKeyboardMarkup):
+            all_messages[lang] = all_messages[lang].to_dict()
+
     with open('all_messages.json', 'w') as f:
         json.dump(all_messages, f, indent=4)
 
