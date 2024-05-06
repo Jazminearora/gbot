@@ -34,7 +34,7 @@ def save_user(user_id: int, total_chat: int = 0, total_message: int = 0, total_d
                 "total_message": total_message,
                 "total_dialogues": total_dialogues,
                 "profanity_score": profanity_score,
-                "rating": rating or {},
+                "rating": rating or {"🤩": 0, "😊": 0, "😐": 0, "😕": 0, "😠": 0},
                 "chat_time": chat_time,
                 "frens": frens or []
             }

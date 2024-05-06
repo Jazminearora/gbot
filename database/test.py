@@ -56,8 +56,9 @@ def users_chat_details(user_id: int, field: str):
         print("Error:", e)
         return {}
 
-save_user(5131723020, rating={"😐": 1})
+# save_user(5131723020, rating={"😐": 1})
 chat_details = users_chat_details(5131723020, "rating")
+chatdb.find_one({"_id": user_id})
 result = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
 print(result)
 print(chatdb.find_one({"_id": 5131723020}))
