@@ -1,0 +1,72 @@
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors import RPCError
+import pyrostep
+
+from .. import cbot, BOT_USERNAME, ADMIN_IDS
+from database.prdb import PROMO_MSG
+
+pyrostep.listen(cbot)
+
+@cbot.on_message(filters.command("add_msg") & filters.user(ADMIN_IDS))
+async def add_msg(_, message):
+    await cbot.send_message(message.chat.id, "❇ Enter New Message.\nYou can also «Forward» text from another chat or channel.")
+    msg = await pyrostep.wait_for(message.chat.id)
+    print(msg)
+    
+    if msg.forward_from:
+        await msg.forward(chat_id=int(message.chat.id))
+        save_button = InlineKeyboardButton("Save", callback_data=f"save_{msg.forward_from_chat}_{msg.forward_from_message_id}")
+        keyboard = InlineKeyboardMarkup([[save_button]])
+        await cbot.send_message(message.chat.id, "Do you want to save the above forwarded message?", reply_markup=keyboard)
+    else:
+        await msg.copy(chat_id=int(message.chat.id))
+        save_button = InlineKeyboardButton("Save", callback_data=f"save_{msg.message_id}_{msg.chat.id}")
+        add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{msg.message_id}_{msg.chat.id}")
+        keyboard = InlineKeyboardMarkup([[save_button, add_button]])
+        try:
+            await message.reply_text("Please choose a button from below.", reply_markup=keyboard)
+        except RPCError as e:
+            print(f"Error sending message: {e}")
+            return
+
+@cbot.on_callback_query(filters.regex(r"save_(.+)_(.+)"))
+async def save_callback(_, callback_query):
+    data = callback_query.data.split("_")
+    msg_id = int(data[1])
+    chat_id = int(data[2])
+    metadata = await cbot.get_messages(chat_id, msg_id)
+    PROMO_MSG.append(metadata)
+    await callback_query.answer("Message saved.")
+
+@cbot.on_callback_query(filters.regex(r"add_(.+)_(.+)"))
+async def add_callback(_, callback_query):
+    data = callback_query.data.split("_")
+    msg_id = int(data[1])
+    chat_id = int(data[2])
+    metadata = await cbot.get_messages(chat_id, msg_id)
+
+    await cbot.send_message(callback_query.message.chat.id, "❇ Enter data for the URL/SHARE-button.\n\n➠ For example to create «Share» button with the link to our help bot enter:\nShare\nhttps://t.me/share/url?url=t.me/MenuBuilderHelpBot\n\nℹ Data shall go in TWO LINES:\nBUTTON TITLE\nURL/Share address")
+    msg = await pyrostep.wait_for(callback_query.message.chat.id)
+
+    if msg.text:
+        title, url = msg.text.split("\n")
+        try:
+            keyboard = metadata.reply_markup
+            if keyboard:
+                new_keyboard = keyboard.inline_keyboard
+            else:
+                new_keyboard = []
+
+            new_keyboard.append([InlineKeyboardButton(title, url=url)])
+            keyboard = InlineKeyboardMarkup(new_keyboard)
+            updated_metadata = await metadata.edit(reply_markup=keyboard)
+
+            save_button = InlineKeyboardButton("Save", callback_data=f"save_{updated_metadata.message_id}_{updated_metadata.chat.id}")
+            add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{updated_metadata.message_id}_{updated_metadata.chat.id}")
+            keyboard = InlineKeyboardMarkup([[save_button, add_button]])
+            await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=keyboard)
+
+        except RPCError as e:
+            print(f"Error editing message: {e}")
+            return

@@ -14,11 +14,10 @@ FORCE_SUB1 = os.environ.get("FORCE_SUB1")
 FORCE_SUB2 = os.environ.get("FORCE_SUB2")
 
 try:
-    ADMINS=[]
-    for x in (os.environ.get("ADMINS", "").split()):
-        ADMINS.append(int(x))
+    ADMINS = [int(admin_id) for admin_id in os.environ.get("ADMINS", "").split(",") if admin_id.strip()]
 except ValueError:
-        raise Exception("Your Admins list does not contain valid integers.")
+    raise ValueError("Your Admins list does not contain valid integers.")
+
 key = "sundar"
 DEV_USER = []
 SUDO_USERS = os.environ.get("SUDO_USERS")
