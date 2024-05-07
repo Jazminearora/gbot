@@ -4,7 +4,7 @@ from pyrogram.errors import RPCError
 import pyrostep
 import os
 from telegraph import upload_file
-import json
+import aiofiles
 
 from .. import cbot, BOT_USERNAME, ADMIN_IDS
 from database.prdb import English, Russian, Azerbejani
@@ -142,19 +142,17 @@ async def get_msg(_, message):
         'azerbaijani': Azerbejani
     }
 
-    # Convert InlineKeyboardMarkup objects to formatted text
-    for lang in all_messages:
-        if isinstance(all_messages[lang], InlineKeyboardMarkup):
-            formatted_text = ""
-            for row in all_messages[lang].inline_keyboard:
-                for button in row:
-                    formatted_text += f"{button.text} ({button.url})\n"
-            all_messages[lang] = formatted_text
+    try:
+        # Create a temporary file
+        async with aiofiles.open('all_messages.txt', 'w') as f:
+            for lang, msg in all_messages.items():
+                await f.write(f"{lang}: {msg}\n")
 
-    # Write the data to a text file
-    with open('all_messages.txt', 'w') as f:
-        for lang, msg in all_messages.items():
-            f.write(f"{lang}: {msg}\n")
+        # Send the file as a message
+        await message.reply_document("all_messages.txt")
 
-    # Send the file as a message
-    await message.reply_document("all_messages.txt")
+        # Delete the file
+        os.remove("all_messages.txt")
+
+    except Exception as e:
+        await message.reply(f"Error: {str(e)}")

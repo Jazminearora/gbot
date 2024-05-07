@@ -14,3 +14,4 @@ aiohttp
 apscheduler
 googletrans
 telegraph
+aiofiles
