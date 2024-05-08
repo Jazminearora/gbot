@@ -107,7 +107,27 @@ async def add_callback(_, callback_query):
     metadata = await cbot.get_messages(chat_id, msg_id)
 
     await cbot.send_message(callback_query.message.chat.id, f"❇ Enter data for the URL/SHARE-button.\n\n➠ For example to create «Share» button with the link to our help bot enter:\nShare\nhttps://t.me/share/url?url=t.me/{BOT_USERNAME}\n\nℹ Data shall go in TWO LINES:\nBUTTON TITLE\nURL/Share address")
-    title, url = await pyrostep.register_next_step(callback_query.from_user.id, wait_for_message)
+    await pyrostep.register_next_step(callback_query.from_user.id, wait_for_message, kwargs={"metadata": metadata})
+
+    # await _process_button_addition(metadata, callback_query, title, url)
+
+
+async def wait_for_message(_, msg: mssg, metadata):
+    try:
+        title, url = msg.text.split("\n")
+        await pyrostep.register_next_step(
+            msg.from_user.id,
+            process_button_addition,
+            kwargs={"title": title, "url": url, "metadata": metadata}
+        )
+        return title, url
+    except ValueError:
+        await msg.reply(f"Please enter data in correct format (two lines example: \nBUTTON TITLE\nURL/Share address).")
+        await pyrostep.register_next_step(msg.from_user.id, wait_for_message)
+        return
+
+
+async def process_button_addition(_, msg: mssg, title, url, metadata):
     try:
         keyboard = metadata.reply_markup
         if keyboard:
@@ -116,30 +136,20 @@ async def add_callback(_, callback_query):
             new_keyboard = []
         new_keyboard.append([InlineKeyboardButton(title, url=url)])
         keyboard = InlineKeyboardMarkup(new_keyboard)
-        sent = await metadata.copy(chat_id=int(callback_query.message.chat.id))
-        message_id = sent.id
+        sent = await metadata.copy(chat_id=int(msg.chat.id))
         try:
-            await cbot.edit_message_reply_markup(chat_id=sent.chat.id, message_id=message_id, reply_markup=keyboard)
+            await cbot.edit_message_reply_markup(chat_id=sent.chat.id, message_id=sent.id, reply_markup=keyboard)
         except RPCError as r:
             pass
         save_button = InlineKeyboardButton("Save", callback_data=f"save_{sent.id}_{sent.chat.id}")
         add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{sent.id}_{sent.chat.id}")
         reply_markup = InlineKeyboardMarkup([[save_button, add_button]])
-        await cbot.send_message(callback_query.message.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
+        await cbot.send_message(msg.chat.id, "Do you want to add another button?", reply_markup=reply_markup)
 
     except RPCError as e:
         print(f"Error editing message: {e}")
         return
 
-
-async def wait_for_message(_, msg: mssg):
-    try:
-        title, url = msg.text.split("\n")
-        return title, url
-    except ValueError:
-        await msg.reply(f"Please enter data in correct format (two lines example: \nBUTTON TITLE\nURL/Share address).")
-        await pyrostep.register_next_step(msg.from_user.id, wait_for_message)
-        return
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
