@@ -134,11 +134,11 @@ Room: {room if room else "Any"} """, language))
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
             for normal_user in searching_users.copy():
                 if normal_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -180,11 +180,11 @@ async def normal_search(client, message):
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
             for normal_user in searching_users.copy():
                 if normal_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -225,11 +225,11 @@ async def normal_search(client, message):
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
             for normal_user in searching_users.copy():
                 if normal_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
 
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
@@ -270,11 +270,11 @@ async def normal_search(client, message):
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
             for normal_user in searching_users.copy():
                 if normal_user["user_id"] == user_id:
                     await remove_user_from_searching_lists(user_id)
-                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language))
+                    await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
         else:
             await message.reply(await translate_async("failed to search.", language), reply_markup=keyboard)
     except Exception as e:
