@@ -27,21 +27,21 @@ async def add_msg(_, message):
     await cbot.send_message(message.chat.id, "❇ Enter New Message.\nYou can also «Forward» text from another chat or channel.")
     msg = await pyrostep.wait_for(message.chat.id)
     
-    if msg.forward_from:
-        await msg.forward(chat_id=int(message.chat.id))
-        save_button = InlineKeyboardButton("Save", callback_data=f"save_{msg.id}_{msg.forward_from.id}")
-        keyboard = InlineKeyboardMarkup([[save_button]])
-        await cbot.send_message(message.chat.id, "Do you want to save the above forwarded message?", reply_markup=keyboard)
-    else:
-        await msg.copy(chat_id=int(message.chat.id))
-        save_button = InlineKeyboardButton("Save", callback_data=f"save_{msg.id}_{msg.chat.id}")
-        add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{msg.id}_{msg.chat.id}")
-        keyboard = InlineKeyboardMarkup([[save_button, add_button]])
-        try:
-            await message.reply_text("Please choose a button from below.", reply_markup=keyboard)
-        except RPCError as e:
-            print(f"Error sending message: {e}")
-            return
+    # if msg.forward_from:
+    #     await msg.forward(chat_id=int(message.chat.id))
+    #     save_button = InlineKeyboardButton("Save", callback_data=f"save_{msg.id}_{msg.forward_from.id}")
+    #     keyboard = InlineKeyboardMarkup([[save_button]])
+    #     await cbot.send_message(message.chat.id, "Do you want to save the above forwarded message?", reply_markup=keyboard)
+    # else:
+    await msg.copy(chat_id=int(message.chat.id))
+    save_button = InlineKeyboardButton("Save", callback_data=f"save_{msg.id}_{msg.chat.id}")
+    add_button = InlineKeyboardButton("➕ Inline Button", callback_data=f"add_{msg.id}_{msg.chat.id}")
+    keyboard = InlineKeyboardMarkup([[save_button, add_button]])
+    try:
+        await message.reply_text("Please choose a button from below.", reply_markup=keyboard)
+    except RPCError as e:
+        print(f"Error sending message: {e}")
+        return
 
 @cbot.on_callback_query(filters.regex(r"save_(.+)_(.+)"))
 async def save_callback(_, callback_query):
