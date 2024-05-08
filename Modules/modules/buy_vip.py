@@ -6,6 +6,7 @@ import urllib.parse
 from AaioAPI import AsyncAaioAPI
 
 from helpers.helper import find_language
+from helpers.forcesub import subscribed, user_registered
 from helpers.translator import translate_async
 from database.premiumdb import extend_premium_user_hrs
 from langdb.get_msg import get_premium_msg
@@ -18,7 +19,7 @@ aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
 
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
-@cbot.on_message(filters.private & filters.regex(button_pattern))
+@cbot.on_message(filters.regex(button_pattern) & filters.private & subscribed & user_registered)
 async def premium_option(client, message):
     user_id = message.from_user.id
     user_lang = find_language(user_id)
@@ -63,7 +64,7 @@ async def premium_free_callback(bot, update):
         )
     )
 
-@cbot.on_message(filters.command(["referals"]) & filters.private)
+@cbot.on_message(filters.command(["referals"]) & filters.private & subscribed & user_registered)
 async def referals_command(client, message):
     print("referals")
     user_id = message.from_user.id

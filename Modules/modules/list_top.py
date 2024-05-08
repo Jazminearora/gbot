@@ -5,6 +5,7 @@ from pyrogram import filters
 from datetime import timedelta
 
 from Modules import cbot
+from Modules.modules.advertisement import advert_user
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language
 from helpers.translator import translate_async
@@ -16,10 +17,11 @@ button_pattern = re.compile(r"^(🔝 (Top|Лучшие|Ən yuxarı) 🔝)$")
 
 @cbot.on_message((filters.command("top")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
 async def frens(client, message):
+    user_id = message.chat.id
+    language = find_language(user_id)
+    await advert_user(user_id, language)
     # Get the top chat users
     top_users, user_position, user_chat_time = get_top_chat_users(message.from_user.id)
-    print(get_top_chat_users(message.from_user.id))
-
     # Format the chat time for the users
     formatted_top_users = []
     for user in top_users:
@@ -57,9 +59,9 @@ async def frens(client, message):
     message_text += "\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**"
 
     # Send the message
-    await client.send_message(
-        chat_id=message.chat.id,
-        text=message_text,
+    await cbot.send_message(
+        chat_id=user_id,
+        text = translate_async(message_text, language),
         parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True,
     )

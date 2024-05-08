@@ -12,8 +12,9 @@ from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
-from Modules import cbot
+from Modules import cbot, ADMIN_IDS
 from Modules.modules.register import get_user_name
+from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 from database.chatdb import save_user
@@ -36,7 +37,7 @@ message_timestamps = {}
 start_stamp = {}
 
 
-@cbot.on_message(filters.command("hlo") & filters.private & subscribed & user_registered)
+@cbot.on_message(filters.command("hlo") & filters.user([ADMIN_IDS]) & filters.private & subscribed & user_registered)
 async def send_lists(client, message):
     lists = f"Normal users searching: {searching_users.copy()}\n\nPremium Users searching{searching_premium_users.copy()}\n{chat_pairs.copy()}"
     await message.reply(lists)
@@ -81,6 +82,7 @@ button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти со
 @cbot.on_message(filters.private & filters.regex(button_pattern) & subscribed & user_registered)
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
+    await advert_user(message.from_user.id, user_language)
     # Create keyboard with start searching button
     keyboard = ReplyKeyboardMarkup([
         [KeyboardButton(await translate_async("Normal Search", user_language)), 
@@ -97,6 +99,7 @@ async def configured_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     prem_stat, _ = is_user_premium(user_id)
+    await advert_user(user_id, language)
     if not prem_stat:
         await message.reply(await translate_async("Purchase premium first!", language))
         return
@@ -104,11 +107,13 @@ async def configured_search(client, message):
         # Check if user is already in a chat
         for pair in chat_pairs:
             if user_id in pair:
-                await message.reply(await translate_async("You are already in a chat.", language))
+                keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", language))]], resize_keyboard=True, one_time_keyboard=True)
+                await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
         if await is_user_searching(user_id):
-            await message.reply("You are already searching.")
+            keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
@@ -128,6 +133,16 @@ Room: {room if room else "Any"} """, language))
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         try:
             await match_users()
+            asyncio.sleep(40)
+            # Check if user is still searching
+            for premium_user in searching_premium_users.copy():
+                if premium_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
+            for normal_user in searching_users.copy():
+                if normal_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -139,6 +154,7 @@ Room: {room if room else "Any"} """, language))
 async def normal_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
+    await advert_user(user_id, language)
     prem_stat, _ = is_user_premium(user_id)
     print(prem_stat)
     if not prem_stat:
@@ -148,11 +164,13 @@ async def normal_search(client, message):
         # Check if user is already in a chat
         for pair in chat_pairs:
             if user_id in pair:
-                await message.reply(await translate_async("You are already in a chat.", language))
+                keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", language))]], resize_keyboard=True, one_time_keyboard=True)
+                await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
         if await is_user_searching(user_id):
-            await message.reply("You are already searching.")
+            keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
@@ -161,6 +179,16 @@ async def normal_search(client, message):
         print("chking")
         try:
             await match_users()
+            asyncio.sleep(40)
+            # Check if user is still searching
+            for premium_user in searching_premium_users.copy():
+                if premium_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
+            for normal_user in searching_users.copy():
+                if normal_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -173,6 +201,7 @@ async def normal_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     prem_stat, _ = is_user_premium(user_id)
+    await advert_user(user_id, language, bool(prem_stat))
     if not prem_stat:
         await message.reply(await translate_async("Purchase premium first!", language))
         return
@@ -180,11 +209,13 @@ async def normal_search(client, message):
         # Check if user is already in a chat
         for pair in chat_pairs:
             if user_id in pair:
-                await message.reply(await translate_async("You are already in a chat.", language))
+                keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", language))]], resize_keyboard=True, one_time_keyboard=True)
+                await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
         if await is_user_searching(user_id):
-            await message.reply("You are already searching.")
+            keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
@@ -193,6 +224,17 @@ async def normal_search(client, message):
         print("chking")
         try:
             await match_users()
+            asyncio.sleep(40)
+            # Check if user is still searching
+            for premium_user in searching_premium_users.copy():
+                if premium_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
+            for normal_user in searching_users.copy():
+                if normal_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
+
         except Exception as e:
             await message.reply(await translate_async(f"failed to search:{e}", language), reply_markup=keyboard)
     except Exception as e:
@@ -203,15 +245,18 @@ async def normal_search(client, message):
 async def normal_search(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
+    await advert_user(user_id, language)
     try:
         # Check if user is already in a chat
         for pair in chat_pairs:
             if user_id in pair:
-                await message.reply(await translate_async("You are already in a chat.", language))
+                keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", language))]], resize_keyboard=True, one_time_keyboard=True)
+                await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
         if await is_user_searching(user_id):
-            await message.reply("You are already searching.")
+            keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
         # Get normal user's details
         gender = get_gender(user_id, "huls")
@@ -224,6 +269,16 @@ async def normal_search(client, message):
         print("chking")
         if chk:
             await match_users()
+            asyncio.sleep(40)
+            # Check if user is still searching
+            for premium_user in searching_premium_users.copy():
+                if premium_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
+            for normal_user in searching_users.copy():
+                if normal_user["user_id"] == user_id:
+                    await remove_user_from_searching_lists(user_id)
+                    await message.reply(translate_async("No interlocutor found! Please try again in different list"))
         else:
             await message.reply(await translate_async("failed to search.", language), reply_markup=keyboard)
     except Exception as e:
@@ -231,10 +286,20 @@ async def normal_search(client, message):
 
 # Handle stop search button
 @cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
-async def stop_search(client, message):
+async def stop_search(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    # Remove user from searching list
+    
+    # Part 1: Remove user from searching lists
+    await remove_user_from_searching_lists(user_id)
+
+    # Part 2: Send reply to user
+    reply_markup = await get_reply_markup(language)
+    await message.reply(await translate_async("Search stopped.", language), reply_markup=reply_markup)
+    await advert_user(user_id, language)
+
+
+async def remove_user_from_searching_lists(user_id):
     for i, user in enumerate(searching_users):
         if user["user_id"] == user_id:
             del searching_users[i]
@@ -243,8 +308,7 @@ async def stop_search(client, message):
         if user["user_id"] == user_id:
             del searching_premium_users[i]
             break
-    reply_markup = await get_reply_markup(language)
-    await message.reply(await translate_async("Search stopped.", language), reply_markup=reply_markup)
+    return
 
 
 async def apppend_id(user_id, language, gender, age_groups, interest):
@@ -259,37 +323,29 @@ async def match_users():
         matched = False
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
-            print(f"Processing premium user {premium_user['user_id']}...")
             for normal_user in searching_users.copy():
                 print(f"Processing normal user {normal_user['user_id']}...")
                 if (premium_user["language"] == normal_user["language"] and
                     (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
                     (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and
                     (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
-                    print(f"Match found between premium user {premium_user['user_id']} and normal user {normal_user['user_id']}.")
                     await process_match(premium_user, normal_user)
                     matched = True
             if matched:
-                print(f"Match found for premium user {premium_user['user_id']}. Exiting loop...")
                 break
         if not matched:
             # Match normal users with other normal users
             for i, user1 in enumerate(searching_users.copy()):
-                print(f"Processing normal user {user1['user_id']}...")
                 for j, user2 in enumerate(searching_users[i+1:].copy(), i+1):
-                    print(f"Processing normal user {user2['user_id']}...")
                     if user1["language"] == user2["language"]:
-                        print(f"Match found between normal user {user1['user_id']} and normal user {user2['user_id']}.")
                         await process_match(user1, user2)
                         matched = True
                         break
                 if matched:
-                    print(f"Match found for normal user {user1['user_id']}. Exiting loop...")
                     break
 
         if not matched:
             count += 1
-            print(f"No matches found after {count} iterations. Exiting loop...")
 
 async def is_user_searching(user_id):
     for user in searching_users:
@@ -373,6 +429,7 @@ async def send_match_messages(user1, user2):
 async def end_chat(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
+    await advert_user(user_id, language)
     # Find the other user in the pair and inform them
     for pair in chat_pairs:
         if user_id in pair:

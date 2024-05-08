@@ -18,6 +18,9 @@ from helpers.translator import translate_async
 from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
 
 
+SELECT_OPTION_TEXT = "Please select an option:"
+SELECT_OPTION_PHOTO = "https://iili.io/JgY8Fls.jpg"
+
 
 # Handle private messages with the reply markup
 @cbot.on_message(filters.command(["start"]) & filters.private & subscribed & user_registered)
@@ -27,9 +30,8 @@ async def start_command(client, message):
         language = find_language(user_id)
         await advert_user(user_id, language)
         reply_markup = await get_reply_markup(language)
-        photo = "https://iili.io/JgY8Fls.jpg"
-        text = await translate_async("Please select an option:", language)
-        await message.reply_photo(photo, caption = text, reply_markup=reply_markup)
+        text = await translate_async(SELECT_OPTION_TEXT, language)
+        await message.reply_photo(SELECT_OPTION_PHOTO, caption = text, reply_markup=reply_markup)
     except Exception as e:
         print (e)
         await message.reply_text("An Exception occured!")
@@ -38,14 +40,15 @@ async def start_command(client, message):
 # Define a regex pattern to match the button texts for all three languages
 button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥$")
 
-@cbot.on_message(filters.private & filters.regex(button_pattern))
+@cbot.on_message(filters.regex(button_pattern) & filters.private & subscribed & user_registered)
 async def handle_keyboard_response(client, message):
+    user_id = message.from_user.id
+    language = find_language(user_id)
+    await advert_user(user_id, language)
     text = message.text
     if "Profile" in text or "Профиль" in text or "Profil" in text:
         wait_message = await message.reply_text("💭")
         try:
-            user_id = message.from_user.id
-            language = find_language(user_id)
             profile_text, reply_markup = await get_profile(user_id, language)
             try:
                 await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
@@ -100,6 +103,7 @@ async def back(client, callback_query):
     try:
         user_id =callback_query.from_user.id
         language = find_language(user_id)
+        await advert_user(user_id, language)
         profile_text, reply_markup = await get_profile(user_id, language)
         try:
             await callback_query.message.edit_caption(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)

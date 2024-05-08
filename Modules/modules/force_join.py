@@ -9,8 +9,8 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 async def not_joined(client, message):
     buttons = [
         [
-            InlineKeyboardButton(text="Join Channel", url="t.me/about_xytra"),
-            InlineKeyboardButton(text="Join Channel", url="t.me/zenova_prime"),
+            InlineKeyboardButton(text="Channel 1", url="t.me/about_xytra"),
+            InlineKeyboardButton(text="Channel 2", url="t.me/zenova_prime"),
         ]
     ]
     try:
