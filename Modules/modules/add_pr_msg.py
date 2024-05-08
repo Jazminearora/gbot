@@ -117,7 +117,7 @@ async def wait_for_message(_, msg: mssg, metadata):
         title, url = msg.text.split("\n")
     except ValueError:
         await msg.reply(f"Please enter data in correct format (two lines example: \nShare\nhttps://t.me/share/url?url=t.me/{BOT_USERNAME}.")
-        await pyrostep.register_next_step(msg.from_user.id, wait_for_message)
+        await pyrostep.register_next_step(msg.from_user.id, wait_for_message, kwargs={"metadata": metadata})
         return
     try:
         keyboard = metadata.reply_markup
