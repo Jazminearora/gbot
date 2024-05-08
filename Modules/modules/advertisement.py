@@ -20,18 +20,20 @@ async def advert_user(user_id):
             print("User language:", lang)
             
             if lang == "English":
-                choice = random.choice(English)
+                print(English)
+                choices = list(English.values())  # Get a list of dictionary values
+                choice = random.choice(choices)
                 if choice:
                     print("Selected choice:", choice)
                     
-                    if choice.photo_link:
+                    if choice.get('photo_link'):
                         print("Sending photo to user:", user_id)
-                        await cbot.send_photo(user_id, choice.photo_link, caption=choice.text if choice.text else None, reply_markup=choice.reply_markup if choice.reply_markup else None)
+                        await cbot.send_photo(user_id, choice['photo_link'], caption=choice.get('text'), reply_markup=choice.get('reply_markup'))
                         print("Photo sent successfully")
                         return
                     else:
                         print("Sending text message to user:", user_id)
-                        await cbot.send_message(user_id, text=choice.text, reply_markup=choice.reply_markup if choice.reply_markup else None)
+                        await cbot.send_message(user_id, text=choice.get('text'), reply_markup=choice.get('reply_markup'))
                         print("Text message sent successfully")
                         return
     except Exception as e:
