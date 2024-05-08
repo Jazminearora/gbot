@@ -201,24 +201,14 @@ def get_premium_users():
 
 def get_top_chat_users(user_id: int = None):
     try:
-        print(premiumdb.find())
-        top_users = premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1).limit(5)
-        top_users_list = []
-        for user in top_users:
-            top_users_list.append({"user_id": user["_id"], "chat_time": user["chat_time"]})
+        top_users = premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1)
+        top_users_list = [{"user_id": user["_id"], "chat_time": user["chat_time"]} for user in top_users.limit(5)]
 
         if user_id:
             user_doc = premiumdb.find_one({"_id": user_id})
             if user_doc and "chat_time" in user_doc and user_doc["chat_time"] > 0:
                 user_chat_time = user_doc["chat_time"]
-                user_position = 1
-                for i, user in enumerate(top_users_list):
-                    if user["chat_time"] > user_chat_time:
-                        user_position += 1
-                    elif user["chat_time"] == user_chat_time:
-                        user_position += 0.5
-                    else:
-                        break
+                user_position = len([user for user in top_users if user["chat_time"] > user_chat_time]) + 1
                 return top_users_list, user_position, user_chat_time
             else:
                 return top_users_list, None, None
@@ -227,3 +217,24 @@ def get_top_chat_users(user_id: int = None):
     except Exception as e:
         print("Error:", e)
         return {"error": str(e)}
+
+    #     if user_id:
+    #         user_doc = premiumdb.find_one({"_id": user_id})
+    #         if user_doc and "chat_time" in user_doc and user_doc["chat_time"] > 0:
+    #             user_chat_time = user_doc["chat_time"]
+    #             user_position = 1
+    #             for i, user in enumerate(top_users_list):
+    #                 if user["chat_time"] > user_chat_time:
+    #                     user_position += 1
+    #                 elif user["chat_time"] == user_chat_time:
+    #                     user_position += 0
+    #                 else:
+    #                     break
+    #             return top_users_list, user_position, user_chat_time
+    #         else:
+    #             return top_users_list, None, None
+    #     else:
+    #         return top_users_list
+    # except Exception as e:
+    #     print("Error:", e)
+    #     return {"error": str(e)}

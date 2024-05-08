@@ -6,6 +6,7 @@ from datetime import timedelta
 
 from Modules import cbot
 from Modules.modules.advertisement import advert_user
+from Modules.modules.register import get_user_name
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language
 from helpers.translator import translate_async
@@ -27,20 +28,21 @@ async def top_list(_, message):
     formatted_top_users = []
     for user in top_users:
         formatted_chat_time = str(timedelta(seconds=user["chat_time"]))
-        formatted_top_users.append(f"{user['user_id']} - in dialogues {formatted_chat_time}")
+        name = await get_user_name(user['user_id'])
+        formatted_top_users.append(f"{name} {await translate_async("- in dialogues:", language)} {formatted_chat_time}")
 
     # Create the message
     message_text = await translate_async(
         """
-        "🏆 **Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM**\n\n"
-        "📅 **Everyone takes part automatically, the drawing period is every week from Monday to Sunday**\n\n"
-        "⏳ **Summing up and distribution of prizes every Sunday at 20:00 Moscow time.**\n\n"
-        "🏆 **Prizes:**\n"
-        "🥇 **1st place** - free subscription for 3 days\n"
-        "🥈 **2nd place** - free subscription for 2 days\n"
-        "🥉 **3rd place** - free subscription for 1 day\n\n"
-        "📊 **Current leaders:**\n"
-        """, language
+🏆 **Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM**
+📅 **Everyone takes part automatically, the drawing period is every week from Monday to Sunday**
+⏳ **Summing up and distribution of prizes every Sunday at 20:00 Moscow time.**
+🏆 **Prizes:**
+🥇 **1st place** - free subscription for 3 days
+🥈 **2nd place** - free subscription for 2 days
+🥉 **3rd place** - free subscription for 1 day
+📊 **Current leaders:**
+""", language
     )
 
     # Add the top users to the message
@@ -66,12 +68,6 @@ async def top_list(_, message):
         parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True,
     )
-    try:
-        x= translate_async(message_text, "Russian")
-        print (x)
-    except Exception as e:
-        print (e)
-
 
 # async def frens(client, message):
 #     lang = find_language(message.from_user.id)
