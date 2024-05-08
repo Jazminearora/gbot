@@ -11,7 +11,9 @@ from .. import cbot
 async def advert_user(user_id):
     print("function called")
     try:
-        if not is_user_premium(user_id):
+        prem_user, ik = is_user_premium(user_id)
+        print(prem_user, ik)
+        if not prem_user:
             print("User is not premium")
             
             lang = find_language(user_id)
