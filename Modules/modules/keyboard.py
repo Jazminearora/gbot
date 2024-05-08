@@ -9,6 +9,7 @@ import re
 
 # Helper functions
 from Modules.modules.register import get_user_name
+from modules.advertisement import advert_user
 from helpers.forcesub import subscribed, user_registered
 from database.referdb import get_top_referers
 from helpers.helper import get_profile, find_language, get_interest
@@ -21,6 +22,7 @@ from database.registerdb import add_user_id, store_str_id, remove_str_id , remov
 # Handle private messages with the reply markup
 @cbot.on_message(filters.command(["start"]) & filters.private & subscribed & user_registered)
 async def start_command(client, message):
+    await advert_user(message.from_user.id)
     try:
         user_id = message.from_user.id
         language = find_language(user_id)
