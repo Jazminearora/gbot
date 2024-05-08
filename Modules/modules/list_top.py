@@ -16,7 +16,7 @@ from langdb.get_msg import get_top_text, get_points_text, get_prize_text, get_no
 button_pattern = re.compile(r"^(🔝 (Top|Лучшие|Ən yuxarı) 🔝)$")
 
 @cbot.on_message((filters.command("top")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
-async def frens(_, message):
+async def top_list(_, message):
     user_id = message.chat.id
     language = find_language(user_id)
     await advert_user(user_id, language)
@@ -30,9 +30,8 @@ async def frens(_, message):
         formatted_top_users.append(f"{user['user_id']} - in dialogues {formatted_chat_time}")
 
     # Create the message
-    message_text = ( 
-        translate_async(
-"""        
+    message_text = await translate_async(
+        """
         "🏆 **Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM**\n\n"
         "📅 **Everyone takes part automatically, the drawing period is every week from Monday to Sunday**\n\n"
         "⏳ **Summing up and distribution of prizes every Sunday at 20:00 Moscow time.**\n\n"
@@ -41,8 +40,7 @@ async def frens(_, message):
         "🥈 **2nd place** - free subscription for 2 days\n"
         "🥉 **3rd place** - free subscription for 1 day\n\n"
         "📊 **Current leaders:**\n"
-""", language
-    )
+        """, language
     )
 
     # Add the top users to the message
@@ -51,20 +49,20 @@ async def frens(_, message):
 
     # Add the user's position to the message
     if user_chat_time == 0:
-        message_text += translate_async("\n👤 **Your position:**\n", language)
-        message_text += translate_async("📵🚭🔇 - in dialogues 20s", language)
+        message_text += await translate_async("\n👤 **Your position:**\n", language)
+        message_text += await translate_async("📵🚭🔇 - in dialogues 20s", language)
     else:
-        message_text += translate_async(f"\n👤 **Your position:**\n", language)
+        message_text += await translate_async(f"\n👤 **Your position:**\n", language)
         try:
             timee = str(timedelta(seconds=user_chat_time))
         except Exception:
             timee = 0
-        message_text += f"{user_position}. {message.from_user.id} {translate_async("- in dialogues", language)} {timee}"
+        message_text += f"{user_position}. {message.from_user.id} {await translate_async('- in dialogues', language)} {timee}"
 
-    message_text += translate_async("\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
+    message_text += await translate_async("\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
     # Send the message
     await temp_msg.edit_text(
-        text = message_text, #translate_async(message_text, language),
+        text=message_text,
         parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True,
     )
