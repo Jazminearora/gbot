@@ -22,17 +22,17 @@ from database.registerdb import add_user_id, store_str_id, remove_str_id , remov
 # Handle private messages with the reply markup
 @cbot.on_message(filters.command(["start"]) & filters.private & subscribed & user_registered)
 async def start_command(client, message):
-    await advert_user(message.from_user.id)
     try:
         user_id = message.from_user.id
         language = find_language(user_id)
+        await advert_user(user_id, language)
         reply_markup = await get_reply_markup(language)
         photo = "https://iili.io/JgY8Fls.jpg"
         text = await translate_async("Please select an option:", language)
         await message.reply_photo(photo, caption = text, reply_markup=reply_markup)
     except Exception as e:
         print (e)
-        await message.reply_text("It seems you haven't registered yet! Please register first using /register.")
+        await message.reply_text("An Exception occured!")
 
 
 # Define a regex pattern to match the button texts for all three languages
