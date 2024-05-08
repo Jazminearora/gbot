@@ -175,7 +175,7 @@ async def normal_search(client, message):
         print("chking")
         try:
             await match_users()
-            asyncio.sleep(40)
+            await asyncio.sleep(40)
             # Check if user is still searching
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
@@ -220,7 +220,7 @@ async def normal_search(client, message):
         print("chking")
         try:
             await match_users()
-            asyncio.sleep(40)
+            await asyncio.sleep(40)
             # Check if user is still searching
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
@@ -265,7 +265,7 @@ async def normal_search(client, message):
         print("chking")
         if chk:
             await match_users()
-            asyncio.sleep(40)
+            await asyncio.sleep(40)
             # Check if user is still searching
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
