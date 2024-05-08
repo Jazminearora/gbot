@@ -120,7 +120,7 @@ async def wait_for_message(_, msg: mssg, metadata):
             process_button_addition,
             kwargs={"title": title, "url": url, "metadata": metadata}
         )
-        return title, url
+        return
     except ValueError:
         await msg.reply(f"Please enter data in correct format (two lines example: \nBUTTON TITLE\nURL/Share address).")
         await pyrostep.register_next_step(msg.from_user.id, wait_for_message)
