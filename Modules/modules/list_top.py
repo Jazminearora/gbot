@@ -41,7 +41,7 @@ async def top_list(_, message):
 🥇 **1st place** - free subscription for 3 days
 🥈 **2nd place** - free subscription for 2 days
 🥉 **3rd place** - free subscription for 1 day\n\n
-📊 **Current leaders:**
+📊 **Current leaders:**\n
 """, language
     )
 
@@ -49,19 +49,21 @@ async def top_list(_, message):
     for i, user in enumerate(formatted_top_users):
         message_text += f"{i + 1}. {user}\n"
 
+    message_text += f"\n\n"
     # Add the user's position to the message
     if user_chat_time == 0:
-        message_text += await translate_async(f"\n\n👤 **Your position:**\n", language)
+        message_text += await translate_async(f"👤 **Your position:**\n", language)
         message_text += await translate_async("📵🚭🔇 - in dialogues 0s", language)
     else:
-        message_text += await translate_async(f"\n\n👤 **Your position:**\n", language)
+        message_text += await translate_async(f"👤 **Your position:**\n", language)
         try:
             timee = str(timedelta(seconds=user_chat_time))
         except Exception:
             timee = 0
         message_text += f"{user_position}. {message.from_user.id} {await translate_async('- in dialogues', language)} {timee}"
 
-    message_text += await translate_async(f"\n\n‼️ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
+    message_text += f"\n\n"
+    message_text += await translate_async(f"‼️ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
     # Send the message
     await temp_msg.edit_text(
         text=message_text,

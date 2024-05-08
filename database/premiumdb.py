@@ -199,21 +199,27 @@ def get_premium_users():
         return [], 0
 
 
-def get_top_chat_users(user_id: int = None):
+def get_user_position(users_list, user_id: int) -> tuple:
+    """
+    Returns the position and chat time of a user in the list.
+    """
+    for index, user in enumerate(users_list):
+        if user["_id"] == user_id:
+            return index + 1, user["chat_time"]  # Position starts from 1
+    return None, None  # User ID not found in the list
+
+def get_top_chat_users(user_id: int = None) -> tuple:
+    """
+    Returns the top 5 chat users and the position of the given user_id.
+    """
     try:
         all_users = list(premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1))
         top_users = all_users[:5]
-        print(top_users)
         top_users_list = [{"user_id": user["_id"], "chat_time": user["chat_time"]} for user in top_users]
 
         if user_id:
-            user_doc = next((user for user in all_users if user["_id"] == user_id), None)
-            if user_doc and "chat_time" in user_doc and user_doc["chat_time"] > 0:
-                user_position = all_users.index(user_doc) + 1
-                user_chat_time = user_doc["chat_time"]
-                return top_users_list, user_position, user_chat_time
-            else:
-                return top_users_list, None, None
+            user_position, user_chat_time = get_user_position(all_users, user_id)
+            return top_users_list, user_position, user_chat_time
         else:
             return top_users_list
     except Exception as e:
