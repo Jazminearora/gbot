@@ -33,14 +33,14 @@ async def top_list(_, message):
 
     # Create the message
     message_text = await translate_async(
-        """
-🏆 **Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM**
-📅 **Everyone takes part automatically, the drawing period is every week from Monday to Sunday**
-⏳ **Summing up and distribution of prizes every Sunday at 20:00 Moscow time.**
+        f"""
+🏆 **Spend more time in dialogues than others and get a prize - a subscription 💎 PREMIUM**\n\n
+📅 **Everyone takes part automatically, the drawing period is every week from Monday to Sunday**\n\n
+⏳ **Summing up and distribution of prizes every Sunday at 20:00 Moscow time.**\n\n
 🏆 **Prizes:**
 🥇 **1st place** - free subscription for 3 days
 🥈 **2nd place** - free subscription for 2 days
-🥉 **3rd place** - free subscription for 1 day
+🥉 **3rd place** - free subscription for 1 day\n\n
 📊 **Current leaders:**
 """, language
     )
@@ -51,17 +51,17 @@ async def top_list(_, message):
 
     # Add the user's position to the message
     if user_chat_time == 0:
-        message_text += await translate_async("\n👤 **Your position:**\n", language)
-        message_text += await translate_async("📵🚭🔇 - in dialogues 20s", language)
+        message_text += await translate_async(f"\n\n👤 **Your position:**\n", language)
+        message_text += await translate_async("📵🚭🔇 - in dialogues 0s", language)
     else:
-        message_text += await translate_async(f"\n👤 **Your position:**\n", language)
+        message_text += await translate_async(f"\n\n👤 **Your position:**\n", language)
         try:
             timee = str(timedelta(seconds=user_chat_time))
         except Exception:
             timee = 0
         message_text += f"{user_position}. {message.from_user.id} {await translate_async('- in dialogues', language)} {timee}"
 
-    message_text += await translate_async("\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
+    message_text += await translate_async(f"\n\n‼️ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
     # Send the message
     await temp_msg.edit_text(
         text=message_text,
