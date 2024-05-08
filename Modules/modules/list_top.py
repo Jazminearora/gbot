@@ -58,10 +58,16 @@ async def frens(client, message):
 
     message_text += "\n\n❕ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**"
 
+    print(message_text)
+    try:
+        x= translate_async(message_text, "Russian")
+        print (x)
+    except Exception as e:
+        print (e)
     # Send the message
     await cbot.send_message(
         chat_id=user_id,
-        text = translate_async(message_text, language),
+        text = message_text, #translate_async(message_text, language),
         parse_mode=ParseMode.MARKDOWN,
         disable_web_page_preview=True,
     )
