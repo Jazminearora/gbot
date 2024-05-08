@@ -9,17 +9,29 @@ from helpers.forcesub import user_registered, subscribed
 from .. import cbot
 
 async def advert_user(user_id):
+    print("function called")
     try:
         if not is_user_premium(user_id):
-            if find_language(user_id) == "English":
+            print("User is not premium")
+            
+            lang = find_language(user_id)
+            print("User language:", lang)
+            
+            if lang == "English":
                 choice = random.choice(English)
                 if choice:
+                    print("Selected choice:", choice)
+                    
                     if choice.photo_link:
-                        await cbot.send_photo(user_id, choice.photo_link, caption = choice.text if choice.text else None, reply_markup= choice.reply_markup if choice.reply_markup else None)
+                        print("Sending photo to user:", user_id)
+                        await cbot.send_photo(user_id, choice.photo_link, caption=choice.text if choice.text else None, reply_markup=choice.reply_markup if choice.reply_markup else None)
+                        print("Photo sent successfully")
                         return
                     else:
-                        await cbot.send_message(user_id, text = choice.text, reply_markup= choice.reply_markup if choice.reply_markup else None)
+                        print("Sending text message to user:", user_id)
+                        await cbot.send_message(user_id, text=choice.text, reply_markup=choice.reply_markup if choice.reply_markup else None)
+                        print("Text message sent successfully")
                         return
     except Exception as e:
-        print("An error occured:", e)
+        print("An error occurred:", e)
         return
