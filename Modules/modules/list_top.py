@@ -62,7 +62,7 @@ async def top_list(_, message):
         except Exception:
             timee = 0
         message_text += "\n"    
-        message_text += await translate_async(f"Rank: {user_position}\nIn dialogues- {timee}")
+        message_text += await translate_async(f"Rank: {user_position}\nIn dialogues- {timee}", language)
 
     message_text += f"\n\n\n"
     message_text += await translate_async(f"‼️ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
