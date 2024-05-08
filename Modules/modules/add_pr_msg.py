@@ -115,19 +115,10 @@ async def add_callback(_, callback_query):
 async def wait_for_message(_, msg: mssg, metadata):
     try:
         title, url = msg.text.split("\n")
-        await pyrostep.register_next_step(
-            msg.from_user.id,
-            process_button_addition,
-            kwargs={"title": title, "url": url, "metadata": metadata}
-        )
-        return
     except ValueError:
-        await msg.reply(f"Please enter data in correct format (two lines example: \nBUTTON TITLE\nURL/Share address).")
+        await msg.reply(f"Please enter data in correct format (two lines example: \nShare\nhttps://t.me/share/url?url=t.me/{BOT_USERNAME}.")
         await pyrostep.register_next_step(msg.from_user.id, wait_for_message)
         return
-
-
-async def process_button_addition(_, msg: mssg, title, url, metadata):
     try:
         keyboard = metadata.reply_markup
         if keyboard:
