@@ -8,7 +8,7 @@ from helpers.helper import find_language
 from helpers.forcesub import user_registered, subscribed
 from .. import cbot
 
-@cbot.on_message(filters.incoming, filters.private & subscribed & user_registered)
+@cbot.on_message(filters.incoming & filters.private & subscribed & user_registered)
 async def advert_user(_, message):
     user_id = message.from_user.id
     if not is_user_premium(user_id):
