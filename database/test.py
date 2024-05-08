@@ -1,57 +1,33 @@
-list = [
-  {
-    "_id": 5131723020,
-    "premium_status": False,
-    "premium_purchase_time": None,
-    "premium_expiry_time": None,
-    "gender": "female",
-    "age_groups": ["Below-18"],
-    "room": "any",
-    "total_dialog": 20,
-    "chat_time": 357,
-    "frens": None
-  },
-  {
-    "_id": 1567526737,
-    "premium_status": False,
-    "premium_purchase_time": None,
-    "premium_expiry_time": None,
-    "gender": None,
-    "age_groups": None,
-    "room": None,
-    "total_dialog": 19,
-    "chat_time": 114,
-    "frens": None
-  },
-  {
-    "_id": 7067606707,
-    "premium_status": False,
-    "premium_purchase_time": None,
-    "premium_expiry_time": None,
-    "gender": None,
-    "age_groups": None,
-    "room": None,
-    "total_dialog": 1,
-    "chat_time": 36,
-    "frens": None
-  }
-]
+from pymongo import MongoClient
+
+client = MongoClient("")
 
 
-def get_user_position(users_list, user_id: int):
+def get_user_position(users_list, user_id: int) -> tuple:
+    """
+    Returns the position and chat time of a user in the list.
+    """
+    print(users_list)
+    for index, user in enumerate(users_list):
+        if user["_id"] == user_id:
+            print("position:", index +1)
+            return index + 1, user["chat_time"]  # Position starts from 1
+    return None, None  # User ID not found in the list
+
+def get_top_chat_users(user_id: int = None) -> tuple:
+    """
+    Returns the top 5 chat users and the position of the given user_id.
+    """
     try:
-        for index, user in enumerate(users_list):
-            if user["_id"] == user_id:
-                return index + 1  # Position starts from 1
-        return None  # User ID not found in the list
+        all_users = list(premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1))
+        top_users = all_users[:5]
+        top_users_list = [{"user_id": user["_id"], "chat_time": user["chat_time"]} for user in top_users]
+
+        if user_id:
+            user_position, user_chat_time = get_user_position(all_users, user_id)
+            return top_users_list, user_position, user_chat_time
+        else:
+            return top_users_list
     except Exception as e:
         print("Error:", e)
-        return None
-
-# Yahaan 'users_list' aapki di gayi list hai aur 'user_id' user ki ID hai jiski position nikalni hai
-user_id = 5131723020  # Example user ID
-position = get_user_position(list, user_id)
-if position is not None:
-    print(f"User {user_id} ki position chat time ke adhaar pe: {position}")
-else:
-    print("User ID list mein nahi hai.")
+        return {"error": str(e)}

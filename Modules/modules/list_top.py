@@ -45,12 +45,12 @@ async def top_list(_, message):
 """, language
     )
 
-    message_text += f"\ns"
+    message_text += f"\n"
     # Add the top users to the message
     for i, user in enumerate(formatted_top_users):
         message_text += f"{i + 1}. {user}\n"
 
-    message_text += f"\n\n"
+    message_text += f"\n"
     # Add the user's position to the message
     if user_chat_time == 0:
         message_text += await translate_async(f"👤 **Your position:**\n", language)
@@ -61,9 +61,10 @@ async def top_list(_, message):
             timee = str(timedelta(seconds=user_chat_time))
         except Exception:
             timee = 0
-        message_text += f"{user_position}. {message.from_user.id} {await translate_async('- in dialogues', language)} {timee}"
+        message_text += "\n"    
+        message_text += await translate_async(f"Rank: {user_position}\nIn dialogues- {timee}")
 
-    message_text += f"\n\n"
+    message_text += f"\n\n\n"
     message_text += await translate_async(f"‼️ **Time farming is prohibited, and accounts with a suspiciously low number of dialogues and sent messages will be blocked in our bot and removed from the TOP.**", language)
     # Send the message
     await temp_msg.edit_text(
