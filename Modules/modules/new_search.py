@@ -37,7 +37,7 @@ message_timestamps = {}
 start_stamp = {}
 
 
-@cbot.on_message(filters.command("hlo") & filters.user([ADMIN_IDS]) & filters.private & subscribed & user_registered)
+@cbot.on_message(filters.command("hlo") & filters.user(ADMIN_IDS) & filters.private & subscribed & user_registered)
 async def send_lists(client, message):
     lists = f"Normal users searching: {searching_users.copy()}\n\nPremium Users searching{searching_premium_users.copy()}\n{chat_pairs.copy()}"
     await message.reply(lists)
