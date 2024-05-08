@@ -41,10 +41,11 @@ async def top_list(_, message):
 🥇 **1st place** - free subscription for 3 days
 🥈 **2nd place** - free subscription for 2 days
 🥉 **3rd place** - free subscription for 1 day\n\n
-📊 **Current leaders:**\n
+📊 **Current leaders:**
 """, language
     )
 
+    message_text += f"\ns"
     # Add the top users to the message
     for i, user in enumerate(formatted_top_users):
         message_text += f"{i + 1}. {user}\n"
