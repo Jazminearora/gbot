@@ -4,7 +4,6 @@ import asyncio
 from datetime import datetime
 import time
 import re
-import apscheduler.schedulers.asyncio as aps
 from pyrogram import filters
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -12,16 +11,13 @@ from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
-from Modules import cbot, ADMIN_IDS
+from Modules import cbot, scheduler, ADMIN_IDS
 from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 from database.chatdb import save_user
 
-
-# Create a scheduler
-scheduler = aps.AsyncIOScheduler()
 
 # List to store users searching for an interlocutor
 searching_users = []
@@ -133,7 +129,7 @@ Room: {room if room else "Any"} """, language))
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         try:
             await match_users()
-            asyncio.sleep(40)
+            await asyncio.sleep(40)
             # Check if user is still searching
             for premium_user in searching_premium_users.copy():
                 if premium_user["user_id"] == user_id:
@@ -546,5 +542,3 @@ async def check_inactive_chats():
 # Schedule the task to run every 10 minutes
 scheduler.add_job(check_inactive_chats, 'interval', minutes=1)
 
-# Start the scheduler
-scheduler.start()

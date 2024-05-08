@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from os import listdir, path
 from dotenv import load_dotenv
 from pyrogram import Client
+import apscheduler.schedulers.asyncio as aps
 from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS, FORCE_SUB1, FORCE_SUB2
 
 # Tg bot __init_.py
@@ -39,6 +40,9 @@ premiumdb = db["premiumb"]
 mongodb = db["tgtbot"]
 chatdb = db["chatdsd"]
 
+# Create a async scheduler
+scheduler = aps.AsyncIOScheduler()
+
 ADMIN_IDS = ADMIN_IDS
 
 async def cbot_bot():
@@ -52,5 +56,5 @@ async def cbot_bot():
     else:
         BOT_NAME = getme.first_name
 
-
+scheduler.start()
 loop.run_until_complete(cbot_bot())
