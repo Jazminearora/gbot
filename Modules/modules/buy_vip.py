@@ -117,7 +117,7 @@ async def premium_callback(client, callback_query):
     else:
         lang = "en"
     currency = "USD"  # You can get the user's currency here
-    desc = f"Premium subscription for {extend_hrs} hrs."  # You can get the description here
+    desc = f"Premium subscription for {extend_hrs} hrs. of {user_id}"  # You can get the description here
 
     URL = await aaio.create_payment(order_id, amount, lang, currency, desc)
     markup = InlineKeyboardMarkup([
