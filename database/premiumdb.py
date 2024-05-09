@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timedelta
 
 def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
+    print("save:", user_id)
     try:
         # Check if the user already exists in the premium database
         existing_user = premiumdb.find_one({"_id": user_id})
@@ -62,7 +63,7 @@ def is_user_premium(user_id: int):
     try:
         # Retrieve the whole premium db document
         premium_users = list(premiumdb.find())
-        print()
+        print(premium_users)
         # Search for the user in the retrieved document
         for user in premium_users:
             if str(user_id) == user["_id"]:
@@ -104,6 +105,7 @@ def vip_users_details(user_id: int, field: str):
 
 def extend_premium_user_hrs(user_id: int, extend_hrs: int):
     try:
+        print(user_id)
         # Check if the user is already premium
         is_premium, expiry_time = is_user_premium(user_id)
         if is_premium:
@@ -120,6 +122,8 @@ def extend_premium_user_hrs(user_id: int, extend_hrs: int):
             expiry_time = (datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=extend_hrs)).strftime("%Y-%m-%d %H:%M:%S")
             save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
             print(f"User {user_id} added as premium until {expiry_time}.")
+        print("database int:", premiumdb.find_one({"_id": int(user_id)}))
+        print("database str:", premiumdb.find_one({"_id": str(user_id)}))
     except Exception as e:
         print("Error:", e)
 

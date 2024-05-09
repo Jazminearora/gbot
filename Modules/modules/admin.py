@@ -410,11 +410,6 @@ async def add_vip(client, message):
         user_id = command.split()[1]
         extend_hrs = int(command.split()[2])
         print(user_id, extend_hrs)
-        # Check if the user exists
-        user = await cbot.get_users(user_id)
-        if not user:
-            await message.reply_text("User does not exist.")
-            return
         try:
             # Extend the user's premium hours
             extend_premium_user_hrs(user_id, extend_hrs)
