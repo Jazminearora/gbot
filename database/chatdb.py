@@ -72,6 +72,9 @@ def reset_ratings(user_id: int):
 def reset_chatime():
     try:
         result = chatdb.update_many({}, {"$set": {"chat_time": 0}})
+        print("Chat DB:")
+        for doc in chatdb.find():
+            print(doc)
         return result.modified_count
     except PyMongoError as e:
         print("Error:", e)
