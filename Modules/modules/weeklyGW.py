@@ -38,7 +38,7 @@ async def weekly_gw():
             message += "🎉 Enjoy your free subscription! 🎉"
 
             # Translate the message to the user's language
-            user_language = find_language(user_id)
+            user_language = find_language(int(user_id))
             print(user_language, user_id)
             try:
                 translated_message = await translate_async(message, user_language)
