@@ -1,7 +1,10 @@
 from pymongo import MongoClient
-
+id = 7067606707
+id_str = str(id)
+print(type(id_str))  # <class 'str'>
+print(id_str)  # '7067606707'
 client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-db = client["cboSot-primer"]
+db = client["zenova-xy"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
 

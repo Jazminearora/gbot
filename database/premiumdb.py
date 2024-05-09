@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta
 
 def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
-    print("save_premium_user", user_id)
+    print("save_premium_user", str(user_id))
     try:
         # Check if the user already exists in the premium database
         existing_user = premiumdb.find_one({"_id": str(user_id)})
@@ -43,7 +43,7 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
             else:
                 new_status = premium_status
             doc = {
-                "_id": id(user_id),
+                "_id": str(user_id),
                 "premium_status": new_status,
                 "premium_purchase_time": purchase_time,
                 "premium_expiry_time": expiry_time,
@@ -75,7 +75,7 @@ def is_user_premium(user_id: int):
                     else:
                         # If expiry time is over, update premium status to False
                         premiumdb.update_one(
-                            {"_id": id(user_id)},
+                            {"_id": str(user_id)},
                             {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
                         )
                         return False, None
