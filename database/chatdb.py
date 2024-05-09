@@ -35,7 +35,9 @@ def save_user(user_id: int, total_message: int = 0, profanity_score: int = 0, ra
                 "weekly_chat_time": weekly_chat_time,
                 "frens": frens or []
             }
-            chatdb.insert_one(doc)
+        print("database int:", chatdb.find_one({"_id": int(user_id)}))
+        print("database str:", chatdb.find_one({"_id": str(user_id)}))
+        chatdb.insert_one(doc)
     except PyMongoError as e:
         print("Error:", e)
 
