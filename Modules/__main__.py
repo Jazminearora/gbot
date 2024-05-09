@@ -1,7 +1,6 @@
 import asyncio
 import importlib
 from pyrogram import idle
-from pyrogram.errors import ChatForbidden, ChatRestricted
 from Modules import cbot, mongodb, logger
 from Modules.modules import ALL_MODULES
 from config import key, LOG_GROUP
@@ -37,12 +36,6 @@ async def cbot_boot():
     for all_module in ALL_MODULES:
         importlib.import_module("Modules.modules." + all_module)
     print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
-    try:
-        await cbot.send_message(LOG_GROUP, text= "Bot started successfully!")
-    except (ChatRestricted, ChatForbidden):
-        logger.critical("Please add me to your log group and give me administrator power!")
-    except Exception as e:
-        logger.critical(f"An error occured while starting the bot!\nError:{e}\n\nPlease make sure LOG_GROUP is valid add also me to your log group and give me administrator power!")
     await idle()
 
     
