@@ -39,18 +39,13 @@ async def weekly_gw():
 
             # Translate the message to the user's language
             user_language = find_language(int(user_id))
-            print(user_language, user_id)
             try:
                 translated_message = await translate_async(message, user_language)
-            except KeyError:
-                translated_message = translate_text(message, user_language)
             except Exception as e:
                 translated_message = f"Error occurred during translation: {e}"
                 print(f"Error occurred during translation for user {user_id}: {e}")
-
-
             # Send the message to the user
-            await cbot.send_message(user_id, text= translated_message)
+            await cbot.send_message(user_id, text = translated_message)
         # Reset the user's chat time
         reset_chatime()
 
@@ -58,5 +53,7 @@ async def weekly_gw():
         print( f"An error occured while distributing weekly gw: {e}" )
 
 scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), timezone=timezone('Europe/Moscow'))
-# Schedule the task to run every 10 minutes
-scheduler.add_job(weekly_gw, 'interval', minutes=5)
+
+
+ # for testing purpose
+scheduler.add_job(weekly_gw, 'interval', minutes=2)
