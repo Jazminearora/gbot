@@ -139,12 +139,19 @@ async def check_payment_callback(client, callback_query):
             st = True
         else:
             st = False
-    if payment_info.is_success() or st:
-        extend_premium_user_hrs(user_id, hrs)
-        await callback_query.message.delete()
-        await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))
-    else:
-        await callback_query.answer(await translate_async("Payment is still pending.", langauge), show_alert=True)
-
-
-   
+    try:
+        if payment_info.is_success():
+            extend_premium_user_hrs(user_id, hrs)
+            await callback_query.message.delete()
+            await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))
+        else:
+            await callback_query.answer(await translate_async("Payment is still pending.", langauge), show_alert=True)
+    except:
+        if st:
+            extend_premium_user_hrs(user_id, hrs)
+            await callback_query.message.delete()
+            await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))
+        else:
+            await callback_query.answer(await translate_async("Payment is still pending.", langauge), show_alert=True)
+           
+    
