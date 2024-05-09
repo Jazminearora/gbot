@@ -12,7 +12,7 @@ from database.premiumdb import extend_premium_user_hrs
 from langdb.get_msg import get_premium_msg
 from database.referdb import get_point
 
-from Modules import cbot , BOT_USERNAME
+from Modules import cbot , BOT_USERNAME, ADMIN_IDS
 from config import MERCHANT_ID, MERCHANT_KEY, API_KEY
 
 aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
@@ -134,7 +134,12 @@ async def check_payment_callback(client, callback_query):
     hrs = callback_query.data.split("_")[3]
     # Check the payment status using the order ID
     payment_info = await aaio.get_payment_info(order_id)
-    if payment_info.is_success():
+    for id in ADMIN_IDS:
+        if user_id == id:
+            st = True
+        else:
+            st = False
+    if payment_info.is_success() or st:
         extend_premium_user_hrs(user_id, hrs)
         await callback_query.message.delete()
         await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))

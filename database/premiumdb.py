@@ -4,10 +4,9 @@ import time
 from datetime import datetime, timedelta
 
 def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
-    print("save:", user_id)
     try:
         # Check if the user already exists in the premium database
-        existing_user = premiumdb.find_one({"_id": str(user_id)})
+        existing_user = premiumdb.find_one({"_id": user_id})
         if existing_user:
             # If user exists, update the premium status and other details
             update_dict = {}
@@ -33,7 +32,7 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
 
             if update_dict:
                 premiumdb.update_one(
-                    {"_id": str(user_id)},
+                    {"_id": user_id},
                     {"$set": update_dict}
                 )
         else:
@@ -43,7 +42,7 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
             else:
                 new_status = premium_status
             doc = {
-                "_id": str(user_id),
+                "_id": user_id,
                 "premium_status": new_status,
                 "premium_purchase_time": purchase_time,
                 "premium_expiry_time": expiry_time,
@@ -78,7 +77,7 @@ def is_user_premium(user_id: int):
                     else:
                         # If expiry time is over, update premium status to False
                         premiumdb.update_one(
-                            {"_id": str(user_id)},
+                            {"_id": user_id},
                             {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
                         )
                         return False, None
@@ -93,7 +92,7 @@ def is_user_premium(user_id: int):
 def vip_users_details(user_id: int, field: str):
     try:
         # Retrieve the user document from the premium database
-        user = premiumdb.find_one({"_id": str(user_id)})
+        user = premiumdb.find_one({"_id": user_id})
         if user and field in user:
             return user[field]
         else:
@@ -104,14 +103,13 @@ def vip_users_details(user_id: int, field: str):
 
 def extend_premium_user_hrs(user_id: int, extend_hrs: int):
     try:
-        print(user_id)
         # Check if the user is already premium
         is_premium, expiry_time = is_user_premium(user_id)
         if is_premium:
             # If user is premium, extend the expiry time by 2 hours
             new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=extend_hrs)).strftime("%Y-%m-%d %H:%M:%S")
             premiumdb.update_one(
-                {"_id": str(user_id)},
+                {"_id": user_id},
                 {"$set": {"premium_expiry_time": new_expiry_time}}
             )
             print(f"Premium extended for user {user_id} to {new_expiry_time}.")
@@ -121,8 +119,6 @@ def extend_premium_user_hrs(user_id: int, extend_hrs: int):
             expiry_time = (datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=extend_hrs)).strftime("%Y-%m-%d %H:%M:%S")
             save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
             print(f"User {user_id} added as premium until {expiry_time}.")
-        print("database int:", premiumdb.find_one({"_id": int(user_id)}))
-        print("database str:", premiumdb.find_one({"_id": str(user_id)}))
     except Exception as e:
         print("Error:", e)
 
@@ -138,7 +134,7 @@ def calculate_remaining_time(expiry_time):
 def remove_item_from_field(user_id: int, field: str, item: any):
     try:
         # Retrieve the user document from the premium database
-        user = premiumdb.find_one({"_id": str(user_id)})
+        user = premiumdb.find_one({"_id": user_id})
         if user and field in user:
             field_value = user[field]
             if isinstance(field_value, list):
@@ -146,7 +142,7 @@ def remove_item_from_field(user_id: int, field: str, item: any):
                 if item in field_value:
                     field_value.remove(item)
                     premiumdb.update_one(
-                        {"_id": str(user_id)},
+                        {"_id": user_id},
                         {"$set": {field: field_value}}
                     )
                     print(f"Item {item} removed from field {field} for user {user_id}.")
@@ -185,10 +181,8 @@ def get_user_position(users_list, user_id: int) -> tuple:
     """
     Returns the position and chat time of a user in the list.
     """
-    print(users_list)
     for index, user in enumerate(users_list):
-        if user["_id"] == str(user_id):
-            print("position:", index +1)
+        if user["_id"] == user_id:
             return index + 1, user["chat_time"]  # Position starts from 1
     return None, None  # User ID not found in the list
 
@@ -209,5 +203,3 @@ def get_top_chat_users(user_id: int = None) -> tuple:
     except Exception as e:
         print("Error:", e)
         return {"error": str(e)}
-
-

@@ -35,9 +35,7 @@ def save_user(user_id: int, total_message: int = 0, profanity_score: int = 0, ra
                 "weekly_chat_time": weekly_chat_time,
                 "frens": frens or []
             }
-        print("database int:", chatdb.find_one({"_id": int(user_id)}))
-        print("database str:", chatdb.find_one({"_id": str(user_id)}))
-        chatdb.insert_one(doc)
+            chatdb.insert_one(doc)
     except PyMongoError as e:
         print("Error:", e)
 
@@ -74,9 +72,6 @@ def reset_ratings(user_id: int):
 def reset_chatime():
     try:
         result = chatdb.update_many({}, {"$set": {"chat_time": 0}})
-        print("Chat DB:")
-        for doc in chatdb.find():
-            print(doc)
         return result.modified_count
     except PyMongoError as e:
         print("Error:", e)
