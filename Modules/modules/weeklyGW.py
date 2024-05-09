@@ -11,7 +11,6 @@ from helpers.helper import find_language
 async def weekly_gw():
     try:
         topper = get_top_chat_users()
-        print(topper)
 
         # Distribute premium to top 3 users
         for i, user in enumerate(topper):
@@ -40,10 +39,16 @@ async def weekly_gw():
 
             # Translate the message to the user's language
             user_language = find_language(user_id)
-            translated_message = await translate_async(message, user_language)
+            print(message)
+            try:
+                translated_message = await translate_async(message, user_language)
+            except KeyError as e:
+                translated_message = f"Error occurred during translation: {e}"
+                print(f"Error occurred during translation for user {user_id}: {e}")
+
 
             # Send the message to the user
-            await cbot.send_message(user_id, translated_message)
+            await cbot.send_message(user_id, text= translated_message)
         # Reset the user's chat time
         reset_chatime()
 

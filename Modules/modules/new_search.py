@@ -412,15 +412,16 @@ async def send_match_messages(user1, user2):
     lang2 = find_language(user2["user_id"])
     is_vip1, _ = is_user_premium(user1["user_id"])
     is_vip2, _ = is_user_premium(user2["user_id"])
-    name = await get_user_name(user2["user_id"])
+    name1 = await get_user_name(user1["user_id"])
+    name2 = await get_user_name(user2["user_id"])
     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     if is_vip1:
-        cap1 = await interlocutor_vip_message(lang1, name, user2["gender"], user2["age_groups"])
+        cap1 = await interlocutor_vip_message(lang1, name2, user2["gender"], user2["age_groups"])
     else:
         cap1 = await interlocutor_normal_message(lang1)
     await cbot.send_message(user1["user_id"], cap1, reply_markup=keyboard)
     if is_vip2:
-        caption = await interlocutor_vip_message(lang2, name, user1["gender"], user1["age_groups"])
+        caption = await interlocutor_vip_message(lang2, name1, user1["gender"], user1["age_groups"])
     else:
         caption = await interlocutor_normal_message(lang2)
     await cbot.send_message(user2["user_id"], caption, reply_markup=keyboard)

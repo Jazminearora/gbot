@@ -171,12 +171,12 @@ def get_premium_users():
         return [], 0
 
 
-def get_user_position(users_list, user_id: int) -> tuple:
+def get_user_position(users_list, user_id):
     """
     Returns the position and chat time of a user in the list.
     """
     for index, user in enumerate(users_list):
-        if user["_id"] == user_id:
+        if user["_id"] == str(user_id):
             return index + 1, user["chat_time"]  # Position starts from 1
     return None, None  # User ID not found in the list
 
