@@ -101,27 +101,6 @@ def vip_users_details(user_id: int, field: str):
     except Exception as e:
         print("Error:", e)
         return None
-    
-def extend_premium_user(user_id: int):
-    try:
-        # Check if the user is already premium
-        is_premium, expiry_time = is_user_premium(user_id)
-        if is_premium:
-            # If user is premium, extend the expiry time by 2 hours
-            new_expiry_time = (datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=EXTEND_HRS_REFER)).strftime("%Y-%m-%d %H:%M:%S")
-            premiumdb.update_one(
-                {"_id": user_id},
-                {"$set": {"premium_expiry_time": new_expiry_time}}
-            )
-            print(f"Premium extended for user {user_id} to {new_expiry_time}.")
-        else:
-            # If user is not premium, add them as a new premium user
-            current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-            expiry_time = (datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S") + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
-            save_premium_user(user_id, premium_status=True, purchase_time=current_time, expiry_time=expiry_time)
-            print(f"User {user_id} added as premium until {expiry_time}.")
-    except Exception as e:
-        print("Error:", e)
 
 def extend_premium_user_hrs(user_id: int, extend_hrs: int):
     try:
