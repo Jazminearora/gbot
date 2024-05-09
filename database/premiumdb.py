@@ -62,7 +62,7 @@ def is_user_premium(user_id: int):
     try:
         # Retrieve the whole premium db document
         premium_users = list(premiumdb.find())
-
+        print()
         # Search for the user in the retrieved document
         for user in premium_users:
             if str(user_id) == user["_id"]:

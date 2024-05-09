@@ -16,6 +16,7 @@ async def weekly_gw():
         # Distribute premium to top 3 users
         for i, user in enumerate(topper):
             user_id = user['user_id']
+            print(user_id)
             chat_time = user['chat_time']
 
             # Distribute premium based on the rank
@@ -27,7 +28,7 @@ async def weekly_gw():
                 days = 1
 
             # Extend the user's premium subscription
-            extend_premium_user_hrs(user_id, days * 24)
+            extend_premium_user_hrs(str(user_id), days * 24)
 
             place = '1st' if i == 0 else '2nd' if i == 1 else '3rd'
             # Notify the user about their reward
@@ -51,4 +52,4 @@ async def weekly_gw():
 
 scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), timezone=timezone('Europe/Moscow'))
 # Schedule the task to run every 10 minutes
-scheduler.add_job(weekly_gw, 'interval', minutes=10)
+scheduler.add_job(weekly_gw, 'interval', minutes=2)
