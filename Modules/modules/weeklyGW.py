@@ -8,7 +8,7 @@ from helpers.translator import translate_async
 from helpers.helper import find_language
 
 
-async def weekly_gw(user_id, message):
+async def weekly_gw():
     try:
         topper = get_top_chat_users()
         print(topper)
@@ -17,3 +17,5 @@ async def weekly_gw(user_id, message):
         print( f"An error occured while distriburion of weekly gw: {e}" )
 
 scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), timezone=timezone('Europe/Moscow'))
+# Schedule the task to run every 10 minutes
+scheduler.add_job(weekly_gw, 'interval', minutes=1)

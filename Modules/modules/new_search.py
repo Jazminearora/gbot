@@ -539,6 +539,6 @@ async def check_inactive_chats():
                 await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
 
 
-# Schedule the task to run every 10 minutes
+# Schedule the task to run every 1 minute
 scheduler.add_job(check_inactive_chats, 'interval', minutes=1)
 
