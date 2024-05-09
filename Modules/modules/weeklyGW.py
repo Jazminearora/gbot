@@ -28,7 +28,7 @@ async def weekly_gw():
                 days = 1
 
             # Extend the user's premium subscription
-            extend_premium_user_hrs(str(user_id), days * 24)
+            extend_premium_user_hrs(int(user_id), days * 24)
 
             place = '1st' if i == 0 else '2nd' if i == 1 else '3rd'
             # Notify the user about their reward
