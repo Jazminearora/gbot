@@ -5,15 +5,15 @@ db = client["cboSot-primer"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
 
-premiumdb.find_one_and_delete({"_id": 5131723020})
-premiumdb.find_one_and_delete({"_id": 1567526737})
-premiumdb.find_one_and_delete({"_id": '432334334'})
+# premiumdb.find_one_and_delete({"_id": 5131723020})
+# premiumdb.find_one_and_delete({"_id": 1567526737})
+# premiumdb.find_one_and_delete({"_id": '432334334'})
 
 # Fetch all documents from the "premiumdb" collection
 all_documents = premiumdb.find()
 h_doc = referdb.find()
-for doc in h_doc:
-    print(doc)
+# for doc in h_doc:
+    # print(doc)
 
 def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
     try:

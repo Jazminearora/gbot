@@ -34,7 +34,7 @@ cbot = Client(
 
 
 client = MongoClient(MONGO_URI)
-db = client["cboSot-primer"]
+db = client["zenova-xy"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
 mongodb = db["tgtbot"]

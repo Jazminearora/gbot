@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timedelta
 
 def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
+    print("save_premium_user", user_id)
     try:
         # Check if the user already exists in the premium database
         existing_user = premiumdb.find_one({"_id": str(user_id)})
