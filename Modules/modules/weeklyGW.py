@@ -1,11 +1,13 @@
 from pytz import timezone
+from pyrogram.errors import PeerIdInvalid
 from apscheduler.triggers.cron import CronTrigger
 
 from database.premiumdb import get_top_chat_users, extend_premium_user_hrs
 from database.chatdb import reset_chatime
 from .. import cbot, scheduler
-from helpers.translator import translate_async, translate_text
+from helpers.translator import translate_async
 from helpers.helper import find_language
+from config import LOG_GROUP
 
 
 async def weekly_gw():
@@ -44,8 +46,17 @@ async def weekly_gw():
             except Exception as e:
                 translated_message = f"Error occurred during translation: {e}"
                 print(f"Error occurred during translation for user {user_id}: {e}")
-            # Send the message to the user
-            await cbot.send_message(user_id, text = translated_message)
+            try:
+                # Send the message to the user
+                await cbot.send_message(user_id, text = translated_message)
+            except PeerIdInvalid:
+                retry = await cbot.send_message(LOG_GROUP, text= translated_message)
+                await retry.copy(chat_id= user_id)
+                await retry.delete()
+            except Exception as e:
+                await cbot.send_message(LOG_GROUP, text= f"{e}\n\nError occured in sending winning message to winner! Premium membership activated for the user! User details-\n\nUser id = {user_id}\nPosition = {place}\nChat time = {chat_time}")
+                pass
+
         # Reset the user's chat time
         reset_chatime()
 

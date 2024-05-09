@@ -1,4 +1,5 @@
 import os
+from Modules import logger
 #okay
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
@@ -22,11 +23,15 @@ key = "sundar"
 DEV_USER = []
 SUDO_USERS = os.environ.get("SUDO_USERS")
 EXTEND_HRS_REFER = os.environ.get("EXTEND_HRS_REFER")
-if EXTEND_HRS_REFER is not None and isinstance(EXTEND_HRS_REFER, str):
-    EXTEND_HRS_REFER = int(EXTEND_HRS_REFER, 2)
+if EXTEND_HRS_REFER is not None:
+    try:
+        EXTEND_HRS_REFER = int(EXTEND_HRS_REFER, 2)
+    except ValueError:
+        logger.warn("Your EXTEND_HRS_REFER does not contain valid integers. Continuing with default value 2!", userWarning=True)
+        EXTEND_HRS_REFER = 2
 else:
     EXTEND_HRS_REFER = 2
-CHANNEL_USERNAME = '@Equinoxlogs'
+LOG_GROUP = '@tesrubo'
 SUPPORTING = '@Equinox_Chats'
 UPDATE = "https://t.me/EquinoxNetwork"
 SUPPORT = "https://t.me/Equinox_Chats"
