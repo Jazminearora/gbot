@@ -51,4 +51,4 @@ async def weekly_gw():
 
 scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), timezone=timezone('Europe/Moscow'))
 # Schedule the task to run every 10 minutes
-scheduler.add_job(weekly_gw, 'interval', minutes=1)
+scheduler.add_job(weekly_gw, 'interval', minutes=10)

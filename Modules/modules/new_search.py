@@ -16,7 +16,7 @@ from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
-from database.chatdb import save_user
+from database.chatdb import save_user, users_chat_details
 
 
 # List to store users searching for an interlocutor
@@ -60,6 +60,12 @@ async def delete_pair(id_to_delete):
             print(upate_chat_time1, upate_chat_time2)
             save_premium_user(user1, chat_time = upate_chat_time1)
             save_premium_user(user2, chat_time = upate_chat_time2)
+            old_chat_time3 = users_chat_details(user1, "weekly_chat_time") if users_chat_details(user1, "weekly_chat_time") is not None else 0
+            old_chat_time4 = users_chat_details(user2, "weekly_chat_time") if users_chat_details(user2, "weekly_chat_time") is not None else 0
+            upate_chat_time3 = ((last_message_time1 - start_set_time1).seconds + old_chat_time3)
+            upate_chat_time4 = ((last_message_time2 - start_set_time2).seconds + old_chat_time4)
+            save_user(user1, weekly_chat_time = upate_chat_time3)
+            save_user(user2, weekly_chat_time = upate_chat_time4)
             print(vip_users_details(user2, "chat_time"), vip_users_details(user2, "chat_time"), "final" )
     for i, pair in enumerate(chat_pairs):
         if id_to_delete in pair:

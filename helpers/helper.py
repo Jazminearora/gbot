@@ -3,7 +3,7 @@ from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text
 from database.premiumdb import is_user_premium, calculate_remaining_time
-from database.chatdb import users_chat_details
+from database.chatdb import users_rating_details
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def find_language(user_id):
@@ -129,7 +129,7 @@ async def get_profile(user_id, language):
         gender = get_gender(user_id, language)
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
-        chat_details = users_chat_details(user_id, "rating")
+        chat_details = users_rating_details(user_id, "rating")
         rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
         if language == "English":
             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
