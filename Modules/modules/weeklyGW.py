@@ -4,7 +4,7 @@ from apscheduler.triggers.cron import CronTrigger
 from database.premiumdb import get_top_chat_users, extend_premium_user_hrs
 from database.chatdb import reset_chatime
 from .. import cbot, scheduler
-from helpers.translator import translate_async
+from helpers.translator import translate_async, translate_text
 from helpers.helper import find_language
 
 
@@ -39,10 +39,12 @@ async def weekly_gw():
 
             # Translate the message to the user's language
             user_language = find_language(user_id)
-            print(message)
+            print(user_language, user_id)
             try:
                 translated_message = await translate_async(message, user_language)
-            except KeyError as e:
+            except KeyError:
+                translated_message = translate_text(message, user_language)
+            except Exception as e:
                 translated_message = f"Error occurred during translation: {e}"
                 print(f"Error occurred during translation for user {user_id}: {e}")
 
