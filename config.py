@@ -1,5 +1,4 @@
 import os
-from Modules import logger
 #okay
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
