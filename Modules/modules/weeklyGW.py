@@ -48,10 +48,14 @@ async def weekly_gw():
                 print(f"Error occurred during translation for user {user_id}: {e}")
             try:
                 # Send the message to the user
-                await cbot.send_message(user_id, text = translated_message)
+                await cbot.send_message(int(user_id), text = translated_message)
             except PeerIdInvalid:
                 retry = await cbot.send_message(LOG_GROUP, text= translated_message)
-                await retry.copy(chat_id= user_id)
+                try:
+                    await retry.copy(int(user_id))
+                except:
+                    await cbot.send_message(LOG_GROUP, text= f"{e}\n\nError occured in sending winning message to winner! Premium membership activated for the user! User details-\n\nUser id = {user_id}\nPosition = {place}\nChat time = {chat_time}")
+                    pass
                 await retry.delete()
             except Exception as e:
                 await cbot.send_message(LOG_GROUP, text= f"{e}\n\nError occured in sending winning message to winner! Premium membership activated for the user! User details-\n\nUser id = {user_id}\nPosition = {place}\nChat time = {chat_time}")

@@ -26,7 +26,7 @@ if EXTEND_HRS_REFER is not None:
     try:
         EXTEND_HRS_REFER = int(EXTEND_HRS_REFER, 2)
     except ValueError:
-        logger.warn("Your EXTEND_HRS_REFER does not contain valid integers. Continuing with default value 2!", userWarning=True)
+        print("Your EXTEND_HRS_REFER does not contain valid integers. Continuing with default value 2!")
         EXTEND_HRS_REFER = 2
 else:
     EXTEND_HRS_REFER = 2
