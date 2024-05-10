@@ -1,9 +1,9 @@
 from Modules import premiumdb
-from config import EXTEND_HRS_REFER
 import time
+from pymongo.errors import PyMongoError
 from datetime import datetime, timedelta
 
-def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
+def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, weekly_chat_time: int = 0, frens: list = None):
     print("save_premium_user", str(user_id))
     try:
         # Check if the user already exists in the premium database
@@ -29,6 +29,8 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
                 update_dict["total_dialog"] = total_dialog
             if chat_time != 0:
                 update_dict["chat_time"] = chat_time
+            if weekly_chat_time != 0:
+                update_dict["weekly_chat_time"] = chat_time
 
 
             if update_dict:
@@ -51,7 +53,8 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
                 "age_groups": age_groups,
                 "room": room,
                 "total_dialog": total_dialog,
-                "chat_time": chat_time, 
+                "chat_time": chat_time,
+                "weekly_chat_time": chat_time, 
                 "frens": frens
             }
             premiumdb.insert_one(doc)
@@ -198,3 +201,12 @@ def get_top_chat_users(user_id: int = None) -> tuple:
     except Exception as e:
         print("Error:", e)
         return {"error": str(e)}
+
+
+def reset_chatime():
+    try:
+        result = premiumdb.update_many({}, {"$set": {"weekly_chat_time": 0}})
+        return result.modified_count
+    except PyMongoError as e:
+        print("Error:", e)
+        return None

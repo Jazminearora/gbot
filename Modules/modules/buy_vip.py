@@ -127,7 +127,7 @@ async def premium_callback(client, callback_query):
 
 
 @cbot.on_callback_query(filters.regex(r'check_payement_(.+)_(.+)'))
-async def check_payment_callback(client, callback_query):
+async def check_payment_callback(_, callback_query):
     try:
         user_id = callback_query.from_user.id
         langauge = find_language(user_id)

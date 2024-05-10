@@ -1,113 +1,87 @@
-# from pymongo import MongoClient
-# id = 7067606707
-# id_str = str(id)
-# print(type(id_str))  # <class 'str'>
-# print(id_str)  # '7067606707'
-# client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-# db = client["zenova-xy"]
-# referdb = db["referdb"]
-# premiumdb = db["premiumb"]
+from pymongo import MongoClient
+client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
+db = client["zenova-xy"]
+referdb = db["referdb"]
+premiumdb = db["premiumb"]
 
-# # premiumdb.find_one_and_delete({"_id": 5131723020})
-# # premiumdb.find_one_and_delete({"_id": 1567526737})
-# # premiumdb.find_one_and_delete({"_id": '432334334'})
-
-# # Fetch all documents from the "premiumdb" collection
-# all_documents = premiumdb.find()
-# h_doc = referdb.find()
-# # for doc in h_doc:
-#     # print(doc)
-
-# def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
-#     try:
-#         # Check if the user already exists in the premium database
-#         existing_user = premiumdb.find_one({"_id": user_id})
-#         if existing_user:
-#             # If user exists, update the premium status and other details
-#             update_dict = {}
-#             if premium_status is not None:
-#                 update_dict["premium_status"] = premium_status
-#             if purchase_time is not None:
-#                 update_dict["premium_purchase_time"] = purchase_time
-#             if expiry_time is not None:
-#                 update_dict["premium_expiry_time"] = expiry_time
-#             if gender is not None:
-#                 update_dict["gender"] = gender
-#             if age_groups is not None:
-#                 update_dict["age_groups"] = age_groups
-#             if room is not None:
-#                 update_dict["room"] = room
-#             if frens is not None:
-#                 update_dict["frens"] = frens
-#             if total_dialog != 0:
-#                 update_dict["total_dialog"] = total_dialog
-#             if chat_time != 0:
-#                 update_dict["chat_time"] = chat_time
+def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
+    print("save_premium_user", str(user_id))
+    try:
+        # Check if the user already exists in the premium database
+        existing_user = premiumdb.find_one({"_id": str(user_id)})
+        if existing_user:
+            # If user exists, update the premium status and other details
+            update_dict = {}
+            if premium_status is not None:
+                update_dict["premium_status"] = premium_status
+            if purchase_time is not None:
+                update_dict["premium_purchase_time"] = purchase_time
+            if expiry_time is not None:
+                update_dict["premium_expiry_time"] = expiry_time
+            if gender is not None:
+                update_dict["gender"] = gender
+            if age_groups is not None:
+                update_dict["age_groups"] = age_groups
+            if room is not None:
+                update_dict["room"] = room
+            if frens is not None:
+                update_dict["frens"] = frens
+            if total_dialog != 0:
+                update_dict["total_dialog"] = total_dialog
+            if chat_time != 0:
+                update_dict["chat_time"] = chat_time
+                update_dict["weekly_chat"] = chat_time
 
 
-#             if update_dict:
-#                 premiumdb.update_one(
-#                     {"_id": user_id},
-#                     {"$set": update_dict}
-#                 )
-#         else:
-#             # If user does not exist, insert a new document
-#             if premium_status is None:
-#                 new_status = False
-#             else:
-#                 new_status = premium_status
-#             doc = {
-#                 "_id": user_id,
-#                 "premium_status": new_status,
-#                 "premium_purchase_time": purchase_time,
-#                 "premium_expiry_time": expiry_time,
-#                 "gender": gender,
-#                 "age_groups": age_groups,
-#                 "room": room,
-#                 "total_dialog": total_dialog,
-#                 "chat_time": chat_time, 
-#                 "frens": frens
-#             }
-#             premiumdb.insert_one(doc)
-#     except Exception as e:
-#         print("Error:", e)
+            if update_dict:
+                premiumdb.update_one(
+                    {"_id": str(user_id)},
+                    {"$set": update_dict}
+                )
+        else:
+            # If user does not exist, insert a new document
+            if premium_status is None:
+                new_status = False
+            else:
+                new_status = premium_status
+            doc = {
+                "_id": str(user_id),
+                "premium_status": new_status,
+                "premium_purchase_time": purchase_time,
+                "premium_expiry_time": expiry_time,
+                "gender": gender,
+                "age_groups": age_groups,
+                "room": room,
+                "total_dialog": total_dialog,
+                "chat_time": chat_time,
+                "weekly_chat": chat_time, 
+                "frens": frens
+            }
+            premiumdb.insert_one(doc)
+    except Exception as e:
+        print("Error:", e)
 
-# # save_premium_user("432334334", True, gender= "male")
+def reset_chatime():
+    try:
+        result = premiumdb.update_many({}, {"$set": {"chat_time": 0}})
+        return result.modified_count
+    except Exception as e:
+        print("Error:", e)
+        return None
 
-# # Print each document
-# for document in all_documents:
-#     print(document)
+reset_chatime()
 
 
-# def get_user_position(users_list, user_id: int) -> tuple:
-#     """
-#     Returns the position and chat time of a user in the list.
-#     """
-#     print(users_list)
-#     for index, user in enumerate(users_list):
-#         if user["_id"] == user_id:
-#             print("position:", index +1)
-#             return index + 1, user["chat_time"]  # Position starts from 1
-#     return None, None  # User ID not found in the list
+# premiumdb.find_one_and_delete({"_id": 5131723020})
+# premiumdb.find_one_and_delete({"_id": 1567526737})
+# premiumdb.find_one_and_delete({"_id": '432334334'})
 
-# def get_top_chat_users(user_id: int = None) -> tuple:
-#     """
-#     Returns the top 5 chat users and the position of the given user_id.
-#     """
-#     try:
-#         all_users = list(premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1))
-#         top_users = all_users[:5]
-#         top_users_list = [{"user_id": user["_id"], "chat_time": user["chat_time"]} for user in top_users]
+# save_premium_user(9999999, chat_time= 600)
+# Fetch all documents from the "premiumdb" collection
+all_documents = premiumdb.find_one({"_id": "9999999"})
+print(all_documents)
+# # h_doc = referdb.find()
+doc = premiumdb.find()
+for doc in doc:
+    print(doc)
 
-#         if user_id:
-#             user_position, user_chat_time = get_user_position(all_users, user_id)
-#             return top_users_list, user_position, user_chat_time
-#         else:
-#             return top_users_list
-#     except Exception as e:
-#         print("Error:", e)
-#         return {"error": str(e)}
-
-from datetime import timedelta
-
-print(str(timedelta(seconds=7)))
