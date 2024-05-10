@@ -48,7 +48,7 @@ def users_rating_details(user_id: int, field: str):
 def users_chat_details(user_id: int, field: str):
     try:
         # Retrieve the user document from the premium database
-        user = chatdb.find_one({"_id": user_id})
+        user = chatdb.find_one({"_id": str(user_id)})
         if user and field in user:
             return user[field]
         else:

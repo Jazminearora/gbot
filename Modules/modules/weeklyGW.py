@@ -85,4 +85,4 @@ scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), 
 
 
  # for testing purpose
-scheduler.add_job(weekly_gw, 'interval', minutes=5)
+# scheduler.add_job(weekly_gw, 'interval', minutes=5)

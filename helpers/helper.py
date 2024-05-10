@@ -2,8 +2,8 @@ from Modules import mongodb as collection
 from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text
-from database.premiumdb import is_user_premium, calculate_remaining_time
-from database.chatdb import users_rating_details
+from database.premiumdb import is_user_premium, calculate_remaining_time, vip_users_details
+from database.chatdb import users_rating_details, users_chat_details
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def find_language(user_id):
@@ -130,6 +130,8 @@ async def get_profile(user_id, language):
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
         chat_details = users_rating_details(user_id, "rating")
+        total_msg = users_rating_details(user_id, "rating")
+        dialogs = vip_users_details(user_id, "total_dialog")
         rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
         if language == "English":
             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
@@ -137,6 +139,7 @@ async def get_profile(user_id, language):
             if premium:
                 message += f"\nPremium Expiry: {expiry}"
             message += "\n" + rating
+            message += f"\n\nTotal messages sent: {total_msg} in total dialogs: {dialogs}"
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":
@@ -147,6 +150,7 @@ async def get_profile(user_id, language):
             message += f"\nСтатус премиума: {premium}"
             if premium:
                 message += f"\nСрок действия премиума: {expiry}"
+            message += f"\n\nОбщее количество отправленных сообщений: {total_msg} в общем количестве диалогов: {dialogs}"
             edit_button_text = "Редактировать ✏️"
             close_button_text = "Закрыть ❌"
         elif language == "Azerbejani":
@@ -157,6 +161,7 @@ async def get_profile(user_id, language):
             message += f"\nPremium Statusu: {premium}"
             if premium:
                 message += f"\nPremiumun Bitiş Tarixi: {expiry}"
+            message += f"\n\nÜmumi göndərilmiş mesajların sayı: {total_msg} ümumi dialoqların sayı: {dialogs}"
             edit_button_text = "Redaktə et ✏️"
             close_button_text = "Bağla ❌"
         else:

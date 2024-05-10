@@ -498,6 +498,7 @@ async def forward_message(client, message):
             lang1 = find_language(user1)
             lang2 = find_language(user2)
             if message.from_user.id == user1:
+                save_user(user1, total_message= 1)
                 is_premium, _ = is_user_premium(user1)
                 message_timestamps[f"user_{user1}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if is_premium:
@@ -508,6 +509,7 @@ async def forward_message(client, message):
                     else:
                         await cbot.send_message(user1, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang1))
             elif message.from_user.id == user2:
+                save_user(user2, total_message= 1)
                 is_premium, _ = is_user_premium(user2)
                 message_timestamps[f"user_{user2}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if is_premium:

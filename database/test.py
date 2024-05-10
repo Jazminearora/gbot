@@ -3,6 +3,7 @@ client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongo
 db = client["cboSot-primer"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
+chatdb = db["chatdsd"]
 
 def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
     print("save_premium_user", str(user_id))
@@ -81,8 +82,60 @@ def reset_chatime():
 # all_documents = premiumdb.find_one({"_id": "7067606707"})
 # print(all_documents)
 # # # h_doc = referdb.find()
-doc = premiumdb.find()
-for doc in doc:
-    print(doc)
+# doc = premiumdb.find()
+# for doc in doc:
+    # print(doc)
 # 
 # print(str(int(34893480)))
+
+
+def save_user(user_id: int, total_message: int = 0, profanity_score: int = 0, rating: dict = None):
+    try:
+        chat_dict = {}
+        existing_user = chatdb.find_one({"_id": str(user_id)})
+        if existing_user:
+            update_ops = {"$inc": {}}
+            if total_message!= 0:
+                update_ops["$inc"]["total_message"] = total_message
+            if profanity_score!= 0:
+                update_ops["$inc"]["profanity_score"] = profanity_score
+            if rating:
+                for emoji, count in rating.items():
+                    update_ops["$inc"][f"rating.{emoji}"] = count
+                if chat_dict:
+                    chatdb.update_one(
+                        {"_id": user_id},
+                        {"$set": chat_dict}
+                    )
+
+            if update_ops:
+                chatdb.update_one({"_id": str(user_id)}, update_ops)
+        else:
+            doc = {
+                "_id": str(user_id),
+                "total_message": total_message,
+                "profanity_score": profanity_score,
+                "rating": rating or {"👍": 0, "👎": 0, "⛔": 0},
+            }
+            chatdb.insert_one(doc)
+    except Exception as e:
+        print("Error:", e)
+
+# save_user(3433343, total_message= 1)
+
+def users_chat_details(user_id: int, field: str):
+    try:
+        # Retrieve the user document from the premium database
+        user = chatdb.find_one({"_id": user_id})
+        if user and field in user:
+            return user[field]
+        else:
+            return None
+    except Exception as e:
+        print("Error:", e)
+        return None
+users_chat_details(str(3433343),"total_message" )
+print(users_chat_details(str(3433343),"total_message" ))
+# doc = chatdb.find()
+# for doc in doc:
+#     print(doc)
