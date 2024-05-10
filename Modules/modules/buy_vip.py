@@ -144,8 +144,8 @@ async def check_payment_callback(client, callback_query):
         except Exception as e:
             await cbot.send_message(LOG_GROUP, f"⚠️WARNING!!⚠️\n\nAn error occured while checking the payment info!\nException:{e}\n\nPlease check your credentials and other details!!\n\nTip: Verify the payment of the user '{user_id}' manually from the AAIO website.Order details are shared in description of the order.")
             await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
-            return
-        if payment_info and payment_info.is_success():
+            payment_info = False
+        if payment_info and payment_info.is_success() or st:
             extend_premium_user_hrs(user_id, hrs)
             await callback_query.message.delete()
             await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))

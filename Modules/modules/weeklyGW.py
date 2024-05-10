@@ -137,13 +137,13 @@ async def send_weekly_winner_announcement(log_group, winners):
     message = "🏆 **WEEKLY CHAMPIONS ANNOUNCEMENT** 🏆\n\n"
     message += f"**1st Place**\n"
     message += f"🥇 User_id: {winners[0].get('user_id')}\n"
-    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[0].get('chat_time')))}\n\n"
+    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[0].get('chat_time'))) if winners[0].get('chat_time') is not None else '0 seconds'}\n\n"
     message += f"**2nd Place**\n"
     message += f"🥈 User_id: {winners[1].get('user_id')}\n"
-    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[1].get('chat_time')))}\n\n"
+    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[1].get('chat_time'))) if winners[1].get('chat_time') is not None else '0 seconds'}\n\n"
     message += f"**3rd Place**\n"
     message += f"🥉 User_id: {winners[2].get('user_id')}\n"
-    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[2].get('user_id')))}\n\n"
+    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[2].get('chat_time'))) if winners[2].get('chat_time') is not None else '0 seconds'}\n\n"
     message += "Congratulations to all winners! Let's keep the momentum going! 💪🎉"
     await cbot.send_message(log_group, message)
 
