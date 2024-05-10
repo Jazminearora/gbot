@@ -12,7 +12,7 @@ from database.premiumdb import extend_premium_user_hrs
 from langdb.get_msg import get_premium_msg
 from database.referdb import get_point
 
-from Modules import cbot , BOT_USERNAME, ADMIN_IDS
+from Modules import cbot , BOT_USERNAME, ADMIN_IDS, LOG_GROUP
 from config import MERCHANT_ID, MERCHANT_KEY, API_KEY
 
 aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
@@ -132,15 +132,20 @@ async def check_payment_callback(client, callback_query):
     langauge = find_language(user_id)
     order_id = callback_query.data.split("_")[2]
     hrs = callback_query.data.split("_")[3]
-    # Check the payment status using the order ID
-    payment_info = await aaio.get_payment_info(order_id)
     for id in ADMIN_IDS:
         if user_id == id:
             st = True
         else:
             st = False
     try:
-        if payment_info.is_success():
+        try:
+            # Check the payment status using the order ID
+            payment_info = await aaio.get_payment_info(order_id)
+        except Exception as e:
+            await cbot.send_message(LOG_GROUP, f"⚠️WARNING!!⚠️\n\nAn error occured while checking the payment info!\nException:{e}\n\nPlease check your credentials and other details!!\n\nTip: Verify the payment of the user '{user_id}' manually from the AAIO website.Order details are shared in description of the order.")
+            await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
+            return
+        if payment_info and payment_info.is_success():
             extend_premium_user_hrs(user_id, hrs)
             await callback_query.message.delete()
             await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))

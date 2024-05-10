@@ -108,11 +108,6 @@
 #         print("Error:", e)
 #         return {"error": str(e)}
 
-st_win1 = {}
-user_id = 3422323
-chat_time = 101
-st_win1.update({"user_id": user_id, "chat_time":chat_time})
-# for user in st_win1:
-#     user = user["user_id"]
-# oser = st_win1.__format__()
-print( st_win1.get("user_id"))
+from datetime import timedelta
+
+print(str(timedelta(seconds=7)))

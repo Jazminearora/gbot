@@ -45,6 +45,7 @@ chatdb = db["chatdsd"]
 scheduler = aps.AsyncIOScheduler()
 
 ADMIN_IDS = ADMIN_IDS
+LOG_GROUP = LOG_GROUP
 
 async def cbot_bot():
     global BOT_ID, BOT_NAME, BOT_USERNAME

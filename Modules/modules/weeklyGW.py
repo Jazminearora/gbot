@@ -111,11 +111,10 @@ async def weekly_gw():
 
 
 def construct_message(place, days, chat_time):
-    message = f"🏆 Congratulations, you won the weekly giveaway! 🏆\n\n"
-    message += f"🥇 Prizes:\n"
-    message += f"🥇 {place} place - free subscription for {days} days\n\n"
-    message += f"🎉 You won {place} place with {chat_time} chat time!\n\n"
-    message += "🎉 Enjoy your free subscription! 🎉"
+    message = "🏆 **Congratulations, you are the winner of our weekly giveaway!** 🏆\n\n"
+    message += f"🥇 **Prize:** Free Premium💎 subscription for {days} days\n"
+    message += f"🎉 You secured {place} place with an impressive chat time of {str(timedelta(seconds=chat_time))}!\n\n"
+    message += "🎉 Enjoy your well-deserved free subscription! 🎉"
     return message
 
 
@@ -138,13 +137,13 @@ async def send_weekly_winner_announcement(log_group, winners):
     message = "🏆 **WEEKLY CHAMPIONS ANNOUNCEMENT** 🏆\n\n"
     message += f"**1st Place**\n"
     message += f"🥇 User_id: {winners[0].get('user_id')}\n"
-    message += f"🕒 Weekly Chat Time: {winners[0].get('chat_time')}\n\n"
+    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[0].get('chat_time')))}\n\n"
     message += f"**2nd Place**\n"
     message += f"🥈 User_id: {winners[1].get('user_id')}\n"
-    message += f"🕒 Weekly Chat Time: {winners[1].get('chat_time')}\n\n"
+    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[1].get('chat_time')))}\n\n"
     message += f"**3rd Place**\n"
     message += f"🥉 User_id: {winners[2].get('user_id')}\n"
-    message += f"🕒 Weekly Chat Time: {winners[2].get('chat_time')}\n\n"
+    message += f"🕒 Weekly Chat Time: {str(timedelta(seconds=winners[2].get('user_id')))}\n\n"
     message += "Congratulations to all winners! Let's keep the momentum going! 💪🎉"
     await cbot.send_message(log_group, message)
 
