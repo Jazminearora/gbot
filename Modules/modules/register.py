@@ -255,7 +255,7 @@ async def register_interest_callback(client, callback_query):
         interest = data_parts[3]
         
         # Get user ID
-        user_id = str(callback_query.from_user.id)
+        user_id = callback_query.from_user.id
         
         # Check if user ID is already registered for interest
         if not get_interest(user_id,language):

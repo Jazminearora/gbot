@@ -64,25 +64,25 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
 
 def is_user_premium(user_id: int):
     try:
-        # Retrieve the whole premium db document
-        premium_users = list(premiumdb.find())
-        # Search for the user in the retrieved document
-        for user in premium_users:
-            current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-            user_doc = premiumdb.find_one({"_id": str(user_id)})
-            if user_doc and user_doc.get("premium_status"):
-                expiry_time = user_doc.get("premium_expiry_time")
-                if expiry_time:
-                    if expiry_time > current_time:
-                        return True, expiry_time
-                    else:
-                        # If expiry time is over, update premium status to False
-                        premiumdb.update_one(
-                            {"_id": str(user_id)},
-                            {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
-                        )
-                        return False, None
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        user_doc = premiumdb.find_one({"_id": str(user_id)})
+        if not user_doc:
+            save_premium_user(user_id, premium_status= False)
             return False, None
+        # If user is found, check if premium status is True and expiry time is not over
+        if user_doc and user_doc.get("premium_status"):
+            expiry_time = user_doc.get("premium_expiry_time")
+            if expiry_time:
+                if expiry_time > current_time:
+                    return True, expiry_time
+                else:
+                    # If expiry time is over, update premium status to False
+                    premiumdb.update_one(
+                        {"_id": str(user_id)},
+                        {"$set": {"premium_status": False, "premium_purchase_time": None, "premium_expiry_time": None}}
+                    )
+                    return False, None
+        return False, None
     except Exception as e:
         return False, None
         
@@ -91,6 +91,8 @@ def vip_users_details(user_id: int, field: str):
     try:
         # Retrieve the user document from the premium database
         user = premiumdb.find_one({"_id": str(user_id)})
+        if not user:
+            save_premium_user(user_id, premium_status= False)
         if user and field in user:
             return user[field]
         else:
@@ -181,7 +183,7 @@ def get_user_position(users_list, user_id):
     """
     for index, user in enumerate(users_list):
         if user["_id"] == str(user_id):
-            return index + 1, user["chat_time"]  # Position starts from 1
+            return index + 1, user["weekly_chat_time"]  # Position starts from 1
     return None, None  # User ID not found in the list
 
 def get_top_chat_users(user_id: int = None) -> tuple:
@@ -189,9 +191,9 @@ def get_top_chat_users(user_id: int = None) -> tuple:
     Returns the top 3 chat users and the position of the given user_id.
     """
     try:
-        all_users = list(premiumdb.find({"chat_time": {"$gt": 0}}).sort("chat_time", -1))
+        all_users = list(premiumdb.find({"weekly_chat_time": {"$gt": 0}}).sort("weekly_chat_time", -1))
         top_users = all_users[:3]
-        top_users_list = [{"user_id": user["_id"], "chat_time": user["chat_time"]} for user in top_users]
+        top_users_list = [{"user_id": user["_id"], "weekly_chat_time": user["weekly_chat_time"]} for user in top_users]
 
         if user_id:
             user_position, user_chat_time = get_user_position(all_users, user_id)

@@ -14,11 +14,11 @@ from config import LOG_GROUP
 async def weekly_gw():
     try:
         topper = get_top_chat_users()
-        winners = [{"user_id": None, "chat_time": None} for _ in range(3)]
+        winners = [{"user_id": None, "weekly_chat_time": None} for _ in range(3)]
 
         for i, user in enumerate(topper):
             user_id = user['user_id']
-            chat_time = user['chat_time']
+            chat_time = user['weekly_chat_time']
 
             # Distribute premium based on the rank
             days = 3 if i == 0 else 2 if i == 1 else 1
@@ -85,4 +85,4 @@ scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), 
 
 
  # for testing purpose
-# scheduler.add_job(weekly_gw, 'interval', minutes=2)
+scheduler.add_job(weekly_gw, 'interval', minutes=5)

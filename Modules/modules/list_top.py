@@ -27,7 +27,7 @@ async def top_list(_, message):
     # Format the chat time for the users
     formatted_top_users = []
     for user in top_users:
-        formatted_chat_time = str(timedelta(seconds=user["chat_time"]))
+        formatted_chat_time = str(timedelta(seconds=user["weekly_chat_time"]))
         name = await get_user_name(user['user_id'])
         formatted_top_users.append(f"{name} {await translate_async("- in dialogues:", language)} {formatted_chat_time}")
 
