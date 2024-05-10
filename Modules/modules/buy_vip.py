@@ -146,7 +146,7 @@ async def check_payment_callback(client, callback_query):
             await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
             payment_info = False
         if payment_info and payment_info.is_success() or st:
-            extend_premium_user_hrs(user_id, hrs)
+            extend_premium_user_hrs(user_id, int(hrs))
             await callback_query.message.delete()
             await callback_query.message.reply_text(await translate_async("Payment was successful. Your premium subscription has been extended.", langauge))
         else:
