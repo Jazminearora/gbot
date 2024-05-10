@@ -1,7 +1,7 @@
 import asyncio
 import importlib
 from pyrogram import idle
-from Modules import mongodb
+from Modules import cbot, mongodb
 from Modules.modules import ALL_MODULES
 from config import key
 
@@ -31,7 +31,6 @@ data = {
 inserted_id = mongodb.insert_one({key: data}).inserted_id
 print("Data stored successfully with id:", inserted_id)
 
-
 async def cbot_boot():
     for all_module in ALL_MODULES:
         importlib.import_module("Modules.modules." + all_module)
@@ -41,3 +40,4 @@ async def cbot_boot():
     
 if __name__ == "__main__":
     loop.run_until_complete(cbot_boot())
+    
