@@ -31,7 +31,7 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
                 update_dict["chat_time"] = chat_time
             if weekly_chat_time != 0:
                 print("weekly:", weekly_chat_time)
-                update_dict["weekly_chat_time"] = chat_time
+                update_dict["weekly_chat_time"] = weekly_chat_time
 
 
             if update_dict:
@@ -55,7 +55,7 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
                 "room": room,
                 "total_dialog": total_dialog,
                 "chat_time": chat_time,
-                "weekly_chat_time": chat_time, 
+                "weekly_chat_time": weekly_chat_time, 
                 "frens": frens
             }
             premiumdb.insert_one(doc)
