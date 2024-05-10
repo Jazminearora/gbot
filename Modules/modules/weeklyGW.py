@@ -135,10 +135,17 @@ async def send_message(user_id, message, log_group, place, chat_time):
 
 
 async def send_weekly_winner_announcement(log_group, winners):
-    message = "**WEEKLY WINNER ANNOUNCEMENT**\n\n"
-    for i, winner in enumerate(winners):
-        place = '1st' if i == 0 else '2nd' if i == 1 else '3rd'
-        message += f"--{place} Position--\nUser_id: {winner.get('user_id')}\nWeek chat time: {winner.get('chat_time')}\n\n"
+    message = "🏆 **WEEKLY CHAMPIONS ANNOUNCEMENT** 🏆\n\n"
+    message += f"**1st Place**\n"
+    message += f"🥇 User_id: {winners[0].get('user_id')}\n"
+    message += f"🕒 Weekly Chat Time: {winners[0].get('chat_time')}\n\n"
+    message += f"**2nd Place**\n"
+    message += f"🥈 User_id: {winners[1].get('user_id')}\n"
+    message += f"🕒 Weekly Chat Time: {winners[1].get('chat_time')}\n\n"
+    message += f"**3rd Place**\n"
+    message += f"🥉 User_id: {winners[2].get('user_id')}\n"
+    message += f"🕒 Weekly Chat Time: {winners[2].get('chat_time')}\n\n"
+    message += "Congratulations to all winners! Let's keep the momentum going! 💪🎉"
     await cbot.send_message(log_group, message)
 
 scheduler.add_job(weekly_gw, CronTrigger(day_of_week='sat', hour=20, minute=0), timezone=timezone('Europe/Moscow'))
