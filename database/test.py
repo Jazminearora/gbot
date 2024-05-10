@@ -81,8 +81,8 @@ def reset_chatime():
 # all_documents = premiumdb.find_one({"_id": "7067606707"})
 # print(all_documents)
 # # # h_doc = referdb.find()
-# doc = premiumdb.find()
-# for doc in doc:
-#     print(doc)
-
-print(str(int(34893480)))
+doc = premiumdb.find()
+for doc in doc:
+    print(doc)
+# 
+# print(str(int(34893480)))

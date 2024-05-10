@@ -30,6 +30,7 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
             if chat_time != 0:
                 update_dict["chat_time"] = chat_time
             if weekly_chat_time != 0:
+                print("weekly:", weekly_chat_time)
                 update_dict["weekly_chat_time"] = chat_time
 
 
