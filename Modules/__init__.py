@@ -55,9 +55,9 @@ async def cbot_bot():
     try:
         await cbot.send_message(LOG_GROUP, text= "Bot started successfully!")
     except (ChatRestricted, ChatForbidden):
-        logger.critical("Please add me to your log group and give me administrator power!")
+        print("Please add me to your log group and give me administrator power!")
     except Exception as e:
-        logger.critical(f"An error occured while starting the bot!\nError:{e}\n\nPlease make sure LOG_GROUP is valid add also me to your log group and give me administrator power!")
+        print(f"An error occured while starting the bot!\nError:{e}\n\nPlease make sure LOG_GROUP is valid add also me to your log group and give me administrator power!")
     if getme.last_name:
         BOT_NAME = getme.first_name + " " + getme.last_name
     else:
