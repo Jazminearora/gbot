@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-db = client["zenova-xy"]
+db = client["cboSot-primer"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
 
@@ -69,19 +69,20 @@ def reset_chatime():
         print("Error:", e)
         return None
 
-reset_chatime()
+# reset_chatime()
 
 
-# premiumdb.find_one_and_delete({"_id": 5131723020})
-# premiumdb.find_one_and_delete({"_id": 1567526737})
-# premiumdb.find_one_and_delete({"_id": '432334334'})
+# premiumdb.find_one_and_delete({"_id": 140512778568208})
+# premiumdb.find_one_and_delete({"_id": 140210233318032})
+# # premiumdb.find_one_and_delete({"_id": '432334334'})
 
-# save_premium_user(9999999, chat_time= 600)
-# Fetch all documents from the "premiumdb" collection
-all_documents = premiumdb.find_one({"_id": "9999999"})
-print(all_documents)
-# # h_doc = referdb.find()
-doc = premiumdb.find()
-for doc in doc:
-    print(doc)
+# save_premium_user(7067606707, room="movies" )
+# # Fetch all documents from the "premiumdb" collection
+# all_documents = premiumdb.find_one({"_id": "7067606707"})
+# print(all_documents)
+# # # h_doc = referdb.find()
+# doc = premiumdb.find()
+# for doc in doc:
+#     print(doc)
 
+print(str(int(34893480)))

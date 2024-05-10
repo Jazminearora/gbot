@@ -30,7 +30,7 @@ async def start_command(client, message):
         language = find_language(user_id)
         await advert_user(user_id, language)
         reply_markup = await get_reply_markup(language)
-        text = await translate_async(SELECT_OPTION_TEXT, language)
+        text = await translate_async("Please select an option:", language)
         await message.reply_photo(SELECT_OPTION_PHOTO, caption = text, reply_markup=reply_markup)
     except Exception as e:
         print (e)
