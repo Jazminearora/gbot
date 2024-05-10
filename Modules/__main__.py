@@ -1,9 +1,9 @@
 import asyncio
 import importlib
 from pyrogram import idle
-from Modules import cbot, mongodb, logger
+from Modules import mongodb
 from Modules.modules import ALL_MODULES
-from config import key, LOG_GROUP
+from config import key
 
 loop = asyncio.get_event_loop()
 
