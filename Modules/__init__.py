@@ -52,12 +52,12 @@ async def cbot_bot():
     getme = await cbot.get_me()
     BOT_ID = getme.id
     BOT_USERNAME = getme.username
-    try:
-        await cbot.send_message(LOG_GROUP, text= "Bot started successfully!")
-    except (ChatRestricted, ChatForbidden):
-        print("Please add me to your log group and give me administrator power!")
-    except Exception as e:
-        print(f"An error occured while starting the bot!\nError:{e}\n\nPlease make sure LOG_GROUP is valid add also me to your log group and give me administrator power!")
+    # try:
+    #     await cbot.send_message(LOG_GROUP, text= "Bot started successfully!")
+    # except (ChatRestricted, ChatForbidden):
+    #     print("Please add me to your log group and give me administrator power!")
+    # except Exception as e:
+    #     print(f"An error occured while starting the bot!\nError:{e}\n\nPlease make sure LOG_GROUP is valid add also me to your log group and give me administrator power!")
     if getme.last_name:
         BOT_NAME = getme.first_name + " " + getme.last_name
     else:
