@@ -426,7 +426,7 @@ async def referral_admin(_, callback_query):
     # Create a list of tuples (program_name, program_id, total_points)
     program_points = [(program['name'], program['id'], program['points']) for program in programs]
     # Create a string to display the program names and total points
-    program_str = '\n'.join([f"{index+1}. {name} (ID: ```{program_id}```) - {points} points" for index, (name, program_id, points) in enumerate(program_points)])
+    program_str = '\n'.join([f"{index+1}. {name} (ID: {program_id}) - {points} points" for index, (name, program_id, points) in enumerate(program_points)])
     # Create a list of InlineKeyboardButtons for adding and deleting programs
     program_buttons = [
         [
@@ -437,7 +437,7 @@ async def referral_admin(_, callback_query):
     # Create an InlineKeyboardMarkup with the program buttons
     program_markup = InlineKeyboardMarkup(program_buttons)
     # Send a message with the program names and total points and the program buttons
-    await callback_query.message.edit_text(f"Current active refer programs:\n\n{program_str}", reply_markup=program_markup)
+    await cbot.send_message(callback_query.from_user.id, f"Current active refer programs:\n\n{program_str}", reply_markup=program_markup)
 
 
 # Callback handler for add_program
