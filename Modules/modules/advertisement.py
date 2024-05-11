@@ -1,5 +1,5 @@
 import random
-
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.premiumdb import is_user_premium
 from database.prdb import English, Russian, Azerbejani
 from helpers.helper import find_language
@@ -12,24 +12,33 @@ async def advert_user(user_id, lang, prem: bool = None):
         else:
             prem_user = prem
         if not prem_user:
-            language_dicts = {
-                "English": English,
-                "Russian": Russian,
-                "Azerbejani": Azerbejani
+            lang_dict = {
+                "english": English,
+                "russian": Russian,
+                "azerbaijani": Azerbejani
             }
-            lang_dict = language_dicts.get(lang)
-            if not lang_dict:
+            lang = lang.lower()
+            if lang not in lang_dict:
                 return
-            choices = list(lang_dict.values())
-            if not choices:
+            messages = lang_dict[lang]
+            if not messages:
                 return
-            choice = random.choice(choices)
-            if not choice:
+            message_ids = list(messages.keys())
+            if not message_ids:
                 return
-            if choice.get('photo_link'):
-                await cbot.send_photo(user_id, choice['photo_link'], caption=choice.get('text'), reply_markup=choice.get('reply_markup'))
-            else:
-                await cbot.send_message(user_id, text=choice.get('text'), reply_markup=choice.get('reply_markup'))
+            message_id = random.choice(message_ids)
+            if not message_id:
+                return
+            message = messages[message_id]
+            if not message:
+                return
+            text = message.get('text')
+            button_details = message.get('button_details', [])
+            reply_markup = None
+            if button_details:
+                keyboard = [[InlineKeyboardButton(btn['btn_text'], url=btn['btn_url'])] for btn in button_details]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+            await cbot.send_message(user_id, text=text, reply_markup=reply_markup)
     except AttributeError as e:
         print("An error occurred:", e)
         return

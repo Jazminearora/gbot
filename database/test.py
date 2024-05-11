@@ -200,8 +200,10 @@ msg_collection = db["msg_collection"]
 
 # create_refer_program(id = 400415, admin_ids=[4390234, 43344233, -1003434324], promotion_name= "shull") #, referred_users= 47394738, points= 1)
 
-# msg_collection.find_one_and_delete({"663f7f8357e86ce9716695b7"})
+msg_collection.delete_many({'key': 'english'})
+
 # msg_collection.find_one_and_delete({"663f8ab40092d6a76b7fd1bf"})
+
 
 doc = msg_collection.find()#{'is_active': True})
 for doc in doc:

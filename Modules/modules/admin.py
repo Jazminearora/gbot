@@ -194,7 +194,25 @@ async def subscriptions_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^impressions$'))
 async def impressions_handler(_, query):
-    await query.message.edit_text(text="You selected Impressions.")
+    text = """
+🚀 Welcome to the Promo Management System! 🚀
+
+This system helps you manage promotional messages efficiently. Here's a quick guide to the available commands:
+
+📝 /add_msg - Use this command to add a new promotional message to the system.
+
+🗑️ /del_msg - Delete a promotional message from the system using this command.
+
+🔍 /get_msg - Retrieve a list of all available promotional messages in the system with this command.
+
+🔄 /pull_msg - Fetch and update a specific message from the database using this command.
+
+💾 /push_msg - Push the updated message back into the database using this command.
+
+Happy promoting! 🚀✨
+
+"""
+    await query.message.edit_text(text, reply_markup = home_btn)
 
 @cbot.on_callback_query(filters.regex(r'^statistics$'))
 async def statistics_handler(_, query):
