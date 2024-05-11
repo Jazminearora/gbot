@@ -40,6 +40,7 @@ referdb = db["referdb"]
 premiumdb = db["premiumb"]
 mongodb = db["tgtbot"]
 chatdb = db["chatdsd"]
+msg_collection = db["msg_collection"]
 
 # Create a async scheduler
 scheduler = aps.AsyncIOScheduler()

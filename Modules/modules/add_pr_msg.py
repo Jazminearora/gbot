@@ -6,7 +6,7 @@ import os
 from telegraph import upload_file
 import aiofiles
 
-from .. import cbot, BOT_USERNAME, ADMIN_IDS
+from .. import cbot, BOT_USERNAME, ADMIN_IDS, msg_collection
 from database.prdb import English, Russian, Azerbejani
 
 pyrostep.listen(cbot)
@@ -21,6 +21,49 @@ async def upload_image(path):
         print(f"Error uploading image: {e}")
         return None
     
+
+@cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
+async def push_msg(_, message):
+    try:
+        # Get messages from English, Russian, and Azerbejani dictionaries
+        english_msgs = dict(English)
+        russian_msgs = dict(Russian)
+        azerbejani_msgs = dict(Azerbejani)
+
+        # Save messages to MongoDB
+        msg_collection.insert_one({
+            "english": english_msgs,
+            "russian": russian_msgs,
+            "azerbejani": azerbejani_msgs
+        })
+
+        await message.reply("Messages saved successfully! 📥")
+    except Exception as e:
+        await message.reply(f"Error: {e}")
+
+@cbot.on_message(filters.command("pull_msg") & filters.user(ADMIN_IDS))
+async def pull_msg(_, message):
+    try:
+        # Fetch messages from MongoDB
+        saved_msgs = msg_collection.find_one()
+
+        if saved_msgs:
+            # Clear existing messages
+            English.clear()
+            Russian.clear()
+            Azerbejani.clear()
+
+            # Update messages from MongoDB
+            English.update(saved_msgs.get("english", {}))
+            Russian.update(saved_msgs.get("russian", {}))
+            Azerbejani.update(saved_msgs.get("azerbejani", {}))
+
+            await message.reply("Messages pulled and updated successfully! 📤")
+        else:
+            await message.reply("No saved messages found. ❌")
+    except Exception as e:
+        await message.reply(f"Error: {e}")
+
 
 @cbot.on_message(filters.command("add_msg") & filters.user(ADMIN_IDS))
 async def add_msg(_, message):
