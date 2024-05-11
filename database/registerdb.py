@@ -2,8 +2,9 @@ from config import key
 from Modules import mongodb as collection
 
 
-def add_user_id(language, user_id, field):
+def add_user_id(_, user_id, field):
     try:
+        print(field)
         collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.database.{field}": user_id}})
     except Exception as e:
         print("Error in adding user ID:", e)
@@ -14,7 +15,7 @@ def store_str_id( user_id, field):
     except Exception as e:
         print("Error in storing user ID:", e)
 
-def remove_user_id(language, user_id, field):
+def remove_user_id(_, user_id, field):
     try:
         collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
     except Exception as e:

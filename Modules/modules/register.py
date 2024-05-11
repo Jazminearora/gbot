@@ -262,6 +262,7 @@ async def register_interest_callback(client, callback_query):
         
         # Check if user ID is already registered for interest
         if not get_interest(user_id,language):
+            print(interest)
             # Store user ID in chosen interest's field in the chosen language in MongoDB
             add_user_id(language, user_id, interest)
             
