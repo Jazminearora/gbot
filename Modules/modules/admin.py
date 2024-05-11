@@ -451,8 +451,9 @@ async def add_program(_, callback_query):
     await callback_query.message.reply_text(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
     admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
     admin_list = admin_chat_ids_input.text
+    print(admin_list)
     try:
-        admin_chat_ids = list(admin_list.text)
+        admin_chat_ids = list(admin_list)
         print(admin_chat_ids)
         # Create the new refer program
         program_id = await create_refer_program(admin_chat_ids, program_name.text)
