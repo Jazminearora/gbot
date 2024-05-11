@@ -2,6 +2,7 @@ from pymongo import MongoClient
 client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
 db = client["cboSot-primer"]
 referdb = db["referdb"]
+mongodb = db["tgtbot"]
 premiumdb = db["premiumb"]
 chatdb = db["chatdsd"]
 msg_collection = db["msg_collection"]
@@ -203,21 +204,26 @@ msg_collection = db["msg_collection"]
 # msg_collection.delete_many({'key': 'english'})
 
 # msg_collection.find_one_and_delete({"663f8ab40092d6a76b7fd1bf"})
-referdb.delete_one({'_id': 314886})
+# # referdb.delete_one({'_id': 314886})
 
-doc = referdb.find()#{'is_active': True})
-for doc in doc:
-    print(doc)
+# doc = mongodb.find()#{'is_active': True})
+# for doc in doc:
+#     print(doc)
 
-def is_served_user(refered_user_id: int) -> bool:
+key = "sundar"
+
+def get_interest(user_id, _):
     try:
-        # Check if any user has referred the given user_id
-        for document in referdb.find():
-            if refered_user_id in document["referred_users"]:
-                return True
-        return False
+        document = mongodb.find_one({key: {"$exists": True}})
+        if document:
+            lang_data = document[key]["database"]
+            for interest in ["communication", "intimacy", "selling", "movies", "anime"]:
+                if (user_id) in lang_data.get(interest, []):
+                    return interest.capitalize()
     except Exception as e:
-        print("Error:", e)
-        return False
-# print(is_served_user(47394738))
+        print('Exception occurred in get_interest:', e)
+    return None
+
+print(get_interest(5020973580, "x"))
+
 

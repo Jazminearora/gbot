@@ -64,7 +64,7 @@ def get_age_group(user_id, language):
         print('Exception occurred in get_age_group:', e)
     return None
 
-def get_interest(user_id, language):
+def get_interest(user_id, _):
     try:
         document = collection.find_one({key: {"$exists": True}})
         if document:

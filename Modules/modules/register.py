@@ -258,13 +258,13 @@ async def register_interest_callback(client, callback_query):
         interest = data_parts[3]
         
         # Get user ID
-        user_id = callback_query.from_user.id
+        user_id = (callback_query.from_user.id)
         
         # Check if user ID is already registered for interest
         if not get_interest(user_id,language):
             print(interest)
             # Store user ID in chosen interest's field in the chosen language in MongoDB
-            add_user_id(language, user_id, interest)
+            add_user_id(language, str(user_id), interest)
             
             # Registration completed
             await callback_query.message.edit_text("Registration completed! Thank you for registering.")
