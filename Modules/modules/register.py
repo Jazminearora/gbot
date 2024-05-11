@@ -42,6 +42,7 @@ async def register_user(client, message):
     if len(command_parts) > 1:
         try:
             referer_user_id = int(command_parts[1].replace("r", ""))
+            print(referer_user_id)
         except ValueError:
             await message.reply("Invalid referer user id format.")
             return

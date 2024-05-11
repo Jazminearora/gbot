@@ -14,6 +14,7 @@ async def is_served_user(refered_user_id: int) -> bool:
 
 async def save_id(referer_user_id: int, refered_user_id: int):
     try:
+        print(refered_user_id)
         referer_key = f"r{referer_user_id}"
         # Check if the referring user already exists in the database
         user = referdb.find_one({"user_id": referer_key})
