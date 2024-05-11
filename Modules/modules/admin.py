@@ -453,11 +453,9 @@ async def add_program(_, callback_query):
     admin_list = admin_chat_ids_input.text
     print(admin_list)
     try:
-        admin_chat_ids = list(admin_list)
-        print(admin_chat_ids)
         # Create the new refer program
-        program_id = await create_refer_program(admin_chat_ids, program_name.text)
-    except ValueError:
+        program_id = await create_refer_program(admin_ids= admin_list, promotion_name= program_name.text)
+    except:
         await callback_query.message.edit_text(text="Invalid input. Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]).")
     # Send a message to the admin with the program ID
     await callback_query.message.reply_text(f"Refer program '{program_name.text}' created with ID {program_id}")
