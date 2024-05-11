@@ -30,12 +30,26 @@ async def push_msg(_, message):
         russian_msgs = dict(Russian)
         azerbejani_msgs = dict(Azerbejani)
 
-        # Save messages to MongoDB
-        msg_collection.insert_one({
-            "english": english_msgs,
-            "russian": russian_msgs,
-            "azerbejani": azerbejani_msgs
-        })
+        # Check if a document with the same _id exists in MongoDB
+        existing_doc = msg_collection.find_one({"_id": "messages"})
+
+        if existing_doc:
+            # Update the existing document
+            msg_collection.update_one({"_id": "messages"}, {
+                "$set": {
+                    "english": english_msgs,
+                    "russian": russian_msgs,
+                    "azerbejani": azerbejani_msgs
+                }
+            })
+        else:
+            # Insert a new document with the specified _id
+            msg_collection.insert_one({
+                "_id": "messages",
+                "english": english_msgs,
+                "russian": russian_msgs,
+                "azerbejani": azerbejani_msgs
+            })
 
         await message.reply("Messages saved successfully! 📥")
     except Exception as e:
@@ -44,16 +58,15 @@ async def push_msg(_, message):
 @cbot.on_message(filters.command("pull_msg") & filters.user(ADMIN_IDS))
 async def pull_msg(_, message):
     try:
-        # Fetch messages from MongoDB
-        saved_msgs = msg_collection.find_one()
+        # Fetch the document with the specified _id from MongoDB
+        saved_msgs = msg_collection.find_one({"_id": "messages"})
 
         if saved_msgs:
-            # Clear existing messages
+            # Update messages from MongoDB
             English.clear()
             Russian.clear()
             Azerbejani.clear()
 
-            # Update messages from MongoDB
             English.update(saved_msgs.get("english", {}))
             Russian.update(saved_msgs.get("russian", {}))
             Azerbejani.update(saved_msgs.get("azerbejani", {}))
