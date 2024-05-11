@@ -83,6 +83,8 @@ async def create_refer_program(
     """
     if id is None:
         id = randint(111111, 999999)
+        
+    print(id)
 
     refer_program = {
         '_id': id, 

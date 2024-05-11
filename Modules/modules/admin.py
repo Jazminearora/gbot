@@ -452,7 +452,8 @@ async def add_program(_, callback_query):
     admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
     admin_list = admin_chat_ids_input.text
     try:
-        admin_chat_ids = [id.strip() for id in admin_list.strip('[]').split(',')]
+        admin_chat_ids = list(admin_list.text)
+        print(admin_chat_ids)
         # Create the new refer program
         program_id = await create_refer_program(admin_chat_ids, program_name.text)
     except ValueError:
