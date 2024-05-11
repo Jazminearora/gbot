@@ -182,16 +182,23 @@ async def wait_for_message(_, msg: mssg, metadata):
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
-    try:
-        # Specify the file path
-        file_path = "database/prdb.py"
+    all_messages = {
+        'english': English,
+        'russian': Russian,
+        'azerbaijani': Azerbejani
+    }
 
-        # Check if the file exists
-        if os.path.isfile(file_path):
-            # Send the file as a message
-            await message.reply_document(file_path)
-        else:
-            await message.reply("File not found.")
+    try:
+        # Create a temporary file
+        async with aiofiles.open('all_messages.txt', 'w') as f:
+            for lang, msg in all_messages.items():
+                await f.write(f"{lang}: {msg}\n")
+
+        # Send the file as a message
+        await message.reply_document("all_messages.txt")
+
+        # Delete the file
+        os.remove("all_messages.txt")
 
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
