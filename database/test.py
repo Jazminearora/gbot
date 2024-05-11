@@ -193,13 +193,15 @@ def get_refer_programs_data():
 def delete_refer_program(program_id: int):
     referdb.update_one({'_id': program_id}, {'$set': {'is_active': False}})
 
+print(get_refer_programs_data())
+
 # create_refer_program(id=400415, promotion_name= "bhoolA", referred_users= 9099090, points= 1)
 
 # create_refer_program(id = 400415, admin_ids=[4390234, 43344233, -1003434324], promotion_name= "shull") #, referred_users= 47394738, points= 1)
 
 doc = referdb.find({'is_active': True})
-for doc in doc:
-    print(doc)
+# for doc in doc:
+#     print("doc")
 
 def is_served_user(refered_user_id: int) -> bool:
     try:
