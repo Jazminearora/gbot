@@ -439,34 +439,35 @@ async def referral_admin(_, callback_query):
     # Send a message with the program names and total points and the program buttons
     await callback_query.message.edit_text(f"Current active refer programs:\n\n{program_str}", reply_markup=program_markup)
 
-    
+
 # Callback handler for add_program
 @cbot.on_callback_query(filters.regex('add_program'))
 async def add_program(_, callback_query):
 
     # Ask the admin to enter the program name
-    await callback_query.message.edit_text(text="Please enter the program name:")
+    await callback_query.message.reply_text(text="Please enter the program name:")
     program_name = await pyrostep.wait_for(callback_query.from_user.id)
     # Ask the admin to enter the admin and chat IDs
-    await callback_query.message.edit_text(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
+    await callback_query.message.reply_tex(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
     admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
+    admin_list = admin_chat_ids_input.text
     try:
-        admin_chat_ids = [id.strip() for id in admin_chat_ids_input.strip('[]').split(',')]
+        admin_chat_ids = [id.strip() for id in admin_list.strip('[]').split(',')]
         # Create the new refer program
-        program_id = await create_refer_program(admin_chat_ids, program_name)
+        program_id = await create_refer_program(admin_chat_ids, program_name.text)
     except ValueError:
         await callback_query.message.edit_text(text="Invalid input. Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]).")
     # Send a message to the admin with the program ID
-    await callback_query.message.edit_text(f"Refer program '{program_name}' created with ID {program_id}")
+    await callback_query.message.reply_tex(f"Refer program '{program_name.text}' created with ID {program_id}")
 
 # Callback handler for delete_program
 @cbot.on_callback_query(filters.regex('delete_program'))
 async def delete_program(_, callback_query):
 
     # Ask the admin to enter the program ID
-    await callback_query.message.edit_text(text="Please enter the program ID:")
+    await callback_query.message.reply_text(text="Please enter the program ID:")
     program_id = await pyrostep.wait_for(callback_query.from_user.id)
     # Delete the refer program with the given ID
-    await delete_refer_program(int(program_id))
+    await delete_refer_program(int(program_id.text))
     # Send a message to the admin with the program ID
-    await callback_query.message.edit_text(f"Refer program with ID {program_id} deleted")
+    await callback_query.message.reply_tex(f"Refer program with ID {program_id.text} deleted")
