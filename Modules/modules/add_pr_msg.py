@@ -104,6 +104,7 @@ async def lang_callback(_, callback_query):
     chat_id = int(data[3])
     
     metadata = await cbot.get_messages(chat_id, msg_id)
+    reply_markup = metadata.reply_markup.to_dict()
     
     if metadata.photo:
         # Download the photo
@@ -117,19 +118,19 @@ async def lang_callback(_, callback_query):
     if lang == "ENGLISH":
         English[f"message_{metadata.id}"] = {
             "text": metadata.caption if photo_link else metadata.text,
-            "reply_markup": metadata.reply_markup,
+            "reply_markup": reply_markup,
             "photo_link": photo_link
         }
     elif lang == "RUSSIAN":
         Russian[f"message_{metadata.id}"] = {
             "text": metadata.caption if photo_link else metadata.text,
-            "reply_markup": metadata.reply_markup,
+            "reply_markup": reply_markup,
             "photo_link": photo_link
         }
     elif lang == "AZERBAIJANI":
         Azerbejani[f"message_{metadata.id}"] = {
-            "text": metadata.text,
             "text": metadata.caption if photo_link else metadata.text,
+            "reply_markup": reply_markup,
             "photo_link": photo_link
         }
     await callback_query.answer("Message saved.", show_alert=True)
@@ -181,23 +182,16 @@ async def wait_for_message(_, msg: mssg, metadata):
 
 @cbot.on_message(filters.command("get_msg") & filters.user(ADMIN_IDS))
 async def get_msg(_, message):
-    all_messages = {
-        'english': English,
-        'russian': Russian,
-        'azerbaijani': Azerbejani
-    }
-
     try:
-        # Create a temporary file
-        async with aiofiles.open('all_messages.txt', 'w') as f:
-            for lang, msg in all_messages.items():
-                await f.write(f"{lang}: {msg}\n")
+        # Specify the file path
+        file_path = "database/prdb.py"
 
-        # Send the file as a message
-        await message.reply_document("all_messages.txt")
-
-        # Delete the file
-        os.remove("all_messages.txt")
+        # Check if the file exists
+        if os.path.isfile(file_path):
+            # Send the file as a message
+            await message.reply_document(file_path)
+        else:
+            await message.reply("File not found.")
 
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
@@ -213,13 +207,13 @@ async def del_msg(_, message):
         else:
             msg_id = int(msg_id.text)
     except ValueError:
-        await msg_id.reply("Invalid message ID. Please enter a valid ID.")
+        await message.reply("Invalid message ID. Please enter a valid ID.")
         return
     
     for lang in [English, Russian, Azerbejani]:
         if f"message_{msg_id}" in lang:
             del lang[f"message_{msg_id}"]
-            await msg_id.reply("Message deleted successfully.")
+            await message.reply("Message deleted successfully.")
             return
     
-    await msg_id.reply("Message not found.")
+    await message.reply("Message not found.")
