@@ -1,4 +1,5 @@
 from Modules import referdb
+from random import randint
 
 async def is_served_user(refered_user_id: int) -> bool:
     try:
@@ -60,3 +61,51 @@ async def get_top_referers() -> list:
         print("Error:", e)
         return []
     
+async def create_refer_program(
+    id: int = None, 
+    admin_ids: list = None, 
+    promotion_name: str = None, 
+    referred_users: list = None, 
+    points: int = 0
+) -> int:
+    """
+    Create a new referral program or update an existing one.
+    
+    Args:
+        id (int): The ID of the referral program (optional).
+        admin_ids (list): The IDs of the administrators.
+        promotion_name (str): The name of the promotion.
+        referred_users (list): The list of referred users.
+        points (int): The points awarded for each referral.
+    
+    Returns:
+        int: The ID of the created or updated referral program.
+    """
+    if id is None:
+        id = randint(111111, 999999)
+
+    refer_program = {
+        '_id': id, 
+        'admins_id': admin_ids, 
+        'name': promotion_name, 
+        'referred_users': referred_users or [], 
+        'points': points
+    }
+
+    existing_program = referdb.find_one({'_id': id}) if referdb.find_one({'_id': id}) else referdb.find_one({'name': promotion_name}) 
+    if existing_program:
+        if referred_users:
+            existing_program['referred_users'].append(referred_users)
+            existing_program['points'] += points
+            referdb.update_one({'_id': id}, {'$set': {'referred_users': existing_program['referred_users'], 'points': existing_program['points']}})
+        return id
+    else:
+        referdb.insert_one({'is_active': True, **refer_program})
+        return id
+
+async def get_refer_programs_data():
+    programs = referdb.find({'is_active': True})
+    return [{'id': program['_id'], 'name': program['name'], 'admins_id': program['admins_id'], 'points': program['points']} for program in programs]
+
+async def delete_refer_program(program_id: int):
+    referdb.update_one({'_id': program_id}, {'$set': {'is_active': False}})

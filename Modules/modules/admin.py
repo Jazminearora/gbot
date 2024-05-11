@@ -13,6 +13,7 @@ from config import key
 from helpers.helper import get_total_users, get_users_list, find_language, get_detailed_user_list
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
+from database.referdb import create_refer_program, delete_refer_program, get_refer_programs_data
 
 pyrostep.listen(cbot)
 broadcasting_in_progress = False
@@ -28,7 +29,7 @@ buttons = [
             InlineKeyboardButton("📊 Statistics", callback_data='statistics')
         ],
         [
-            InlineKeyboardButton("⛓ Referral link", callback_data='referral'),
+            InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
             InlineKeyboardButton("👑 VIP Users", callback_data='vip_users')
         ],
         [
@@ -253,11 +254,6 @@ async def format_detailed_user_list(detailed_list):
         return "No users found. 😔"
     
 
-
-@cbot.on_callback_query(filters.regex(r'^referral$'))
-async def referral_handler(_, query):
-    await query.message.edit_text(text="You selected Referral link.")
-
 @cbot.on_callback_query(filters.regex(r'^vip_users$'))
 async def vip_users_handler(_, query):
     premium_user_ids, total_premium_users = get_premium_users()
@@ -420,3 +416,57 @@ async def add_vip(client, message):
 
     except Exception as e:
         await message.reply_text(f"Error: {e}")
+
+
+# Callback handler for referral_admin
+@cbot.on_callback_query(filters.regex('referral_admin'))
+async def referral_admin(_, callback_query):
+
+    # Get the current active refer programs
+    programs = get_refer_programs_data()
+    # Create a list of tuples (program_name, program_id, total_points)
+    program_points = [(program['name'], program['_id'], program['points']) for program in programs]
+    # Create a string to display the program names and total points
+    program_str = '\n'.join([f"{index+1}. {name} (ID: {program_id}) - {points} points" for index, (name, program_id, points) in enumerate(program_points)])
+    # Create a list of InlineKeyboardButtons for adding and deleting programs
+    program_buttons = [
+        [
+            InlineKeyboardButton("📊 Add program", callback_data=f'add_program'),
+            InlineKeyboardButton("🗑️ Delete program", callback_data=f'delete_program')
+        ]
+    ]
+    # Create an InlineKeyboardMarkup with the program buttons
+    program_markup = InlineKeyboardMarkup(program_buttons)
+    # Send a message with the program names and total points and the program buttons
+    await callback_query.message.edit_text(f"Current active refer programs:\n\n{program_str}", reply_markup=program_markup)
+
+# Callback handler for add_program
+@cbot.on_callback_query(filters.regex('add_program'))
+async def add_program(_, callback_query):
+
+    # Ask the admin to enter the program name
+    await callback_query.message.edit_text(text="Please enter the program name:")
+    program_name = await pyrostep.wait_for(callback_query.from_user.id)
+    # Ask the admin to enter the admin and chat IDs
+    await callback_query.message.edit_text(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
+    admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
+    try:
+        admin_chat_ids = [id.strip() for id in admin_chat_ids_input.strip('[]').split(',')]
+        # Create the new refer program
+        program_id = await create_refer_program(admin_chat_ids, program_name)
+    except ValueError:
+        await callback_query.message.edit_text(text="Invalid input. Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]).")
+    # Send a message to the admin with the program ID
+    await callback_query.message.edit_text(f"Refer program '{program_name}' created with ID {program_id}")
+
+# Callback handler for delete_program
+@cbot.on_callback_query(filters.regex('delete_program'))
+async def delete_program(_, callback_query):
+
+    # Ask the admin to enter the program ID
+    await callback_query.message.edit_text(text="Please enter the program ID:")
+    program_id = await pyrostep.wait_for(callback_query.from_user.id)
+    # Delete the refer program with the given ID
+    await delete_refer_program(int(program_id))
+    # Send a message to the admin with the program ID
+    await callback_query.message.edit_text(f"Refer program with ID {program_id} deleted")

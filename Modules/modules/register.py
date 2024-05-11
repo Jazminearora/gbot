@@ -139,6 +139,8 @@ async def register_user(client, message):
                         await message.reply_text("You are already refered by someone!")
             except Exception as e:
                 await message.reply_text(f"An error occurred: {str(e)}")
+        
+        
         else:
             await message.reply_text(f"Referer id {referer_user_id} is invalid.")
     else:
