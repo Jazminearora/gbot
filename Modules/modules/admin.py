@@ -426,7 +426,7 @@ async def referral_admin(_, callback_query):
     # Create a list of tuples (program_name, program_id, total_points)
     program_points = [(program['name'], program['id'], program['points']) for program in programs]
     # Create a string to display the program names and total points
-    program_str = '\n'.join([f"{index+1}. {name} (ID: {program_id}) - {points} points" for index, (name, program_id, points) in enumerate(program_points)])
+    program_str = '\n'.join([f"{index+1}. {name} (ID: ```{program_id}```) - {points} points" for index, (name, program_id, points) in enumerate(program_points)])
     # Create a list of InlineKeyboardButtons for adding and deleting programs
     program_buttons = [
         [
@@ -448,7 +448,7 @@ async def add_program(_, callback_query):
     await callback_query.message.reply_text(text="Please enter the program name:")
     program_name = await pyrostep.wait_for(callback_query.from_user.id)
     # Ask the admin to enter the admin and chat IDs
-    await callback_query.message.reply_tex(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
+    await callback_query.message.reply_text(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
     admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
     admin_list = admin_chat_ids_input.text
     try:
@@ -458,7 +458,7 @@ async def add_program(_, callback_query):
     except ValueError:
         await callback_query.message.edit_text(text="Invalid input. Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]).")
     # Send a message to the admin with the program ID
-    await callback_query.message.reply_tex(f"Refer program '{program_name.text}' created with ID {program_id}")
+    await callback_query.message.reply_text(f"Refer program '{program_name.text}' created with ID {program_id}")
 
 # Callback handler for delete_program
 @cbot.on_callback_query(filters.regex('delete_program'))
@@ -470,4 +470,4 @@ async def delete_program(_, callback_query):
     # Delete the refer program with the given ID
     await delete_refer_program(int(program_id.text))
     # Send a message to the admin with the program ID
-    await callback_query.message.reply_tex(f"Refer program with ID {program_id.text} deleted")
+    await callback_query.message.reply_text(f"Refer program with ID {program_id.text} deleted")
