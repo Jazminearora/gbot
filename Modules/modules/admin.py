@@ -7,7 +7,7 @@ import datetime, time
 import pyrostep
 
 from config import  ADMINS as ADMIN_IDS
-from Modules import cbot, logger
+from Modules import cbot, logger, BOT_USERNAME
 from Modules import mongodb as collection
 from config import key
 from helpers.helper import get_total_users, get_users_list, find_language, get_detailed_user_list
@@ -423,22 +423,34 @@ async def add_vip(client, message):
 async def referral_admin(_, callback_query):
     # Get the current active refer programs
     programs = await get_refer_programs_data()
-    # Create a list of tuples (program_name, program_id, total_points)
-    program_points = [(program['name'], program['id'], program['points']) for program in programs]
+    
     # Create a string to display the program names and total points
-    program_str = '\n'.join([f"{index+1}. {name} (ID: {program_id}) - {points} points" for index, (name, program_id, points) in enumerate(program_points)])
-    # Create a list of InlineKeyboardButtons for adding and deleting programs
+    program_str = ""
+    for index, program in enumerate(programs, start=1):
+        program_name = program['name']
+        program_id = program['id']
+        total_points = program['points']
+        refer_link = f"https://t.me/{BOT_USERNAME}?start=r{program_id}"
+        
+        program_details = (
+            f"🔹 {index}. Program name: {program_name}\n"
+            f"     🆔 ID: {program_id}\n"
+            f"     🔢 Total Points: {total_points}\n"
+            f"     🔗 Refer link: {refer_link}\n\n"
+        )
+        program_str += program_details
+    
+    # Create an InlineKeyboardMarkup with buttons for adding and deleting programs
     program_buttons = [
         [
-            InlineKeyboardButton("📊 Add program", callback_data=f'add_program'),
-            InlineKeyboardButton("🗑️ Delete program", callback_data=f'delete_program')
+            InlineKeyboardButton("📊 Add program", callback_data='add_program'),
+            InlineKeyboardButton("🗑️ Delete program", callback_data='delete_program')
         ]
     ]
-    # Create an InlineKeyboardMarkup with the program buttons
     program_markup = InlineKeyboardMarkup(program_buttons)
-    # Send a message with the program names and total points and the program buttons
+    
+    # Send a message with the program details and the program buttons
     await cbot.send_message(callback_query.from_user.id, f"Current active refer programs:\n\n{program_str}", reply_markup=program_markup)
-
 
 # Callback handler for add_program
 @cbot.on_callback_query(filters.regex('add_program'))

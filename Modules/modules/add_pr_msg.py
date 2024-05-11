@@ -158,3 +158,25 @@ async def get_msg(_, message):
 
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
+
+@cbot.on_message(filters.command("del_msg") & filters.user(ADMIN_IDS))
+async def del_msg(_, message):
+    await cbot.send_message(message.chat.id, "Enter the message ID to delete.")
+    msg_id = await pyrostep.wait_for(message.chat.id)
+    
+    try:
+        if msg_id.text.startswith("message_"):
+            msg_id = msg_id.text[8:]
+        else:
+            msg_id = int(msg_id.text)
+    except ValueError:
+        await msg_id.reply("Invalid message ID. Please enter a valid ID.")
+        return
+    
+    for lang in [English, Russian, Azerbejani]:
+        if f"message_{msg_id}" in lang:
+            del lang[f"message_{msg_id}"]
+            await msg_id.reply("Message deleted successfully.")
+            return
+    
+    await msg_id.reply("Message not found.")
