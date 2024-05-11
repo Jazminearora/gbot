@@ -104,8 +104,18 @@ async def lang_callback(_, callback_query):
     chat_id = int(data[3])
     
     metadata = await cbot.get_messages(chat_id, msg_id)
-    reply_markup = metadata.reply_markup.to_dict()
+    reply_markup = metadata.reply_markup
     
+    if reply_markup:
+        # Extract button details from the reply markup
+        button_details = []
+        for row in reply_markup.inline_keyboard:
+            for button in row:
+                button_details.append({
+                    'btn_text': button.text,
+                    'btn_url': button.url if button.url else None
+                })
+
     if metadata.photo:
         # Download the photo
         photo_path = await cbot.download_media(message=metadata, file_name=f"image/photo1.jpg")
@@ -114,27 +124,25 @@ async def lang_callback(_, callback_query):
         photo_link = await upload_image(photo_path)
     else:
         photo_link = None
-    # Store the photo link along with the text and markup
+
+    # Store the message details
+    message_details = {
+        "text": metadata.caption if photo_link else metadata.text,
+        "button_details": button_details,
+        "photo_link": photo_link
+    }
+
+    # Save message details based on language
     if lang == "ENGLISH":
-        English[f"message_{metadata.id}"] = {
-            "text": metadata.caption if photo_link else metadata.text,
-            "reply_markup": reply_markup,
-            "photo_link": photo_link
-        }
+        English[f"message_{metadata.id}"] = message_details
     elif lang == "RUSSIAN":
-        Russian[f"message_{metadata.id}"] = {
-            "text": metadata.caption if photo_link else metadata.text,
-            "reply_markup": reply_markup,
-            "photo_link": photo_link
-        }
+        Russian[f"message_{metadata.id}"] = message_details
     elif lang == "AZERBAIJANI":
-        Azerbejani[f"message_{metadata.id}"] = {
-            "text": metadata.caption if photo_link else metadata.text,
-            "reply_markup": reply_markup,
-            "photo_link": photo_link
-        }
+        Azerbejani[f"message_{metadata.id}"] = message_details
+
     await callback_query.answer("Message saved.", show_alert=True)
     await callback_query.message.delete()
+
 
 @cbot.on_callback_query(filters.regex(r"add_(.+)_(.+)"))
 async def add_callback(_, callback_query):
