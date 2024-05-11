@@ -130,7 +130,7 @@ async def get_profile(user_id, language):
         age_group = get_age_group(user_id, language)
         interest = get_interest(user_id, language)
         chat_details = users_rating_details(user_id, "rating")
-        total_msg = users_rating_details(user_id, "rating")
+        total_msg = users_chat_details(user_id, "total_message")
         dialogs = vip_users_details(user_id, "total_dialog")
         rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
         if language == "English":
