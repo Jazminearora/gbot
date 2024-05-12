@@ -17,6 +17,7 @@ from config import EXTEND_HRS_REFER
 
 
 async def get_user_name(user_id):
+    print(f"get user name function called: {id}")
     try:
         user = await cbot.get_users(user_id)
         if user:
@@ -24,12 +25,12 @@ async def get_user_name(user_id):
             if user.last_name:
                 name += " " + user.last_name
             return name
-        name2 = await get_refer_program_field(user_id, "name")
+    except Exception as e:
+        print(e)
+        name2 = await get_refer_program_field(int(user_id), "name")
         if name2:
             print(name2)
             return name2
-        return None
-    except Exception as e:
         return None
     
 async def check_registration_completed(user_id):
