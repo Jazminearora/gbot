@@ -5,6 +5,7 @@ import pyrostep
 import os
 from telegraph import upload_file
 import aiofiles
+import json
 
 from .. import cbot, BOT_USERNAME, ADMIN_IDS, msg_collection
 from database.prdb import English, Russian, Azerbejani
@@ -108,14 +109,34 @@ async def save_callback(_, callback_query):
     ])
     
     await callback_query.message.edit_text("Choose a language to save the message:", reply_markup=markup)
-
+    
 @cbot.on_callback_query(filters.regex(r"lang_(.+)_(.+)_(.+)"))
 async def lang_callback(_, callback_query):
     data = callback_query.data.split("_")
     lang = data[1]
     msg_id = int(data[2])
     chat_id = int(data[3])
+
+    # Create an inline keyboard for selecting purpose
+    keyboard = [
+        [
+            InlineKeyboardButton("Scheduled Promo", callback_data=f"purpose_scheduled_{lang}_{msg_id}_{chat_id}"),
+            InlineKeyboardButton("Auto Promo", callback_data=f"purpose_auto_{lang}_{msg_id}_{chat_id}")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await callback_query.message.edit_reply_markup(reply_markup)
     
+
+@cbot.on_callback_query(filters.regex(r"purpose_(.+)_(.+)_(.+)_(.+)"))
+async def purpose_callback(_, callback_query):
+    data = callback_query.data.split("_")
+    purpose = data[1]
+    lang = data[2]
+    msg_id = int(data[3])
+    chat_id = int(data[4])
+
     metadata = await cbot.get_messages(chat_id, msg_id)
     reply_markup = metadata.reply_markup
     
@@ -145,16 +166,23 @@ async def lang_callback(_, callback_query):
         "photo_link": photo_link
     }
 
-    # Save message details based on language
-    if lang == "ENGLISH":
-        English[f"message_{metadata.id}"] = message_details
-    elif lang == "RUSSIAN":
-        Russian[f"message_{metadata.id}"] = message_details
-    elif lang == "AZERBAIJANI":
-        Azerbejani[f"message_{metadata.id}"] = message_details
+    # Save message details based on purpose and language
+    if purpose == "scheduled":
+        # Save message details for scheduled promo in JSON format
+        with open(f"promo_scheduled_{lang}.json", "a") as file:
+            json.dump({f"message_{metadata.id}": message_details}, file)
+            file.write("\n")
+    else:
+        if lang == "ENGLISH":
+            English[f"message_{metadata.id}"] = message_details
+        elif lang == "RUSSIAN":
+            Russian[f"message_{metadata.id}"] = message_details
+        elif lang == "AZERBAIJANI":
+            Azerbejani[f"message_{metadata.id}"] = message_details
 
     await callback_query.answer("Message saved.", show_alert=True)
     await callback_query.message.delete()
+
 
 
 @cbot.on_callback_query(filters.regex(r"add_(.+)_(.+)"))
