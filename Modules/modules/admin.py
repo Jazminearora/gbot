@@ -473,26 +473,34 @@ async def referral_admin(_, callback_query):
 # Callback handler for add_program
 @cbot.on_callback_query(filters.regex('add_program'))
 async def add_program(_, callback_query):
-
-    # Ask the admin to enter the program name
-    await callback_query.message.reply_text(text="Please enter the program name:")
-    program_name = await pyrostep.wait_for(callback_query.from_user.id)
-    # Ask the admin to enter the admin and chat IDs
-    await callback_query.message.reply_text(text="Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]):")
-    admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
-    admin_list = admin_chat_ids_input.text
-    print(admin_list)
+    try:
+        # Ask the admin to enter the program name
+        await callback_query.message.reply_text(text="Please enter the new program name:")
+        program_name = await pyrostep.wait_for(callback_query.from_user.id)
+        
+        # Ask the admin to enter the admin and chat IDs
+        await callback_query.message.reply_text(text="Please enter the users/chat IDs where I will report on new joining. Provide one ID per line:")
+        admin_chat_ids_input = await pyrostep.wait_for(callback_query.from_user.id)
+        try:
+            # Split the input by newline character to create a list of IDs
+            admin_list = [(id) for id in admin_chat_ids_input.text.split('\n') if id.strip()]
+        except ValueError:
+            await callback_query.message.reply_text("Its seems you didn't provided admins id in correct format.")          
+        print(admin_list)
+    except TimeoutError:
+        await callback_query.message.reply_text("OHOO, Timeout error! Please retry again.")
     try:
         # Create the new refer program
         program_id = await create_refer_program(admin_ids= admin_list, promotion_name= program_name.text)
-    except:
-        await callback_query.message.edit_text(text="Invalid input. Please enter the admin and chat IDs separated by commas (e.g. [4390234, 43344233, -1003434324]).")
+    except Exception as r:
+        await callback_query.message.edit_text(text=f"An error occured!\n\n{r}")
     # Send a message to the admin with the program ID
     await callback_query.message.reply_text(f"Refer program '{program_name.text}' created with ID {program_id}")
 
 # Callback handler for delete_program
 @cbot.on_callback_query(filters.regex('delete_program'))
 async def delete_program(_, callback_query):
+
 
     # Ask the admin to enter the program ID
     await callback_query.message.reply_text(text="Please enter the program ID:")
