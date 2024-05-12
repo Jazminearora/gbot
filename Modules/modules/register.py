@@ -8,7 +8,7 @@ from helpers.helper import find_language, get_gender, get_age_group, get_interes
 from langdb.get_msg import get_registration_text, get_reply_markup
 from helpers.translator import translate_text, translate_async
 from database.registerdb import add_user_id
-from database.referdb import save_id, is_served_user, get_point, get_refer_program_field, is_program_id
+from database.referdb import save_id, is_served_user, get_point, get_refer_program_field, is_program_id, create_refer_program
 from database.premiumdb import extend_premium_user_hrs, save_premium_user
 from helpers.forcesub import subscribed, user_registered
 from config import EXTEND_HRS_REFER
@@ -111,7 +111,11 @@ async def register_user(client, message):
                                     ])
                                 await message.reply_text(f"You are not registered yet!\n\nUse below button to retry.", reply_markup = button)
                                 return
-                            await save_id(referer_user_id, user_id)
+                            is_program, _ = await is_program_id(referer_user_id)
+                            if is_program:
+                                await create_refer_program(id = referer_user_id, referred_users= user_id, points= 1)
+                            else:
+                                await save_id(referer_user_id, user_id)
                             refered_lang = find_language(message.from_user.id)
                             if refered_lang == "English":
                                 message_text = f"You are successfully referred by {name}."
