@@ -114,8 +114,9 @@ async def delete_refer_program(program_id: int):
 
 async def get_refer_program_field(program_id: int, field: str) -> any:
     try:
+        print(f"function called: {program_id}")
         # Retrieve the program document from the database
-        program = referdb.find_one({"_id": program_id})
+        program = referdb.find_one({"_id": int(program_id)})
         if program and field in program:
             return program[field]
         else:
