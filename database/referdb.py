@@ -125,7 +125,8 @@ async def get_refer_program_field(program_id: int, field: str) -> any:
         return None
     
 async def is_program_id(id: int) -> tuple:
-    program = referdb.find_one({'_id': id, 'is_active': True})
+    print(f"function called: {id}")
+    program = referdb.find_one({'_id': int(id), 'is_active': True})
     if program:
         return True, program['admins_id']
     return False, []

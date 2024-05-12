@@ -210,20 +210,49 @@ msg_collection = db["msg_collection"]
 # for doc in doc:
 #     print(doc)
 
-key = "sundar"
+# key = "sundar"
 
-def get_interest(user_id, _):
+# def get_interest(user_id, _):
+#     try:
+#         document = mongodb.find_one({key: {"$exists": True}})
+#         if document:
+#             lang_data = document[key]["database"]
+#             for interest in ["communication", "intimacy", "selling", "movies", "anime"]:
+#                 if (user_id) in lang_data.get(interest, []):
+#                     return interest.capitalize()
+#     except Exception as e:
+#         print('Exception occurred in get_interest:', e)
+#     return None
+
+# print(get_interest(5020973580, "x"))
+
+def get_refer_program_field(program_id: int, field: str) -> any:
     try:
-        document = mongodb.find_one({key: {"$exists": True}})
-        if document:
-            lang_data = document[key]["database"]
-            for interest in ["communication", "intimacy", "selling", "movies", "anime"]:
-                if (user_id) in lang_data.get(interest, []):
-                    return interest.capitalize()
+        # Retrieve the program document from the database
+        program = referdb.find_one({"_id": program_id})
+        print(program)
+        if program and field in program:
+            return program[field]
+        else:
+            return None
     except Exception as e:
-        print('Exception occurred in get_interest:', e)
-    return None
+        return None
 
-print(get_interest(5020973580, "x"))
-
-
+def get_user_name(user_id):
+    try:
+        # user = await cbot.get_users(user_id)
+        # if user:
+        #     name = user.first_name
+        #     if user.last_name:
+        #         name += " " + user.last_name
+        #     return name
+        name2 = get_refer_program_field(user_id, "name")
+        if name2:
+            print(name2)
+            return name2
+        return None
+    except Exception as e:
+        return None
+    
+# get_user_name(664985)
+print(list('-1002050970665, 5131723020'))

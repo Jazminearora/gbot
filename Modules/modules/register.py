@@ -26,6 +26,7 @@ async def get_user_name(user_id):
             return name
         name2 = await get_refer_program_field(user_id, "name")
         if name2:
+            print(name2)
             return name2
         return None
     except Exception as e:
