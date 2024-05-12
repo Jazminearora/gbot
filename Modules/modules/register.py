@@ -128,13 +128,15 @@ async def register_user(client, message):
                             caption_suffix = f".\n\n Your Total points: {total_points}"
                             translated_caption = await translate_async(caption_prefix, referer_lang) + f" {referred_name}" + translate_text(caption_suffix, referer_lang)
                             is_program, admins_ids = await is_program_id(referer_user_id)
+                            print(admins_ids)
                             if is_program:
                                 for ids in admins_ids:
                                     try:
                                         await cbot.send_message(ids, translated_caption)
                                     except:
                                         await cbot.send_message(LOG_GROUP, f"Error occured while sending message to group/id: {ids}.\n\n#Message:\n{translated_caption}")
-                            await cbot.send_message(referer_user_id, translated_caption)
+                            else:
+                                await cbot.send_message(referer_user_id, translated_caption)
                         else:
                             msg = "You are Already registered!"
                             user_lang = find_language(user_id)
@@ -143,7 +145,7 @@ async def register_user(client, message):
                     else:
                         await message.reply_text("You are already refered by someone!")
             except Exception as e:
-                await message.reply_text(f"An error occurred: {str(e)}")
+                await cbot.send_message(LOG_GROUP,f"An error occurred: {str(e)}")
         else:
             await message.reply_text(f"Referer id {referer_user_id} is invalid.")
     else:

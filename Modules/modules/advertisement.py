@@ -5,10 +5,15 @@ from database.prdb import English, Russian, Azerbejani
 from helpers.helper import find_language
 from .. import cbot
 
+prem_user_cache = {}
+
 async def advert_user(user_id, lang, prem: bool = None):
     try:
         if prem is None:
-            prem_user, _ = is_user_premium(user_id)
+            prem_user = prem_user_cache.get(user_id)
+            if prem_user is None:
+                prem_user, _ = is_user_premium(user_id)
+                prem_user_cache[user_id] = prem_user
         else:
             prem_user = prem
         if not prem_user:
@@ -23,12 +28,7 @@ async def advert_user(user_id, lang, prem: bool = None):
             messages = lang_dict[lang]
             if not messages:
                 return
-            message_ids = list(messages.keys())
-            if not message_ids:
-                return
-            message_id = random.choice(message_ids)
-            if not message_id:
-                return
+            message_id = random.choice(list(messages.keys()))
             message = messages[message_id]
             if not message:
                 return
@@ -36,8 +36,8 @@ async def advert_user(user_id, lang, prem: bool = None):
             button_details = message.get('button_details', [])
             reply_markup = None
             if button_details:
-                keyboard = [[InlineKeyboardButton(btn['btn_text'], url=btn['btn_url'])] for btn in button_details]
-                reply_markup = InlineKeyboardMarkup(keyboard)
+                keyboard = [InlineKeyboardButton(btn['btn_text'], url=btn['btn_url']) for btn in button_details]
+                reply_markup = InlineKeyboardMarkup([keyboard])
             await cbot.send_message(user_id, text=text, reply_markup=reply_markup)
     except AttributeError as e:
         print("An error occurred:", e)
