@@ -489,7 +489,11 @@ async def add_program(_, callback_query):
         print(admin_list)
     except TimeoutError:
         await callback_query.message.reply_text("OHOO, Timeout error! Please retry again.")
+        return
     try:
+        if not admin_list or program_name.text:
+            await callback_query.message.reply_text("OHOO, Timeout error! Please retry again.")
+            return
         # Create the new refer program
         program_id = await create_refer_program(admin_ids= admin_list, promotion_name= program_name.text)
     except Exception as r:

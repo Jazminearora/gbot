@@ -117,15 +117,7 @@ async def register_user(client, message):
                             else:
                                 await save_id(referer_user_id, user_id)
                             refered_lang = find_language(message.from_user.id)
-                            if refered_lang == "English":
-                                message_text = f"You are successfully referred by {name}."
-                            elif refered_lang == "Russian":
-                                message_text = f"Вас успешно направил {name}.."
-                            elif refered_lang == "Azerbejani":
-                                message_text = f"Siz {name} tərəfindən uğurla istinad edildiniz."
-                            else:
-                                # Default to English if the language is not recognized
-                                message_text = f"You are successfully referred by {name}."
+                            message_text = (f"{translate_async("You are successfully referred by", refered_lang)} {name}", refered_lang) if refered_lang else f"You are successfully referred by {name}"
                             await message.reply_text(message_text)
                             if not (111111 <= int(referer_user_id) <= 999999):
                                 extend_premium_user_hrs(referer_user_id, EXTEND_HRS_REFER)
@@ -271,17 +263,17 @@ async def register_interest_callback(client, callback_query):
         user_id = (callback_query.from_user.id)
         
         # Check if user ID is already registered for interest
-        if not get_interest(user_id,language):
+        if not get_interest(user_id, language):
             print(interest)
             # Store user ID in chosen interest's field in the chosen language in MongoDB
             add_user_id(language, str(user_id), interest)
-            
+            language = find_language(user_id)
             # Registration completed
-            await callback_query.message.edit_text("Registration completed! Thank you for registering.")
+            await callback_query.message.edit_text(await translate_async("Registration completed! Thank you for registering.", language))
             save_premium_user(user_id, premium_status= False)
             reply_markup = await get_reply_markup(language)
             await callback_query.message.reply_text("Please select a option.", reply_markup=reply_markup)
         else:
-            await callback_query.message.edit_text("You have already selected an interest.")
+            await callback_query.message.edit_text(await translate_async("You have already selected an interest.", language))
     except Exception as e:
         print("Error in register_interest_callback:", e)
