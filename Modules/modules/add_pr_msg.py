@@ -208,7 +208,6 @@ async def get_msg(_, message):
         'russian': Russian,
         'azerbaijani': Azerbejani
     }
-
     try:
         # Create a temporary file
         async with aiofiles.open('all_messages.txt', 'w') as f:
@@ -243,5 +242,4 @@ async def del_msg(_, message):
             del lang[f"message_{msg_id}"]
             await message.reply("Message deleted successfully.")
             return
-    
     await message.reply("Message not found.")

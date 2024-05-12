@@ -1,4 +1,4 @@
-from Modules import referdb
+from Modules import referdb, logging
 from random import randint
 
 async def is_served_user(refered_user_id: int) -> bool:
@@ -83,8 +83,7 @@ async def create_refer_program(
         int: The ID of the created or updated referral program.
     """
     if id is None:
-        id = randint(111111, 999999)
-        
+        id = randint(111111, 999999) # do not edit this
     print(id)
 
     refer_program = {
@@ -112,3 +111,21 @@ async def get_refer_programs_data():
 
 async def delete_refer_program(program_id: int):
     referdb.update_one({'_id': program_id}, {'$set': {'is_active': False}})
+
+async def get_refer_program_field(program_id: int, field: str) -> any:
+    try:
+        # Retrieve the program document from the database
+        program = referdb.find_one({"_id": program_id})
+        if program and field in program:
+            return program[field]
+        else:
+            return None
+    except Exception as e:
+        logging.error("Error: %s", e)
+        return None
+    
+async def is_program_id(id: int) -> tuple:
+    program = referdb.find_one({'_id': id, 'is_active': True})
+    if program:
+        return True, program['admins_id']
+    return False, []

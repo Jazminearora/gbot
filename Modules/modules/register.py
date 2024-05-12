@@ -3,12 +3,12 @@ import asyncio
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-from Modules import cbot, BOT_USERNAME
+from Modules import cbot, BOT_USERNAME, LOG_GROUP
 from helpers.helper import find_language, get_gender, get_age_group, get_interest, is_user_registered
 from langdb.get_msg import get_registration_text, get_reply_markup
-from helpers.translator import translate_text
+from helpers.translator import translate_text, translate_async
 from database.registerdb import add_user_id
-from database.referdb import save_id, is_served_user, get_point
+from database.referdb import save_id, is_served_user, get_point, get_refer_program_field, is_program_id
 from database.premiumdb import extend_premium_user_hrs, save_premium_user
 from helpers.forcesub import subscribed, user_registered
 from config import EXTEND_HRS_REFER
@@ -24,6 +24,10 @@ async def get_user_name(user_id):
             if user.last_name:
                 name += " " + user.last_name
             return name
+        name2 = await get_refer_program_field(user_id, "name")
+        if name2:
+            return name2
+        return None
     except Exception as e:
         return None
     
@@ -106,31 +110,33 @@ async def register_user(client, message):
                                 await message.reply_text(f"You are not registered yet!\n\nUse below button to retry.", reply_markup = button)
                                 return
                             await save_id(referer_user_id, user_id)
-                            referer_lang = find_language(referer_user_id)
-                            if referer_lang == "English":
+                            refered_lang = find_language(message.from_user.id)
+                            if refered_lang == "English":
                                 message_text = f"You are successfully referred by {name}."
-                            elif referer_lang == "Russian":
+                            elif refered_lang == "Russian":
                                 message_text = f"Вас успешно направил {name}.."
-                            elif referer_lang == "Azerbejani":
+                            elif refered_lang == "Azerbejani":
                                 message_text = f"Siz {name} tərəfindən uğurla istinad edildiniz."
                             else:
                                 # Default to English if the language is not recognized
                                 message_text = f"You are successfully referred by {name}."
                             await message.reply_text(message_text)
-                            extend_premium_user_hrs(referer_user_id, EXTEND_HRS_REFER)
-                            referer_lang = find_language(referer_user_id)
+                            if not (111111 <= int(referer_user_id) <= 999999):
+                                extend_premium_user_hrs(referer_user_id, EXTEND_HRS_REFER)
+                            referer_lang = find_language(referer_user_id) if find_language(referer_user_id) else "English"
                             referred_name = await get_user_name(user_id)
-                            total_points =await (get_point(referer_user_id))
+                            total_points =await (get_point(referer_user_id)) if await (get_point(referer_user_id))  else await get_refer_program_field(referer_user_id, "points")
                             caption_prefix = "You have successfully referred to"
                             caption_suffix = f".\n\n Your Total points: {total_points}"
-                            if referer_lang == "English":
-                                await cbot.send_message(referer_user_id, f"{caption_prefix} {referred_name}{caption_suffix}")
-                            elif referer_lang == "Russian":
-                                translated_caption = translate_text(caption_prefix, target_language="ru") + f" {referred_name}" + translate_text(caption_suffix, target_language="ru")
-                                await cbot.send_message(referer_user_id, translated_caption)
-                            elif referer_lang == "Azerbejani":
-                                translated_caption = translate_text(caption_prefix, target_language="az") + f" {referred_name}" + translate_text(caption_suffix, target_language="az")
-                                await cbot.send_message(referer_user_id, translated_caption)
+                            translated_caption = translate_async(caption_prefix, referer_lang) + f" {referred_name}" + translate_text(caption_suffix, referer_lang)
+                            is_program, admins_ids = await is_program_id(referer_user_id)
+                            if is_program:
+                                for ids in admins_ids:
+                                    try:
+                                        await cbot.send_message(ids, translated_caption)
+                                    except:
+                                        await cbot.send_message(LOG_GROUP, f"Error occured while sending message to group/id: {ids}.\n\n#Message:\n{translated_caption}")
+                            await cbot.send_message(referer_user_id, translated_caption)
                         else:
                             msg = "You are Already registered!"
                             user_lang = find_language(user_id)
@@ -140,8 +146,6 @@ async def register_user(client, message):
                         await message.reply_text("You are already refered by someone!")
             except Exception as e:
                 await message.reply_text(f"An error occurred: {str(e)}")
-        
-        
         else:
             await message.reply_text(f"Referer id {referer_user_id} is invalid.")
     else:
