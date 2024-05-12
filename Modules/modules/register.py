@@ -130,7 +130,7 @@ async def register_user(client, message):
                             total_points =await (get_point(referer_user_id)) if await (get_point(referer_user_id))  else await get_refer_program_field(referer_user_id, "points")
                             caption_prefix = "You have successfully referred to"
                             caption_suffix = f".\n\n Your Total points: {total_points}"
-                            translated_caption = translate_async(caption_prefix, referer_lang) + f" {referred_name}" + translate_text(caption_suffix, referer_lang)
+                            translated_caption = await translate_async(caption_prefix, referer_lang) + f" {referred_name}" + translate_text(caption_suffix, referer_lang)
                             is_program, admins_ids = await is_program_id(referer_user_id)
                             if is_program:
                                 for ids in admins_ids:
