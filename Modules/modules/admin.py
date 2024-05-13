@@ -210,8 +210,13 @@ async def subscriptions_handler(_, query):
 async def add_chat_handler(_, query):
     sk = await query.message.reply("Enter chat ID to add:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
+    try:
+        chat = await cbot.get_chat(chat_id.text)
+        name = f"{chat.first_name} + {(chat.last_name if chat.last_name else "")}"
+    except:
+        await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
     add_chat_id(chat_id.text)
-    await sk.edit_text(text="Chat ID added successfully!")
+    await query.answer(f"Chat: {name} added successfully!", show_alert=True)
 
 
 @cbot.on_callback_query(filters.regex(r'^delete_chat$'))
@@ -219,7 +224,7 @@ async def delete_chat_handler(_, query):
     sk = await query.message.reply("Enter chat ID to delete:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
     delete_chat_id(chat_id.text)
-    await sk.edit_text(text="Chat ID deleted successfully!")
+    await query.answer("Chat ID deleted successfully!", show_alert=True)
 
 
 @cbot.on_callback_query(filters.regex(r'^set_status$'))
@@ -242,7 +247,7 @@ def add_chat_id(chat_id):
     config.SUBSCRIPTION.append(chat_id)
 
 def delete_chat_id(chat_id):
-    if chat_id in config.CHAT_IDS:
+    if chat_id in config.SUBSCRIPTION:
         config.SUBSCRIPTION.remove(chat_id)
 
 def get_chat_ids():
