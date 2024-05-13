@@ -5,11 +5,13 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardB
 import asyncio
 import datetime, time
 import pyrostep
+import heroku3
 
 from config import  ADMINS as ADMIN_IDS
 from Modules import cbot, logger, BOT_USERNAME
+import config
 from Modules import mongodb as collection
-from config import key
+from config import key, HEROKU_API
 from helpers.helper import get_total_users, get_users_list, find_language, get_detailed_user_list
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
@@ -17,7 +19,9 @@ from database.referdb import create_refer_program, delete_refer_program, get_ref
 
 pyrostep.listen(cbot)
 broadcasting_in_progress = False
+promo_status = False
 
+heroku = heroku3.from_key(HEROKU_API)
 
 buttons = [
         [
@@ -190,7 +194,53 @@ async def send_newsletter(user_id, message):
 
 @cbot.on_callback_query(filters.regex(r'^subscriptions$'))
 async def subscriptions_handler(_, query):
-    await query.message.edit_text(text="You selected Subscriptions.")
+    chat_ids = get_chat_ids()
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Add Chat", callback_data="add_chat")],
+        [InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
+        [InlineKeyboardButton(f"Set {'✅' if promo_status else '❌'}", callback_data="set_status")]
+    ])
+    text = f"Current Chat IDs: {', '.join(map(str, chat_ids))}\nStatus: {promo_status}"
+    await query.message.edit_text(text=text, reply_markup=markup)
+
+
+@cbot.on_callback_query(filters.regex(r'^add_chat$'))
+async def add_chat_handler(_, query):
+    sk = await query.message.reply("Enter chat ID to add:")
+    chat_id = await pyrostep.wait_for(query.from_user.id)
+    add_chat_id(chat_id)
+    await sk.edit_text(text="Chat ID added successfully!")
+
+
+@cbot.on_callback_query(filters.regex(r'^delete_chat$'))
+async def delete_chat_handler(_, query):
+    sk = await query.message.reply("Enter chat ID to delete:")
+    chat_id = await pyrostep.wait_for(query.from_user.id)
+    delete_chat_id(chat_id)
+    await sk.edit_text(text="Chat ID deleted successfully!")
+
+
+@cbot.on_callback_query(filters.regex(r'^set_status$'))
+async def set_status_handler(_, query):
+    status = not status  # toggle status
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Add Chat", callback_data="add_chat")],
+        [InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
+        [InlineKeyboardButton(f"Set {'✅' if status else '❌'}", callback_data="set_status")]
+    ])
+    await query.message.edit_reply_markup(reply_markup=markup)
+
+
+def add_chat_id(chat_id):
+    config.SUBSCRIPTION.append(chat_id)
+
+def delete_chat_id(chat_id):
+    if chat_id in config.CHAT_IDS:
+        config.SUBSCRIPTION.remove(chat_id)
+
+def get_chat_ids():
+    return config.SUBSCRIPTION
+
 
 @cbot.on_callback_query(filters.regex(r'^impressions$'))
 async def impressions_handler(_, query):
@@ -295,13 +345,6 @@ def save_file(data, filename):
     except Exception as e:
         print("Error:", e)
 
-@cbot.on_callback_query(filters.regex(r'^st_close$'))
-async def close_page(_, query):
-    try:
-        # Delete the callback message
-        await query.message.delete()
-    except Exception as e:
-        print("Error in close_profile:", e)
 
 @cbot.on_callback_query(filters.regex(r'^st_back$'))
 async def back_page(_, query):

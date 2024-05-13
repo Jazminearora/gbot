@@ -10,8 +10,10 @@ MONGO_URI = os.environ.get("MONGO_URI")
 API_KEY = os.environ.get("API_KEY")
 MERCHANT_ID = os.environ.get("MERCHANT_ID")
 MERCHANT_KEY = os.environ.get("MERCHANT_KEY")
+SUBSCRIPTION = []
 FORCE_SUB1 = os.environ.get("FORCE_SUB1")
 FORCE_SUB2 = os.environ.get("FORCE_SUB2")
+HEROKU_API = os.environ.get("HEROKU_API")
 
 try:
     ADMINS = [int(admin_id) for admin_id in os.environ.get("ADMINS", "").split(",") if admin_id.strip()]

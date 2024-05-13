@@ -271,3 +271,13 @@ async def del_msg(_, message):
             await message.reply("Message deleted successfully.")
             return
     await message.reply("Message not found.")
+
+
+
+@cbot.on_callback_query(filters.regex(r'^st_close$'))
+async def close_page(_, query):
+    try:
+        # Delete the callback message
+        await query.message.delete()
+    except Exception as e:
+        print("Error in close_profile:", e)
