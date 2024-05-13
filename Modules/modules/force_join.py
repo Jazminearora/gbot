@@ -2,12 +2,13 @@ from Modules import cbot, BOT_USERNAME
 from helpers.forcesub import subscribed
 from config import FORCE_MSG
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+
 
 
 @cbot.on_message( filters.private & ~subscribed)
-async def not_joined(client, message):
-    print(message.command[1])
+async def not_joined(client, message: Message):
+    print(message.command)
     buttons = [
         [
             InlineKeyboardButton(text="Channel 1", url="t.me/about_xytra"),
