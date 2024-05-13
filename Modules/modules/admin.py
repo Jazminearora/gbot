@@ -215,6 +215,7 @@ async def add_chat_handler(_, query):
         name = f"{chat.first_name} + {(chat.last_name if chat.last_name else "")}"
     except:
         await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
+        return
     add_chat_id(chat_id.text)
     await query.answer(f"Chat: {name} added successfully!", show_alert=True)
 
