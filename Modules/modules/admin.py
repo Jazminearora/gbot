@@ -196,9 +196,11 @@ async def send_newsletter(user_id, message):
 async def subscriptions_handler(_, query):
     chat_ids = get_chat_ids()
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Add Chat", callback_data="add_chat")],
-        [InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
-        [InlineKeyboardButton(f"Set {'✅' if promo_status else '❌'}", callback_data="set_status")]
+        [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
+        InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
+        [InlineKeyboardButton(f"Set {'✅' if promo_status else '❌'}", callback_data="set_status")],
+        [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
+        InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
     text = f"Current Chat IDs: {', '.join(map(str, chat_ids))}\nStatus: {promo_status}"
     await query.message.edit_text(text=text, reply_markup=markup)
@@ -222,11 +224,13 @@ async def delete_chat_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^set_status$'))
 async def set_status_handler(_, query):
-    status = not status  # toggle status
+    promo_status = not promo_status  # toggle status
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Add Chat", callback_data="add_chat")],
-        [InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
-        [InlineKeyboardButton(f"Set {'✅' if status else '❌'}", callback_data="set_status")]
+        [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
+        InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
+        [InlineKeyboardButton(f"Set {'✅' if promo_status else '❌'}", callback_data="set_status")],
+        [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
+        InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
     await query.message.edit_reply_markup(reply_markup=markup)
 
