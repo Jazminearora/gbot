@@ -76,11 +76,11 @@ async def subscriptions_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^add_chat$'))
 async def add_chat_handler(_, query):
-    sk = await query.message.reply("Enter chat ID to add:")
+    await query.message.reply("Enter chat ID to add:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
     try:
         chat = await cbot.get_chat(chat_id.text)
-        if chat:
+        if chat and chat.title is not None:
             name = chat.title
         else:
             await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
