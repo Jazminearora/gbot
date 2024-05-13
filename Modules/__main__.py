@@ -38,14 +38,14 @@ async def cbot_boot():
     print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
     await idle()
 
-    
+
 @cbot.on_message(filters.command("restart"))
 async def restart_bot(client, message):
     await message.reply("Restarting bot...")
     await asyncio.sleep(1)
-    new_task = loop.create_task(cbot_boot())
-    await client.stop()
-    await new_task
+    stop_task = loop.create_task(client.stop())
+    await cbot_boot()
+    await stop_task
 
 
     
