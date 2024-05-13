@@ -233,7 +233,9 @@ async def set_status_handler(_, query):
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
-    await query.message.edit_reply_markup(reply_markup=markup)
+    chat_ids = get_chat_ids()
+    text = f"Current Chat IDs: {', '.join(map(str, chat_ids))}\nStatus: {promo_status}"
+    await query.message.edit_text(text, reply_markup=markup)
 
 
 def add_chat_id(chat_id):
