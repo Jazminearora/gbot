@@ -7,6 +7,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 @cbot.on_message( filters.private & ~subscribed)
 async def not_joined(client, message):
+    print(message.command[1])
     buttons = [
         [
             InlineKeyboardButton(text="Channel 1", url="t.me/about_xytra"),
@@ -14,14 +15,16 @@ async def not_joined(client, message):
         ]
     ]
     try:
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    text = 'Continue',
-                    url = f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
-                )
-            ]
-        )
+        if message.command is not None and len(message.command) > 1:
+            print(message.command[1])
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        text = 'Continue',
+                        url = f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
+                    )
+                ]
+            )
     except IndexError:
         pass
 
