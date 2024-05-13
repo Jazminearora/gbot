@@ -210,7 +210,7 @@ async def subscriptions_handler(_, query):
 async def add_chat_handler(_, query):
     sk = await query.message.reply("Enter chat ID to add:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
-    add_chat_id(chat_id)
+    add_chat_id(chat_id.text)
     await sk.edit_text(text="Chat ID added successfully!")
 
 
@@ -218,12 +218,13 @@ async def add_chat_handler(_, query):
 async def delete_chat_handler(_, query):
     sk = await query.message.reply("Enter chat ID to delete:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
-    delete_chat_id(chat_id)
+    delete_chat_id(chat_id.text)
     await sk.edit_text(text="Chat ID deleted successfully!")
 
 
 @cbot.on_callback_query(filters.regex(r'^set_status$'))
 async def set_status_handler(_, query):
+    global promo_status
     promo_status = not promo_status  # toggle status
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
