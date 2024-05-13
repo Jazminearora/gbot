@@ -162,7 +162,7 @@ async def purpose_callback(_, callback_query):
     # Store the message details
     message_details = {
         "text": metadata.caption if photo_link else metadata.text,
-        "button_details": button_details,
+        "button_details": button_details if button_details else None,
         "photo_link": photo_link
     }
 
@@ -241,7 +241,7 @@ async def get_msg(_, message):
         async with aiofiles.open('all_messages.txt', 'w') as f:
             for lang, msg in all_messages.items():
                 await f.write(f"{lang}: {msg}\n")
-
+        await message.reply_document('promo_scheduled_ENGLISH.json')
         # Send the file as a message
         await message.reply_document("all_messages.txt")
 
