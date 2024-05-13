@@ -7,16 +7,16 @@ import pyrostep
 import heroku3
 
 from config import  ADMINS as ADMIN_IDS
-from Modules import cbot, BOT_USERNAME
+from Modules import cbot, BOT_ID
 from Modules import mongodb as collection
 from config import key, HEROKU_API
+from helpers.forcesub import is_member
+from Modules.modules.register import get_user_name
 from helpers.helper import get_total_users, find_language, get_detailed_user_list
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
-from database.referdb import create_refer_program, delete_refer_program, get_refer_programs_data
 
 pyrostep.listen(cbot)
-broadcasting_in_progress = False
 promo_status = False
 
 heroku = heroku3.from_key(HEROKU_API)
@@ -75,18 +75,18 @@ async def subscriptions_handler(_, query):
 
 
 @cbot.on_callback_query(filters.regex(r'^add_chat$'))
-async def add_chat_handler(_, query):
+async def add_chat_handler(client, query):
     await query.message.reply("Enter chat ID to add:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
     try:
-        chat = await cbot.get_chat(chat_id.text)
-        if chat and chat.title is not None:
-            name = chat.title
+        chk = await is_member(client, chat_id.text, BOT_ID)
+        if chk:
+            name = await get_user_name(chat_id.text)
         else:
             await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
             return
-    except:
-        await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
+    except Exception as e:
+        await query.message.reply(f"An error occured while validating chat id:\n\n{e}")
         return
     add_chat_id(chat_id.text)
     await query.answer(f"Chat: {name} added successfully!", show_alert=True)

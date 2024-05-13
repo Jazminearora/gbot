@@ -17,7 +17,6 @@ from config import EXTEND_HRS_REFER
 
 
 async def get_user_name(user_id):
-    print(f"get user name function called: {id}")
     try:
         user = await cbot.get_users(user_id)
         if user:
