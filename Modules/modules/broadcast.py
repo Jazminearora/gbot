@@ -44,11 +44,11 @@ async def preview_handler(_, query):
             InlineKeyboardButton("Azerbejani", callback_data='newsletter_Azerbejani'),
         ],
         [
-            InlineKeyboardButton("Cancel", callback_data='cancel')
+            InlineKeyboardButton("Cancel", callback_data='st_close')
         ]
     ]
     lang_markup = InlineKeyboardMarkup(lang_buttons)
-    await query.message.reply_text(text="Please choose the language for the newsletter recipients:", reply_markup=lang_markup)
+    await query.message.edit_text(text="Please choose the language for the newsletter recipients:", reply_markup=lang_markup)
 
 
 async def wait_for_10_seconds():
