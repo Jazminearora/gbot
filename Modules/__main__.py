@@ -4,6 +4,7 @@ from pyrogram import idle
 from Modules import cbot, mongodb
 from Modules.modules import ALL_MODULES
 from config import key
+from pyrogram import filters
 
 loop = asyncio.get_event_loop()
 
@@ -36,6 +37,13 @@ async def cbot_boot():
         importlib.import_module("Modules.modules." + all_module)
     print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
     await idle()
+
+@cbot.on_message(filters.command("restart"))
+async def restart_bot(client, message):
+    await message.reply("Restarting bot...")
+    await asyncio.sleep(1)
+    await client.stop()
+    await cbot_boot()
 
     
 if __name__ == "__main__":
