@@ -212,7 +212,7 @@ async def add_chat_handler(_, query):
     chat_id = await pyrostep.wait_for(query.from_user.id)
     try:
         chat = await cbot.get_chat(chat_id.text)
-        name = f"{chat.first_name} + {(chat.last_name if chat.last_name else "")}"
+        name = f"{chat.first_name} {chat.last_name or ''}"
     except:
         await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
         return
@@ -246,10 +246,14 @@ async def set_status_handler(_, query):
 
 def add_chat_id(chat_id):
     config.SUBSCRIPTION.append(chat_id)
+    with open('config.py', 'w') as f:
+        f.write(f"SUBSCRIPTION = {config.SUBSCRIPTION}\n")
 
 def delete_chat_id(chat_id):
     if chat_id in config.SUBSCRIPTION:
         config.SUBSCRIPTION.remove(chat_id)
+        with open('config.py', 'w') as f:
+            f.write(f"SUBSCRIPTION = {config.SUBSCRIPTION}\n")
 
 def get_chat_ids():
     return config.SUBSCRIPTION
