@@ -254,5 +254,17 @@ def get_user_name(user_id):
     except Exception as e:
         return None
     
+
 # get_user_name(664985)
-print(list('-1002050970665, 5131723020'))
+# print(list((-1002050970665, 5131723020)))
+# SUBSCRIPTION = [-1002050970665, 5131723020]
+# print(subscription.split(","))
+import os
+
+# Set the environment variable
+os.environ["SUBSCRIPTION"] = "[-1002050970665]"
+
+# Now you can access it using os.getenv()
+my_var_value = os.getenv("SUBSCRIPTION")
+print(my_var_value)  # Output: my value
+print(os.getenv("SUBSCRIPTION"))

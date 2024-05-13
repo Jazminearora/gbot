@@ -4,15 +4,19 @@ from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.enums import ChatMemberStatus
 from helpers.helper import is_user_registered
 
-chat_ids = (-1001997140154, -1001943241575)
+chat_ids = [-1001997140154, -1001943241575]
 
 async def is_subscribed(filter, client, update):
     user_id = update.from_user.id
     if user_id in ADMIN_IDS:
         return True
     
-    if not await is_member(client, chat_ids[0], user_id) or not await is_member(client, chat_ids[1], user_id):
-        return False
+    if not chat_ids: # if the chat_ids list is empty
+        return True
+    
+    for chat_id in chat_ids:
+        if not await is_member(client, chat_id, user_id):
+            return False
     
     return True
 
