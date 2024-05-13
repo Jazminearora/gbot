@@ -14,7 +14,7 @@ async def is_subscribed(filter, client, update):
         return True
     
     chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
-    print(chat_id)
+    print(chat_ids)
     if not chat_ids: # if the chat_ids list is empty
         return True
     
