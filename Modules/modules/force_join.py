@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 @cbot.on_message( filters.private & ~subscribed)
 async def not_joined(client, message: Message):
-    print(message.command)
+    print(message.text)
     buttons = [
         [
             InlineKeyboardButton(text="Channel 1", url="t.me/about_xytra"),
@@ -16,7 +16,7 @@ async def not_joined(client, message: Message):
         ]
     ]
     try:
-        if message.command is not None and len(message.command) > 1:
+        if message.text is not None:
             print(message.command[1])
             buttons.append(
                 [
