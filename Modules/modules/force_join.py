@@ -1,5 +1,5 @@
 import os
-from Modules import cbot, BOT_USERNAME
+from Modules import cbot, BOT_USERNAME, LOG_GROUP
 from helpers.forcesub import subscribed
 from config import FORCE_MSG
 from pyrogram import filters
@@ -16,6 +16,7 @@ async def not_joined(client, message: Message):
         try:
             chat = await cbot.get_chat(chat_id)
             invite_link = await get_invite_link(chat_id)
+            print(invite_link)
             buttons.append(
                 [InlineKeyboardButton(text=chat.title, url=invite_link)]
             )
@@ -58,11 +59,17 @@ async def not_joined(client, message: Message):
 async def get_invite_link(chat_id):
     try:
         chat = await cbot.get_chat(chat_id)
-        link = chat.invite_link
-        if not link:
-            link = chat.export_invite_link()
-            return link
-        print(link)
-        return link
+        try:
+            link = chat.invite_link
+            if chat.username and not link:
+                link = f"https://t.me/{chat.username}"
+                return link
+            if not link:
+                link = await cbot.export_chat_invite_link(chat_id)
+                return link
+        except Exception as e:
+            print(f"Error getting invite link for chat {chat_id}: {e}")
+            await cbot.send_message(LOG_GROUP, "Error getting invite link for chat {chat_id}: {e}")
     except Exception as e:
         print(f"Error getting invite link for chat {chat_id}: {e}")
+        await cbot.send_message(LOG_GROUP, "Error getting invite link for chat {chat_id}: {e}")
