@@ -12,19 +12,19 @@ async def is_subscribed(filter, client, update):
     user_id = update.from_user.id
     if user_id in ADMIN_IDS:
         return True
-    
+    print("sk")
     chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
     if not chat_ids or chat_ids== [""]: # if the chat_ids list is empty
         return True
     
     for chat_id in chat_ids:
-        print(chat_id)
         if not await is_member(client, chat_id, user_id):
             return False
     
     return True
 
 async def is_member(client, chat_id, user_id):
+    print("ts", chat_id)
     try:
         member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
     except (PeerIdInvalid, ChatAdminRequired, UserNotParticipant, UsernameNotOccupied, UsernameInvalid): 
