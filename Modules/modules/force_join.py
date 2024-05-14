@@ -13,7 +13,7 @@ async def not_joined(client, message: Message):
     for chat_id in chat_ids:
         try:
             chat = await client.get_chat(chat_id)
-            invite_link = await chat.export_invite_link()
+            invite_link = await chat.invite_link
             buttons.append(
                 [InlineKeyboardButton(text=chat.title, url=invite_link)]
             )
