@@ -65,12 +65,14 @@ async def get_invite_link(chat_id):
         chat = await cbot.get_chat(chat_id)
         if chat.invite_link:
             link = chat.invite_link
+            return link
         print(f"Chat object: {chat}")
         if chat.username and not chat.invite_link:
             link = f"https://t.me/{chat.username}"
             print(f"Using username to generate invite link: {link}")
+            return link
         try:
-            if not chat.invite_link:
+            if not chat.invite_link and not chat.username:
                 link = await cbot.export_chat_invite_link(chat_id)
                 print(f"Created new invite link: {link}")
         except Exception as e:
