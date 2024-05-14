@@ -8,7 +8,6 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 @cbot.on_message(filters.command('start'), filters.private & ~subscribed)
 async def not_joined(client, message: Message):
-    print(message.text)
     buttons = [
         [
             InlineKeyboardButton(text="Channel 1", url="t.me/about_xytra"),
@@ -26,7 +25,6 @@ async def not_joined(client, message: Message):
         )
     except IndexError:
         pass
-
     await message.reply(
         text = FORCE_MSG.format(
                 first = message.from_user.first_name,
@@ -39,3 +37,4 @@ async def not_joined(client, message: Message):
         quote = True,
         disable_web_page_preview = True
     )
+    print("force_join.py")
