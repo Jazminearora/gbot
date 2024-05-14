@@ -17,7 +17,7 @@ from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
 
 pyrostep.listen(cbot)
-promo_status = True
+# promo_status = True
 
 heroku = heroku3.from_key(HEROKU_API)
 
@@ -66,11 +66,11 @@ async def subscriptions_handler(_, query):
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
         InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
-        [InlineKeyboardButton(f"Set {'✅' if promo_status else '❌'}", callback_data="set_status")],
+        [InlineKeyboardButton(f"Set {'✅' if os.environ.get('PROMO_STATUS', 'False') else '❌'}", callback_data="set_status")],
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
-    text = f"Current Chat IDs: {chat_ids}\nStatus: {promo_status}"
+    text = f"Current Chat IDs: {chat_ids}\nStatus: {os.environ.get('PROMO_STATUS', 'False')}"
     await query.message.edit_text(text=text, reply_markup=markup)
 
 
@@ -103,8 +103,10 @@ async def delete_chat_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^set_status$'))
 async def set_status_handler(_, query):
-    global promo_status
+    promo_status = os.environ.get('PROMO_STATUS', 'False') == 'True'
     promo_status = not promo_status  # toggle status
+    print("line 108", promo_status)
+    os.environ['PROMO_STATUS'] = str(promo_status)
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
         InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
@@ -114,6 +116,9 @@ async def set_status_handler(_, query):
     ])
     chat_ids = get_chat_ids()
     text = f"Current Chat IDs: {chat_ids}\nStatus: {promo_status}"
+    await edit_message(query, text, markup)
+
+async def edit_message(query, text, markup):
     await query.message.edit_text(text, reply_markup=markup)
 
 

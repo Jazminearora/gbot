@@ -5,11 +5,11 @@ from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, ChatAdminRequired, PeerIdInvalid, UsernameNotOccupied, UsernameInvalid
 from pyrogram.enums import ChatMemberStatus
 from helpers.helper import is_user_registered
-from Modules.modules.admin import promo_status
 
 # chat_ids = [-1001997140154, -1001943241575]
 
 async def is_subscribed(filter, client, update):
+    promo_status = os.environ.get('PROMO_STATUS', 'False')
     if not promo_status:
         return True
     user_id = update.from_user.id
