@@ -6,7 +6,9 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
-
+for chat_id in chat_ids:
+    print(chat_id)
+    
 @cbot.on_message(filters.command("start") & filters.private & ~subscribed)
 async def not_joined(client, message: Message):
     buttons = []

@@ -19,6 +19,7 @@ async def is_subscribed(filter, client, update):
         return True
     
     for chat_id in chat_ids:
+        print(chat_id, "forcesub")
         if not await is_member(client, chat_id, user_id):
             return False
     
