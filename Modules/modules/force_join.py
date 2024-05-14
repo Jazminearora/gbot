@@ -60,16 +60,18 @@ async def not_joined(client, message: Message):
     )
 
 async def get_invite_link(chat_id):
-    print(chat_id, "line 60")
+    print(f"Getting invite link for chat ID {chat_id}...")
     try:
         chat = await cbot.get_chat(chat_id)
-        link = chat.invite_link
-        if chat.username and not link:
+        print(f"Chat object: {chat}")
+        if chat.username and not chat.invite_link:
             link = f"https://t.me/{chat.username}"
+            print(f"Using username to generate invite link: {link}")
             return link
         try:
-            if not link:
+            if not chat.invite_link:
                 link = await cbot.export_chat_invite_link(chat_id)
+                print(f"Created new invite link: {link}")
                 return link
         except Exception as e:
             print(f"Error while creating invite link for chat {chat_id}: {e}")
@@ -77,3 +79,5 @@ async def get_invite_link(chat_id):
     except Exception as e:
         print(f"Error getting invite link for chat {chat_id}: {e}")
         await cbot.send_message(LOG_GROUP, "Error getting invite link for chat {chat_id}: {e}")
+    print(f"Could not generate invite link for chat ID {chat_id}")
+    return None
