@@ -3,7 +3,7 @@ from Modules import cbot, BOT_USERNAME, LOG_GROUP
 from helpers.forcesub import subscribed
 from config import FORCE_MSG
 from pyrogram import filters
-from ..modules.admin import get_chat_ids
+from ..modules.subscription import get_chat_ids
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 

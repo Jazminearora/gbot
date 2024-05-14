@@ -13,9 +13,6 @@ from database.premiumdb import extend_premium_user_hrs, save_premium_user
 from helpers.forcesub import subscribed, user_registered
 from config import EXTEND_HRS_REFER
 
-
-
-
 async def get_user_name(user_id):
     try:
         user = await cbot.get_users(user_id)

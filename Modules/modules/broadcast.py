@@ -15,6 +15,10 @@ broadcasting_in_progress = False
 failed_users = []
 preview_mode = False
 
+async def get_failed_users():
+    global failed_users
+    return failed_users
+
 @cbot.on_callback_query(filters.regex(r'^newsletter$'))
 async def newsletter_handler(_, query):
 
