@@ -105,7 +105,6 @@ def get_detailed_user_list(language):
                 gender = get_gender(user_id, language)
                 age_group = get_age_group(user_id, language)
                 interest = get_interest(user_id, language)
-                
                 if gender:
                     detailed_list["Gender"][gender] = detailed_list["Gender"].get(gender, 0) + 1
                 if age_group:

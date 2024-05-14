@@ -120,8 +120,8 @@ async def format_detailed_user_list(detailed_list):
     if detailed_list:
         output = "\n👥 Total Users: {}\n\n".format(detailed_list["Total Users"])
         output += "👩‍♀️ Gender:\n"
-        output += " 👩🏼 Female: {}\n".format(get_total_users("female"))
-        output += " 🧑🏻 Male: {}\n".format(get_total_users("male"))
+        for gender, count in detailed_list["Gender"].items():
+            output += "  {0}: {1}\n".format(gender, count)
         output += "\n📆 Age Group:\n"
         for age_group, count in detailed_list["Age Group"].items():
             output += "  {0}: {1}\n".format(age_group, count)
