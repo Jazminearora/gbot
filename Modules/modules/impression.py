@@ -23,6 +23,64 @@ async def upload_image(path):
         return None
     
 
+@cbot.on_callback_query(filters.regex(r'^impressions$'))
+async def impressions_handler(_, query):
+    text = """
+🚀 Welcome to the Promo Management System! 🚀
+
+This system helps you manage promotional messages efficiently. Here's a quick guide to the available commands:
+
+📝 /add_msg - Use this command to add a new promotional message to the system.
+
+🗑️ /del_msg - Delete a promotional message from the system using this command.
+
+🔍 /get_msg - Retrieve a list of all available promotional messages in the system with this command.
+
+🔄 /pull_msg - Fetch and update a specific message from the database using this command.
+
+💾 /push_msg - Push the updated message back into the database using this command.
+
+Happy promoting! 🚀✨
+
+"""
+    markup = InlineKeyboardMarkup([
+    [
+        [InlineKeyboardButton(text="Scheduled Promo 🕒", callback_data="st_scheduled"),
+        InlineKeyboardButton(text="Auto Promo 🚀", callback_data="st_auto")],
+        [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
+        InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
+    ]
+])
+    await query.message.edit_text(text, reply_markup = markup)
+
+@cbot.on_callback_query(filters.regex(r'^st_scheduled$'))
+async def scheduled_handler(_, query):
+    # Load scheduled promo messages from JSON file
+    with open("promo_scheduled.json", "r") as file:
+        scheduled_messages = [json.loads(line) for line in file.readlines()]
+
+    # Extract message IDs and durations
+    message_ids = [list(msg.keys())[0] for msg in scheduled_messages]
+    # current_scheduled_msgs = [(msg_id, duration) for msg_id, duration in scheduled_messages]
+
+    # Create message text
+    text = "Scheduled Promo Messages:\n"
+    text += message_ids
+    # for msg_id, duration in current_scheduled_msgs:
+    #     text += f"• {msg_id} (every {duration} hours)\n"
+
+    # Create inline keyboard markup
+    markup = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(text="Get Message 📥", callback_data="st_get_msg"),
+            InlineKeyboardButton(text="Schedule Message 📝", callback_data="st_schedule_msg")
+        ]
+    ])
+
+    # Edit the message with the new text and markup
+    await query.message.edit_text(text, reply_markup=markup)
+
+
 @cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
 async def push_msg(_, message):
     try:
@@ -169,7 +227,7 @@ async def purpose_callback(_, callback_query):
     # Save message details based on purpose and language
     if purpose == "scheduled":
         # Save message details for scheduled promo in JSON format
-        with open(f"promo_scheduled_{lang}.json", "a") as file:
+        with open(f"promo_scheduled.json", "a") as file:
             json.dump({f"message_{metadata.id}": message_details}, file)
             file.write("\n")
     else:
