@@ -3,12 +3,12 @@ from Modules import cbot, BOT_USERNAME
 from helpers.forcesub import subscribed
 from config import FORCE_MSG
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, Client
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
 
 @cbot.on_message(filters.command("start") & filters.private & ~subscribed)
-async def not_joined(client: Client, message: Message):
+async def not_joined(client, message: Message):
     buttons = []
     for chat_id in chat_ids:
         try:
