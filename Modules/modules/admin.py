@@ -136,6 +136,8 @@ def delete_chat_id(chat_id):
 
 def get_chat_ids():
     if 'SUBSCRIPTION' in os.environ:
+        current_subscription = os.environ['SUBSCRIPTION']
+        print(current_subscription)
         return os.environ['SUBSCRIPTION']
     else:
         return ''
