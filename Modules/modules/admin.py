@@ -124,7 +124,7 @@ async def format_detailed_user_list(detailed_list):
             output += "  {0}: {1}\n".format(gender, count)
         output += "\n📆 Age Group:\n"
         for age_group, count in detailed_list["Age Group"].items():
-            output += "  {0}: {1}\n".format(age_group, count)
+            output += "  {0}-  {1}\n".format(age_group, count)
         output += "\n💡 Interest:\n"
         for interest, count in detailed_list["Interest"].items():
             output += "  {0}: {1}\n".format(interest, count)
