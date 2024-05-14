@@ -11,7 +11,7 @@ from helpers.helper import is_user_registered
 async def is_subscribed(filter, client, update):
     promo_status = os.environ.get('PROMO_STATUS')
     print(promo_status)
-    if not promo_status:
+    if not promo_status or promo_status == "False":
         return True
     user_id = update.from_user.id
     if user_id in ADMIN_IDS:
