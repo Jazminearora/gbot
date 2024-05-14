@@ -6,7 +6,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 
 
-@cbot.on_message(filters.command('start'), filters.private & ~subscribed)
+@cbot.on_message(filters.command("start"), filters.private & ~subscribed)
 async def not_joined(client, message: Message):
     buttons = [
         [
