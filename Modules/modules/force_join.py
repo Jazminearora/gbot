@@ -3,15 +3,14 @@ from Modules import cbot, BOT_USERNAME
 from helpers.forcesub import subscribed
 from config import FORCE_MSG
 from pyrogram import filters
+from ..modules.admin import get_chat_ids
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
-chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
-for chat_id in chat_ids:
-    print("sk =" ,chat_id)
-    
+
 @cbot.on_message(filters.command("start") & filters.private & ~subscribed)
 async def not_joined(client, message: Message):
     buttons = []
+    chat_ids = get_chat_ids()
     for chat_id in chat_ids:
         try:
             print("sz", chat_id)
