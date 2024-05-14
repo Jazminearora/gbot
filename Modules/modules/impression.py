@@ -63,7 +63,7 @@ async def scheduled_handler(_, query):
 
     # Create message text
     text = "Scheduled Promo Messages:\n"
-    text += message_ids
+    text += "\n".join(message_ids)
     # for msg_id, duration in current_scheduled_msgs:
     #     text += f"• {msg_id} (every {duration} hours)\n"
 
