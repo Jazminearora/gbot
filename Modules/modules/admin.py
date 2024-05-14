@@ -103,10 +103,10 @@ async def delete_chat_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^set_status$'))
 async def set_status_handler(_, query):
-    promo_status = os.environ.get('PROMO_STATUS', 'False') == 'True'
+    promo_status = os.environ.get('PROMO_STATUS') if  os.environ.get('PROMO_STATUS') else False
     promo_status = not promo_status  # toggle status
     print("line 108", promo_status)
-    os.environ['PROMO_STATUS'] = str(promo_status)
+    os.environ['PROMO_STATUS'] = promo_status
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
         InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
