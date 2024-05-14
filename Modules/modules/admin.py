@@ -82,7 +82,7 @@ async def add_chat_handler(client, query):
         print(chat_id.text)
         chk = await is_member(client, chat_id.text, BOT_ID)
         if chk:
-            name = (await cbot.get_chat(chat_id.text)).title()
+            name = (await cbot.get_chat(chat_id.text)).title
         else:
             await query.message.reply("It seems that it is not a valid chat id. If you believe it is correct, add me to that group/channel as admin first.")
             return
