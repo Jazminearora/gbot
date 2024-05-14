@@ -10,6 +10,7 @@ from helpers.helper import is_user_registered
 
 async def is_subscribed(filter, client, update):
     user_id = update.from_user.id
+    print(user_id)
     if user_id in ADMIN_IDS:
         return True
     print("sk")
