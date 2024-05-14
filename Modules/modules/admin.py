@@ -17,7 +17,7 @@ from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
 
 pyrostep.listen(cbot)
-promo_status = False
+promo_status = True
 
 heroku = heroku3.from_key(HEROKU_API)
 
@@ -70,7 +70,7 @@ async def subscriptions_handler(_, query):
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
-    text = f"Current Chat IDs: {', '.join(map(str, chat_ids))}\nStatus: {promo_status}"
+    text = f"Current Chat IDs: {chat_ids}\nStatus: {promo_status}"
     await query.message.edit_text(text=text, reply_markup=markup)
 
 
@@ -137,8 +137,7 @@ def delete_chat_id(chat_id):
 def get_chat_ids():
     if 'SUBSCRIPTION' in os.environ:
         current_subscription = os.environ['SUBSCRIPTION']
-        print(current_subscription)
-        return os.environ['SUBSCRIPTION']
+        return current_subscription
     else:
         return ''
 

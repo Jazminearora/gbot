@@ -5,34 +5,32 @@ from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, ChatAdminRequired, PeerIdInvalid, UsernameNotOccupied, UsernameInvalid
 from pyrogram.enums import ChatMemberStatus
 from helpers.helper import is_user_registered
+from Modules.modules.admin import promo_status
 
 # chat_ids = [-1001997140154, -1001943241575]
 
 async def is_subscribed(filter, client, update):
+    if not promo_status:
+        return True
     user_id = update.from_user.id
-    print(user_id)
     if user_id in ADMIN_IDS:
         return True
-    print("sk")
     chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
     if not chat_ids or chat_ids== [""]: # if the chat_ids list is empty
         return True
     
     for chat_id in chat_ids:
-        print(chat_id, "forcesub")
         if not await is_member(client, chat_id, user_id):
             return False
     
     return True
 
 async def is_member(client, chat_id, user_id):
-    print("ts", chat_id)
     try:
         member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
     except (PeerIdInvalid, ChatAdminRequired, UserNotParticipant, UsernameNotOccupied, UsernameInvalid): 
         return False
     if user_id == BOT_ID:
-        print("bot cing member called")
         if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
             return True
         return False

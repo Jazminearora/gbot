@@ -14,10 +14,8 @@ async def not_joined(client, message: Message):
     chat_ids = [int(chat_id) for chat_id in chat_ids_str.split(",")]
     for chat_id in chat_ids:
         try:
-            print("sz", chat_id)
             chat = await cbot.get_chat(chat_id)
-            print(chat)
-            invite_link = chat.invite_link
+            invite_link = await get_invite_link(chat_id)
             buttons.append(
                 [InlineKeyboardButton(text=chat.title, url=invite_link)]
             )
@@ -56,3 +54,15 @@ async def not_joined(client, message: Message):
         quote=True,
         disable_web_page_preview=True
     )
+
+async def get_invite_link(chat_id):
+    try:
+        chat = await cbot.get_chat(chat_id)
+        link = chat.invite_link
+        if not link:
+            link = chat.export_invite_link()
+            return link
+        print(link)
+        return link
+    except Exception as e:
+        print(f"Error getting invite link for chat {chat_id}: {e}")
