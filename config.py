@@ -11,6 +11,7 @@ API_KEY = os.environ.get("API_KEY")
 MERCHANT_ID = os.environ.get("MERCHANT_ID")
 MERCHANT_KEY = os.environ.get("MERCHANT_KEY")
 SUBSCRIPTION = []
+PROMO_STATUS = "True"
 FORCE_SUB1 = os.environ.get("FORCE_SUB1")
 FORCE_SUB2 = os.environ.get("FORCE_SUB2")
 HEROKU_API = os.environ.get("HEROKU_API")

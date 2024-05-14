@@ -17,7 +17,7 @@ from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
 
 pyrostep.listen(cbot)
-# promo_status = True
+os.environ['PROMO_STATUS'] = "True" # by default true
 
 heroku = heroku3.from_key(HEROKU_API)
 
@@ -104,14 +104,12 @@ async def delete_chat_handler(_, query):
 @cbot.on_callback_query(filters.regex(r'^set_status$'))
 async def set_status_handler(_, query):
     promo_status = os.environ.get('PROMO_STATUS') if  os.environ.get('PROMO_STATUS') else "False"
-    print("line 106", promo_status)
     promo_status = "True" if  promo_status == "False" else "False" # toggle status
-    print("line 108", promo_status)
     os.environ['PROMO_STATUS'] = promo_status
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
         InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
-        [InlineKeyboardButton(f"Set {'✅' if promo_status else '❌'}", callback_data="set_status")],
+        [InlineKeyboardButton(f"Set {'✅' if promo_status == "True" else '❌'}", callback_data="set_status")],
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
