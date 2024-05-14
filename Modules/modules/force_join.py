@@ -17,9 +17,12 @@ async def not_joined(client, message: Message):
             chat = await cbot.get_chat(chat_id)
             invite_link = await get_invite_link(chat_id)
             print(invite_link)
-            buttons.append(
+            if invite_link is not None:
+                buttons.append(
                 [InlineKeyboardButton(text=chat.title, url=invite_link)]
             )
+            else:
+                print("none 1")
         except Exception as e:
             print(f"Error getting invite link for chat {chat_id}: {e}")
 
@@ -57,19 +60,20 @@ async def not_joined(client, message: Message):
     )
 
 async def get_invite_link(chat_id):
+    print(chat_id, "line 60")
     try:
         chat = await cbot.get_chat(chat_id)
+        link = chat.invite_link
+        if chat.username and not link:
+            link = f"https://t.me/{chat.username}"
+            return link
         try:
-            link = chat.invite_link
-            if chat.username and not link:
-                link = f"https://t.me/{chat.username}"
-                return link
             if not link:
                 link = await cbot.export_chat_invite_link(chat_id)
                 return link
         except Exception as e:
-            print(f"Error getting invite link for chat {chat_id}: {e}")
-            await cbot.send_message(LOG_GROUP, "Error getting invite link for chat {chat_id}: {e}")
+            print(f"Error while creating invite link for chat {chat_id}: {e}")
+            await cbot.send_message(LOG_GROUP, "Error while creating invite link for chat {chat_id}: {e}")
     except Exception as e:
         print(f"Error getting invite link for chat {chat_id}: {e}")
         await cbot.send_message(LOG_GROUP, "Error getting invite link for chat {chat_id}: {e}")
