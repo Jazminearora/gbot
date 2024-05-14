@@ -10,7 +10,8 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 @cbot.on_message(filters.command("start") & filters.private & ~subscribed)
 async def not_joined(client, message: Message):
     buttons = []
-    chat_ids = get_chat_ids()
+    chat_ids_str = get_chat_ids()
+    chat_ids = [int(chat_id) for chat_id in chat_ids_str.split(",")]
     for chat_id in chat_ids:
         try:
             print("sz", chat_id)
