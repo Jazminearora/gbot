@@ -44,12 +44,10 @@ Happy promoting! 🚀✨
 
 """
     markup = InlineKeyboardMarkup([
-    [
-        [InlineKeyboardButton(text="Scheduled Promo 🕒", callback_data="st_scheduled"),
-        InlineKeyboardButton(text="Auto Promo 🚀", callback_data="st_auto")],
-        [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
-        InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
-    ]
+    [InlineKeyboardButton(f"Scheduled Promo 🕒", callback_data="st_scheduled"),
+     InlineKeyboardButton(f"Auto Promo 🚀", callback_data="st_auto")],
+    [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
+     InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
 ])
     await query.message.edit_text(text, reply_markup = markup)
 
