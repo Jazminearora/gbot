@@ -195,10 +195,9 @@ async def purpose_callback(_, callback_query):
 
     metadata = await cbot.get_messages(chat_id, msg_id)
     reply_markup = metadata.reply_markup
-    
+    button_details = []
     if reply_markup:
         # Extract button details from the reply markup
-        button_details = []
         for row in reply_markup.inline_keyboard:
             for button in row:
                 button_details.append({
