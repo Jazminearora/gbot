@@ -2,7 +2,7 @@ from config import ADMINS as ADMIN_IDS
 from Modules import BOT_ID
 import os
 from pyrogram import filters
-from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, ChatAdminRequired, ChatIdInvalid
+from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, ChatAdminRequired, PeerIdInvalid
 from pyrogram.enums import ChatMemberStatus
 from helpers.helper import is_user_registered
 
@@ -27,13 +27,14 @@ async def is_subscribed(filter, client, update):
 async def is_member(client, chat_id, user_id):
     try:
         member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
-    except ChatIdInvalid:
+    except PeerIdInvalid:
         return False
     except ChatAdminRequired:
         return False
     except UserNotParticipant:
         return False
     if user_id == BOT_ID:
+        print("bot cing member called")
         if member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
             return True
         return False
