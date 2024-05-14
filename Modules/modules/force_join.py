@@ -17,7 +17,7 @@ async def not_joined(client, message: Message):
             print("sz", chat_id)
             chat = await cbot.get_chat(chat_id)
             print(chat)
-            invite_link = await chat.invite_link
+            invite_link = chat.invite_link
             buttons.append(
                 [InlineKeyboardButton(text=chat.title, url=invite_link)]
             )
