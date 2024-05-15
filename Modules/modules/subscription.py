@@ -13,9 +13,9 @@ os.environ['PROMO_STATUS'] = "True" # by default true
 async def subscriptions_handler(_, query):
     chat_ids = get_chat_ids()
     markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Add Chat", callback_data="add_chat"),
-        InlineKeyboardButton("Delete Chat", callback_data="delete_chat")],
-        [InlineKeyboardButton(f"🔄Set to {'🟢True' if (os.environ.get('PROMO_STATUS')) == "🔴False" else ''}", callback_data="set_status")],
+        [InlineKeyboardButton("➕Add Chat", callback_data="add_chat"),
+        InlineKeyboardButton("➖Delete Chat", callback_data="delete_chat")],
+        [InlineKeyboardButton(f"🔄Set to {'🟢True' if (os.environ.get('PROMO_STATUS')) == "False" else '🔴False'}", callback_data="set_status")],
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
