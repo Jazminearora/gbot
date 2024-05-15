@@ -187,8 +187,8 @@ async def list_users_handler(_, query):
 async def delete_inactive_handler(_, query):
     confirm_buttons = [
         [
-            InlineKeyboardButton("Yes, delete", callback_data='confirm_delete_inactive'),
-            InlineKeyboardButton("No, cancel", callback_data='cancel_delete_inactive')
+            InlineKeyboardButton("Yes, delete🚮", callback_data='confirm_delete_inactive'),
+            InlineKeyboardButton("No, cancel🙅", callback_data='cancel_delete_inactive')
         ]
     ]
     confirm_markup = InlineKeyboardMarkup(confirm_buttons)
@@ -233,7 +233,8 @@ async def close_menu(client, callback_query):
         # Delete the callback message
         await callback_query.message.delete()
     except Exception as e:
-        print("Error in close_profile:", e)
+        print("Error in close:", e)
+        pass
 
 @cbot.on_callback_query(filters.regex(r'^st_back$'))
 async def back_menu(_, query):
@@ -241,7 +242,8 @@ async def back_menu(_, query):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text('Please choose an option:', reply_markup=reply_markup)  
     except Exception as e:
-        print("Error in back_profile:", e)
+        print("Error in back:", e)
+        pass
 
 
 @cbot.on_message(filters.command("add_vip", prefixes='/') & filters.user(ADMIN_IDS))

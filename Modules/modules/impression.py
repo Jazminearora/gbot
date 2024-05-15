@@ -11,7 +11,7 @@ from .. import cbot, BOT_USERNAME, ADMIN_IDS, msg_collection
 from database.prdb import English, Russian, Azerbejani
 
 pyrostep.listen(cbot)
-
+scheduled_messages = []
 
 async def upload_image(path):
     try:
@@ -53,19 +53,20 @@ Happy promoting! 🚀✨
 
 @cbot.on_callback_query(filters.regex(r'^st_scheduled$'))
 async def scheduled_handler(_, query):
+
     # Load scheduled promo messages from JSON file
     with open("promo_scheduled.json", "r") as file:
         scheduled_messages = [json.loads(line) for line in file.readlines()]
 
     # Extract message IDs and durations
     message_ids = [list(msg.keys())[0] for msg in scheduled_messages]
-    # current_scheduled_msgs = [(msg_id, duration) for msg_id, duration in scheduled_messages]
+    current_scheduled_msgs = [(msg_id, duration) for msg_id, duration in scheduled_messages] if scheduled_messages else None, None
 
     # Create message text
     text = "**Scheduled Promo Messages**:\n"
     text += ", ".join(str(id) for id in message_ids)
-    # for msg_id, duration in current_scheduled_msgs:
-    #     text += f"• {msg_id} (every {duration} hours)\n"
+    for msg_id, duration, language in scheduled_messages:
+        text += f"• Message ID: {msg_id}, Duration: {duration}, Language: {language}\n"
 
     # Create inline keyboard markup
     markup = InlineKeyboardMarkup([
@@ -78,6 +79,46 @@ async def scheduled_handler(_, query):
     # Edit the message with the new text and markup
     await query.message.edit_text(text, reply_markup=markup)
 
+@cbot.on_callback_query(filters.regex(r'^st_schedule_msg$'))
+async def schedule_msg_handler(_, query):
+    # Ask user to enter message ID
+    text = "Enter the message ID to schedule:"
+    sui = await query.message.reply_text(text)
+
+    # Wait for user input
+    msg_id_input = await pyrostep.wait_for(query.from_user.id)  
+    msg_id = msg_id_input.text
+
+    # Ask user to choose language
+    text = "Choose a language:"
+    markup = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(text="English", callback_data=f"lang_{msg_id}_en"),
+            InlineKeyboardButton(text="Russian", callback_data=f"lang_{msg_id}_ru"),
+            InlineKeyboardButton(text="Azerbaijani", callback_data=f"lang_{msg_id}_az")
+        ]
+    ])
+    await sui.edit_text(text, reply_markup=markup)
+
+@cbot.on_callback_query(filters.regex(r'^lang_(.+)_(en|ru|az)$'))
+async def language_handler(_, query):
+    msg_id = query.data.split("_")[1]
+    language = query.data.split("_")[-1]
+
+    # Ask user to enter duration (in hours)
+    text = f"Enter the duration (in hours) to send message {msg_id}:"
+    await query.message.edit_text(text)
+
+    # Wait for user input
+    duration_input = await pyrostep.wait_for(query.from_user.id)  
+    duration = int(duration_input.text)
+
+    # Save the scheduled message to the local list
+    scheduled_messages.append((msg_id, duration, language))
+
+    # Send a confirmation message
+    text = f"Message {msg_id} scheduled successfully! 📝"
+    await query.message.edit_text(text)
 
 @cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
 async def push_msg(_, message):
@@ -320,7 +361,18 @@ async def del_msg(_, message):
     for lang in [English, Russian, Azerbejani]:
         if f"message_{msg_id}" in lang:
             del lang[f"message_{msg_id}"]
-            await message.reply("Message deleted successfully.")
+            us = await delete_scheduled_message(f"message_{msg_id}")
+            text = "Message deleted from file successfully."
+            if us:
+                text += f"\nAlso removed message from currently scheduled messages."
+            await message.reply(text)
             return
     await message.reply("Message not found.")
 
+async def delete_scheduled_message(msg_id):
+    global scheduled_messages
+    for i, (id, duration, language) in enumerate(scheduled_messages):
+        if id == msg_id:
+            del scheduled_messages[i]
+            return True
+    return False
