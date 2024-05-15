@@ -300,9 +300,6 @@ async def get_msg(_, message):
         # Send the file as a message
         await message.reply_document("all_messages.txt")
 
-        # Delete the file
-        os.remove("all_messages.txt")
-
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
 

@@ -35,7 +35,7 @@ buttons = [
             InlineKeyboardButton("♿️ Delete inactive", callback_data='delete_inactive')
         ],
         [
-            InlineKeyboardButton("🚫 Cancel", callback_data='st_close')
+            InlineKeyboardButton("🚫 Close", callback_data='st_close')
         ]
     ]
 
@@ -182,8 +182,7 @@ async def list_users_handler(_, query):
         caption="Here is the detailed list of users!"
     )
 
-    # Remove the file after sending it
-    os.remove("Users_Data.txt")
+
 @cbot.on_callback_query(filters.regex(r'^delete_inactive$'))
 async def delete_inactive_handler(_, query):
     confirm_buttons = [
