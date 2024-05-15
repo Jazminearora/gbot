@@ -74,7 +74,7 @@ async def scheduled_handler(_, query):
         [
             InlineKeyboardButton(text="Get Message 📥", callback_data="st_get_msg"),
             InlineKeyboardButton(text="Schedule Message 📝", callback_data="st_schedule_msg")
-        ]
+        ],
         [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
     ])
