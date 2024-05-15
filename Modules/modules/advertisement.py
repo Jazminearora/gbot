@@ -51,43 +51,64 @@ async def advert_user(user_id, lang, prem: bool = None):
         return
 
 async def send_message(user_id: int, msg_text: str, reply_markup, photo_link: str = None) -> None:
-    if photo_link:
-        await cbot.send_photo(user_id, photo_link, msg_text, reply_markup=reply_markup)
-    else:
-        await cbot.send_message(user_id, msg_text, reply_markup=reply_markup)
+    """
+    Send a message to a user with optional photo and reply markup.
+    """
+    if not user_id or not msg_text:
+        raise ValueError("User ID and message text are required")
+    if reply_markup and not isinstance(reply_markup, InlineKeyboardMarkup):
+        raise ValueError("Invalid reply markup")
+    if photo_link and not isinstance(photo_link, str):
+        raise ValueError("Invalid photo link")
+
+    try:
+        if photo_link:
+            await cbot.send_photo(user_id, photo_link, msg_text, reply_markup=reply_markup)
+        else:
+            await cbot.send_message(user_id, msg_text, reply_markup=reply_markup)
+    except Exception as e:
+        print(f"Error sending message to user {user_id}: {e}")
+
 
 async def sheduled_promo_code() -> None:
+    """
+    Send scheduled promo codes to users.
+    """
     while True:
-        messages_list = await get_messages_list()
-        if not messages_list:
-            await asyncio.sleep(60)  # sleep for 1 minute if no messages
-            continue
-
-        for msg_id, duration, language in messages_list:
-            msg_details = await get_message_details(msg_id)
-            if not msg_details:
+        try:
+            messages_list = await get_messages_list()
+            if not messages_list:
+                await asyncio.sleep(60)  # sleep for 1 minute before checking again
                 continue
 
-            msg_text = msg_details.get("text")
-            inline_btn = msg_details.get("button_details")
-            reply_markup = None
-            if inline_btn:
-                keyboard = [InlineKeyboardButton(btn['btn_text'], url=btn['btn_url']) for btn in inline_btn]
-                reply_markup = InlineKeyboardMarkup([keyboard])
+            for msg_id, duration, language in messages_list:
+                msg_details = await get_message_details(msg_id)
+                if not msg_details:
+                    continue
 
-            photo_link = msg_details.get("photo_link")
-            lang = language
+                msg_text = msg_details.get("text")
+                inline_btn = msg_details.get("button_details")
+                reply_markup = None
+                if inline_btn:
+                    keyboard = [InlineKeyboardButton(btn['btn_text'], url=btn['btn_url']) for btn in inline_btn]
+                    reply_markup = InlineKeyboardMarkup([keyboard])
 
-            while True:
-                users = await get_users_list(lang)
-                for user in users:
+                photo_link = msg_details.get("photo_link")
+                lang = language
+
+                while True:
                     try:
-                        await send_message(user, msg_text, reply_markup, photo_link)
+                        users = await get_users_list(lang)
+                        for user in users:
+                            await send_message(user, msg_text, reply_markup, photo_link)
                     except Exception as e:
-                        print(f"Error sending message to user {user}: {e}")
+                        print(f"Error sending message to users: {e}")
 
-                await asyncio.sleep(duration * 60 * 60)  # sleep for the specified duration
+                    await asyncio.sleep(duration * 60 * 60)  # sleep for the specified duration
 
-                new_messages_list = await get_messages_list()
-                if msg_id not in [msg[0] for msg in new_messages_list]:
-                    break  # break the loop if the message is no longer in the list
+                    new_messages_list = await get_messages_list()
+                    if msg_id not in [msg[0] for msg in new_messages_list]:
+                        break  # break the loop if the message is no longer in the list
+        except Exception as e:
+            print(f"Error in scheduled promo code: {e}")
+            await asyncio.sleep(60)  # sleep for 1 minute before retrying

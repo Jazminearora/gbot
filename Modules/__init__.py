@@ -62,6 +62,7 @@ async def cbot_bot():
         BOT_NAME = getme.first_name + " " + getme.last_name
     else:
         BOT_NAME = getme.first_name
+        
 
 scheduler.start()
 loop.run_until_complete(cbot_bot())
