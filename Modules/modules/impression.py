@@ -62,12 +62,12 @@ async def scheduled_handler(_, query):
     message_ids = [list(msg.keys())[0] for msg in scheduled_messages]
     # Create message text
     text = "**Scheduled Promo Messages**:\n"
-    text += ", ".join(str(id) for id in message_ids)
+    text += ", ".join(str(id)[8:] for id in message_ids)
     global scheduled_message_list
     if scheduled_message_list:
-        text += "Currently scheduled message:"
+        text += f"\n\n**Currently scheduled message**:"
         for msg_id, duration, language in scheduled_message_list:
-            text += f" • Message ID: {msg_id}, Duration: {duration}, Language: {language}\n"
+            text += f" • Message ID: {msg_id[8:]}, Duration: {duration}, Language: {language}\n"
 
     # Create inline keyboard markup
     markup = InlineKeyboardMarkup([
@@ -75,6 +75,8 @@ async def scheduled_handler(_, query):
             InlineKeyboardButton(text="Get Message 📥", callback_data="st_get_msg"),
             InlineKeyboardButton(text="Schedule Message 📝", callback_data="st_schedule_msg")
         ]
+        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
+        InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
     ])
 
     # Edit the message with the new text and markup
@@ -99,11 +101,13 @@ async def schedule_msg_handler(_, query):
             InlineKeyboardButton(text="Azerbaijani", callback_data=f"lang_{msg_id}_az")
         ]
     ])
+    await msg_id_input.delete()
     await sui.edit_text(text, reply_markup=markup)
 
 @cbot.on_callback_query(filters.regex(r'^lang_(.+)_(en|ru|az)$'))
 async def language_handler(_, query):
     msg_id = query.data.split("_")[1]
+    msg_id_str = f"message_{msg_id}"
     language = query.data.split("_")[-1]
 
     # Ask user to enter duration (in hours)
@@ -116,10 +120,11 @@ async def language_handler(_, query):
 
     global scheduled_message_list
     # Save the scheduled message to the local list
-    scheduled_message_list.append((msg_id, duration, language))
+    scheduled_message_list.append((msg_id_str, duration, language))
 
     # Send a confirmation message
     text = f"Message {msg_id} scheduled successfully! 📝"
+    await duration_input.delete()
     await query.message.edit_text(text)
 
 @cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
