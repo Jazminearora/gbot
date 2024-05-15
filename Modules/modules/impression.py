@@ -123,6 +123,10 @@ async def get_message_details(msg_id: int) -> dict:
     else:
         return {}
 
+async def get_messages_list():
+    return scheduled_message_list
+
+
 @cbot.on_callback_query(filters.regex(r'^st_schedule_msg$'))
 async def schedule_msg_handler(_, query):
     # Ask user to enter message ID
@@ -137,7 +141,7 @@ async def schedule_msg_handler(_, query):
     text = "Choose a language:"
     markup = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton(text="English", callback_data=f"lang_{msg_id}_Englis"),
+            InlineKeyboardButton(text="English", callback_data=f"lang_{msg_id}_English"),
             InlineKeyboardButton(text="Russian", callback_data=f"lang_{msg_id}_Russian"),
             InlineKeyboardButton(text="Azerbaijani", callback_data=f"lang_{msg_id}_Azerbaijani")
         ]
