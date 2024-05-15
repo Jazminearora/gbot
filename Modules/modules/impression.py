@@ -61,13 +61,13 @@ async def scheduled_handler(_, query):
     # Extract message IDs and durations
     message_ids = [list(msg.keys())[0] for msg in scheduled_messages]
     # Create message text
-    text = "**Scheduled Promo Messages**:\n"
+    text = "**IDs of all saved Messages Scheduled Promo**:\n"
     text += ", ".join(str(id)[8:] for id in message_ids)
     global scheduled_message_list
     if scheduled_message_list:
         text += f"\n\n**Currently scheduled message**:"
         for msg_id, duration, language in scheduled_message_list:
-            text += f" • Message ID: {msg_id[8:]}, Duration: {duration}, Language: {language}\n"
+            text += f"\n  • Message ID: {msg_id[8:]}, Duration: {duration}, Language: {language}\n"
 
     # Create inline keyboard markup
     markup = InlineKeyboardMarkup([
@@ -81,6 +81,47 @@ async def scheduled_handler(_, query):
 
     # Edit the message with the new text and markup
     await query.message.edit_text(text, reply_markup=markup)
+
+@cbot.on_callback_query(filters.regex(r'^st_get_msg$'))
+async def get_msg_ndler(_, query):
+    text = "Enter the message ID you want to get:"
+    await query.message.reply_text(text)
+    msg_id_input = await pyrostep.wait_for(query.from_user.id)  
+    msg_id = int(msg_id_input.text)
+    dict_msg = await get_message_details(msg_id)
+    if dict_msg:
+        msg_text = f"Message ID: {msg_id}\n"
+        msg_text += f"Text: {dict_msg.get('text', '')}\n"
+        msg_text += f"Button Details: {dict_msg.get('button_details', '')}\n"
+        msg_text += f"Photo Link: {dict_msg.get('photo_link', '')}\n"
+        msg_text += f"Language: {dict_msg.get('language', '')}"
+        await query.message.reply_text(msg_text)
+    else:
+        await query.message.reply_text("Message not found!")
+        
+async def get_message_details(msg_id: int) -> dict:
+    msg_id_str = f"message_{msg_id}"
+
+    # Check if the message is in the scheduled message list
+    for scheduled_msg in scheduled_message_list:
+        if scheduled_msg[0] == msg_id_str:
+            language = scheduled_msg[2]
+            break
+    else:
+        language = None
+
+    # Load message details from the JSON file
+    with open("promo_scheduled.json", "r") as file:
+        message_details = {}
+        for line in file:
+            message_details.update(json.loads(line))
+
+    # Return message details if found
+    if msg_id_str in message_details:
+        message_details[msg_id_str]["language"] = language
+        return message_details[msg_id_str]
+    else:
+        return {}
 
 @cbot.on_callback_query(filters.regex(r'^st_schedule_msg$'))
 async def schedule_msg_handler(_, query):
@@ -96,15 +137,15 @@ async def schedule_msg_handler(_, query):
     text = "Choose a language:"
     markup = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton(text="English", callback_data=f"lang_{msg_id}_en"),
-            InlineKeyboardButton(text="Russian", callback_data=f"lang_{msg_id}_ru"),
-            InlineKeyboardButton(text="Azerbaijani", callback_data=f"lang_{msg_id}_az")
+            InlineKeyboardButton(text="English", callback_data=f"lang_{msg_id}_Englis"),
+            InlineKeyboardButton(text="Russian", callback_data=f"lang_{msg_id}_Russian"),
+            InlineKeyboardButton(text="Azerbaijani", callback_data=f"lang_{msg_id}_Azerbaijani")
         ]
     ])
     await msg_id_input.delete()
     await sui.edit_text(text, reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex(r'^lang_(.+)_(en|ru|az)$'))
+@cbot.on_callback_query(filters.regex(r'^lang_(.+)_(English|Russian|Azerbaijani)$'))
 async def language_handler(_, query):
     msg_id = query.data.split("_")[1]
     msg_id_str = f"message_{msg_id}"
