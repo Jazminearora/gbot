@@ -11,7 +11,7 @@ from .. import cbot, BOT_USERNAME, ADMIN_IDS, msg_collection
 from database.prdb import English, Russian, Azerbejani
 
 pyrostep.listen(cbot)
-scheduled_messages = []
+scheduled_message_list = []
 
 async def upload_image(path):
     try:
@@ -60,13 +60,14 @@ async def scheduled_handler(_, query):
 
     # Extract message IDs and durations
     message_ids = [list(msg.keys())[0] for msg in scheduled_messages]
-    current_scheduled_msgs = [(msg_id, duration) for msg_id, duration in scheduled_messages] if scheduled_messages else None, None
-
     # Create message text
     text = "**Scheduled Promo Messages**:\n"
     text += ", ".join(str(id) for id in message_ids)
-    for msg_id, duration, language in scheduled_messages:
-        text += f"• Message ID: {msg_id}, Duration: {duration}, Language: {language}\n"
+    global scheduled_message_list
+    if scheduled_message_list:
+        text += "Currently scheduled message:"
+        for msg_id, duration, language in scheduled_message_list:
+            text += f" • Message ID: {msg_id}, Duration: {duration}, Language: {language}\n"
 
     # Create inline keyboard markup
     markup = InlineKeyboardMarkup([
@@ -113,8 +114,9 @@ async def language_handler(_, query):
     duration_input = await pyrostep.wait_for(query.from_user.id)  
     duration = int(duration_input.text)
 
+    global scheduled_message_list
     # Save the scheduled message to the local list
-    scheduled_messages.append((msg_id, duration, language))
+    scheduled_message_list.append((msg_id, duration, language))
 
     # Send a confirmation message
     text = f"Message {msg_id} scheduled successfully! 📝"
@@ -337,7 +339,7 @@ async def get_msg(_, message):
         async with aiofiles.open('all_messages.txt', 'w') as f:
             for lang, msg in all_messages.items():
                 await f.write(f"{lang}: {msg}\n")
-        await message.reply_document('promo_scheduled_ENGLISH.json')
+        await message.reply_document('promo_scheduled.json')
         # Send the file as a message
         await message.reply_document("all_messages.txt")
 
@@ -370,9 +372,9 @@ async def del_msg(_, message):
     await message.reply("Message not found.")
 
 async def delete_scheduled_message(msg_id):
-    global scheduled_messages
-    for i, (id, duration, language) in enumerate(scheduled_messages):
+    global scheduled_message_list
+    for i, (id, duration, language) in enumerate(scheduled_message_list):
         if id == msg_id:
-            del scheduled_messages[i]
+            del scheduled_message_list[i]
             return True
     return False
