@@ -509,7 +509,7 @@ async def forward_message(client, message: Message):
                 is_premium, _ = is_user_premium(user1)
                 message_timestamps[f"user_{user1}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if message.text:
-                    chk = await check_shear_url(user1, message, message.id, lang1)
+                    chk = await check_shear_url(user1, message, lang1)
                     if chk: return
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
@@ -523,7 +523,7 @@ async def forward_message(client, message: Message):
                 is_premium, _ = is_user_premium(user2)
                 message_timestamps[f"user_{user2}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if message.text:
-                    chk = await check_shear_url(user2, message, message.id, lang2)
+                    chk = await check_shear_url(user2, message, lang2)
                     if chk: return
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)

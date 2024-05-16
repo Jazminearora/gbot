@@ -58,7 +58,7 @@ async def handle_keyboard_response(client, message: Message):
         wait_message = await message.reply_text("💭")
         try:
             profile_text, reply_markup = await get_profile(user_id, language)
-            asyncio.sleep(0.2)
+            await asyncio.sleep(0.2)
             try:
                 await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
             except Exception as e:
