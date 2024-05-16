@@ -74,9 +74,10 @@ async def scheduled_handler(_, query):
     # Create inline keyboard markup
     markup = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton(text="Get Message 📥", callback_data="st_get_msg"),
-            InlineKeyboardButton(text="Schedule Message 📝", callback_data="st_schedule_msg")
+            InlineKeyboardButton(text="Schedule Message ⏰", callback_data="st_schedule_msg"),
+            InlineKeyboardButton(text="Unschedule message 🗑️", callback_data="st_dlt_msg")
         ],
+        [InlineKeyboardButton(text="Get Message 📥", callback_data="st_get_msg")],
         [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
     ])
@@ -172,6 +173,31 @@ async def language_handler(_, query):
     await duration_input.delete()
     await query.message.edit_text(text)
     await sheduled_promo_code(msg_id, msg_id_str, duration, language)
+
+@cbot.on_callback_query(filters.regex(r'^st_dlt_msg$'))
+async def unschedule_message_handler(_, query):
+    # Ask user to enter the message ID to unschedule
+    text = "Enter the message ID to unschedule:"
+    await query.message.edit_text(text)
+
+    # Wait for user input
+    msg_id_input = await pyrostep.wait_for(query.from_user.id)  
+    msg_id = msg_id_input.text
+
+    global scheduled_message_list
+    # Check if the message ID exists in the scheduled message list
+    for scheduled_msg in scheduled_message_list:
+        if scheduled_msg[0] == f"message_{msg_id}":
+            # Remove the scheduled message
+            scheduled_message_list.remove(scheduled_msg)
+            await msg_id_input.delete()
+            await query.message.edit_text(f"Message {msg_id} unscheduled successfully! 🗑️")
+            return
+
+    # If the message ID is not found in the scheduled message list
+    await msg_id_input.delete()
+    await query.message.edit_text(f"Message {msg_id} not found in scheduled messages! ❌")
+
 
 @cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
 async def push_msg(_, message):
