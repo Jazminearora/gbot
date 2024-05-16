@@ -36,6 +36,7 @@ Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO els
     await query.message.edit_text(text, reply_markup=markup)
 
 async def advert_user(user_id, lang, prem: bool = None):
+    global AUTO_PROMO
     if not AUTO_PROMO:
         return
     try:
