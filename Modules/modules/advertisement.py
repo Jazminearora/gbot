@@ -3,22 +3,17 @@ import asyncio
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.premiumdb import is_user_premium
 from database.prdb import English, Russian, Azerbejani
-from helpers.helper import get_users_list
-from helpers.helper import find_language
+from Modules.modules.impression import AUTO_PROMO
 from .. import cbot
 
 
 prem_user_cache = {}
 
 async def advert_user(user_id, lang, prem: bool = None):
+    if not AUTO_PROMO:
+        return
     try:
-        if prem is None:
-            prem_user = prem_user_cache.get(user_id)
-            if prem_user is None:
-                prem_user, _ = is_user_premium(user_id)
-                prem_user_cache[user_id] = prem_user
-        else:
-            prem_user = prem
+        prem_user, _ = is_user_premium(user_id)
         if not prem_user:
             lang_dict = {
                 "english": English,
@@ -54,6 +49,9 @@ async def send_message(user_id: int, msg_id: int, msg_text: str, reply_markup, p
     """
     Send a message to a user with optional photo and reply markup.
     """
+    prem_user, _ = is_user_premium(user_id)
+    if prem_user:
+        return
     if not user_id or not msg_id or not msg_text:
         raise ValueError("User ID, message ID, and message text are required")
     if reply_markup and not isinstance(reply_markup, InlineKeyboardMarkup):

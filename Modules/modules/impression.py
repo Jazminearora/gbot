@@ -15,6 +15,8 @@ from database.prdb import English, Russian, Azerbejani
 pyrostep.listen(cbot)
 scheduled_message_list = []
 
+AUTO_PROMO = True
+
 async def upload_image(path):
     try:
         link = upload_file(path)
@@ -53,6 +55,31 @@ Happy promoting! 🚀✨
 ])
     await query.message.edit_text(text, reply_markup = markup)
 
+@cbot.on_callback_query(filters.regex(r'^st_auto$'))
+async def auto_promo_handler(_, query):
+    global AUTO_PROMO
+    text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
+            Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
+        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
+         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
+    ])
+    await query.message.edit_text(text, reply_markup=markup)
+
+@cbot.on_callback_query(filters.regex(r'^toggle_auto$'))
+async def toggle_auto_handler(_, query):
+    global AUTO_PROMO
+    AUTO_PROMO = not AUTO_PROMO
+    text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
+            Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
+        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
+         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
+    ])
+    await query.message.edit_text(text, reply_markup=markup)
+
 @cbot.on_callback_query(filters.regex(r'^st_scheduled$'))
 async def scheduled_handler(_, query):
 
@@ -87,20 +114,25 @@ async def scheduled_handler(_, query):
 
 @cbot.on_callback_query(filters.regex(r'^st_get_msg$'))
 async def get_msg_ndler(_, query):
-    text = "Enter the message ID you want to get:"
-    await query.message.reply_text(text)
-    msg_id_input = await pyrostep.wait_for(query.from_user.id)  
-    msg_id = int(msg_id_input.text)
-    dict_msg = await get_message_details(msg_id)
-    if dict_msg:
-        msg_text = f"Message ID: {msg_id}\n"
-        msg_text += f"Text: {dict_msg.get('text', '')}\n"
-        msg_text += f"Button Details: {dict_msg.get('button_details', '')}\n"
-        msg_text += f"Photo Link: {dict_msg.get('photo_link', '')}\n"
-        msg_text += f"Language: {dict_msg.get('language', '')}"
-        await query.message.reply_text(msg_text)
-    else:
-        await query.message.reply_text("Message not found!")
+    try:
+        text = "Enter the message ID you want to get:"
+        await query.message.reply_text(text)
+        msg_id_input = await pyrostep.wait_for(query.from_user.id)  
+        msg_id = int(msg_id_input.text)
+        dict_msg = await get_message_details(msg_id)
+        if dict_msg:
+            msg_text = f"Message ID: {msg_id}\n"
+            msg_text += f"Text: {dict_msg.get('text', '')}\n"
+            msg_text += f"Button Details: {dict_msg.get('button_details', '')}\n"
+            msg_text += f"Photo Link: {dict_msg.get('photo_link', '')}\n"
+            msg_text += f"Language: {dict_msg.get('language', '')}"
+            await query.message.reply_text(msg_text)
+        else:
+            await query.message.reply_text("Message not found!")
+    except ValueError:
+        await query.message.reply_text("Invalid message ID entered!")
+    except Exception as e:
+        await query.message.reply_text(f"Error occurred!\n{e}")
         
 async def get_message_details(msg_id: int) -> dict:
     msg_id_str = f"message_{msg_id}"
