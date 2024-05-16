@@ -168,7 +168,7 @@ async def language_handler(_, query):
     global scheduled_message_list
     # Save the scheduled message to the local list
     scheduled_message_list.append((msg_id_str, duration, language))
-    await sheduled_promo_code(msg_id_str, duration, language)
+    await sheduled_promo_code(msg_id, msg_id_str, duration, language)
     # Send a confirmation message
     text = f"Message {msg_id} scheduled successfully! 📝"
     await duration_input.delete()
@@ -434,11 +434,13 @@ async def delete_scheduled_message(msg_id):
 
 
 
-async def sheduled_promo_code(msg_id: int, duration: int, language: str) -> None:
+async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, language: str) -> None:
     """
     Send scheduled promo codes to users.
     """
+    print("called", )
     while True:
+        print("called2", msg_id)
         try:
             messages_list = await get_messages_list()
             if not messages_list:
