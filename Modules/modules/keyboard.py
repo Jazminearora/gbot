@@ -1,7 +1,8 @@
 from pyrogram import filters
 from pyrogram.errors import PeerIdInvalid
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.enums import ParseMode
+import asyncio
 
 from Modules import cbot, BOT_USERNAME
 import re
@@ -30,7 +31,7 @@ async def start_command(client, message):
 async def back_command(client, message):
     await home_page(message)
 
-    
+
 async def home_page(message):
     try:
         user_id = message.from_user.id
@@ -48,7 +49,7 @@ async def home_page(message):
 button_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤|👥 (Add to group|Добавить в группу|Qrupa əlavə et) 👥$")
 
 @cbot.on_message(filters.regex(button_pattern) & filters.private & subscribed & user_registered)
-async def handle_keyboard_response(client, message):
+async def handle_keyboard_response(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
     await advert_user(user_id, language)
@@ -57,6 +58,7 @@ async def handle_keyboard_response(client, message):
         wait_message = await message.reply_text("💭")
         try:
             profile_text, reply_markup = await get_profile(user_id, language)
+            asyncio.sleep(0.2)
             try:
                 await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
             except Exception as e:

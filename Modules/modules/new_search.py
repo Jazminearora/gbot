@@ -1,22 +1,21 @@
-#await match_users(gender="male", age_groups=["18-24"], language="english")
-
 import asyncio
 from datetime import datetime
 import time
 import re
 from pyrogram import filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
-from Modules import cbot, scheduler, ADMIN_IDS
+from Modules import cbot, scheduler, ADMIN_IDS, LOG_GROUP
 from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 from database.chatdb import save_user, users_chat_details
+from Modules.modules.shear import check_shear_url
 
 
 # List to store users searching for an interlocutor
@@ -499,7 +498,7 @@ async def handle_skip(_, query):
 
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)
-async def forward_message(client, message):
+async def forward_message(client, message: Message):
     for pair in chat_pairs:
         if message.from_user.id in pair:
             user1, user2 = pair
@@ -509,27 +508,32 @@ async def forward_message(client, message):
                 save_user(user1, total_message= 1)
                 is_premium, _ = is_user_premium(user1)
                 message_timestamps[f"user_{user1}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                if message.text:
+                    chk = await check_shear_url(user1, message.text, message.chat.id, message.id, lang1)
+                    if chk: return
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
                     if message.text:
                         await cbot.copy_message(user2, message.chat.id, message.id)
                     else:
-                        await cbot.send_message(user1, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang1))
+                        await cbot.send_message(user1, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang1))
             elif message.from_user.id == user2:
                 save_user(user2, total_message= 1)
                 is_premium, _ = is_user_premium(user2)
                 message_timestamps[f"user_{user2}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+                if message.text:
+                    chk = await check_shear_url(user2, message.text, message.chat.id, message.id, lang2)
+                    if chk: return
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
                     if message.text:
                         await cbot.copy_message(user1, message.chat.id, message.id)
                     else:
-                        await cbot.send_message(user2, await translate_async("Sorry, you need to be a premium user to send photos, videos, stickers, and documents. Purchase premium for full access.", lang2))
+                        await cbot.send_message(user2, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang2))
             break
-
-
+ 
 # function to check for inactive chats
 async def check_inactive_chats():
     for pair in chat_pairs:

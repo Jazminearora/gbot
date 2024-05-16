@@ -1,11 +1,11 @@
-from pymongo import MongoClient
-client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-db = client["cboSot-primer"]
-referdb = db["referdb"]
-mongodb = db["tgtbot"]
-premiumdb = db["premiumb"]
-chatdb = db["chatdsd"]
-msg_collection = db["msg_collection"]
+# from pymongo import MongoClient
+# client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
+# db = client["cboSot-primer"]
+# referdb = db["referdb"]
+# mongodb = db["tgtbot"]
+# premiumdb = db["premiumb"]
+# chatdb = db["chatdsd"]
+# msg_collection = db["msg_collection"]
 
 
 # # # def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
@@ -226,45 +226,65 @@ msg_collection = db["msg_collection"]
 
 # print(get_interest(5020973580, "x"))
 
-def get_refer_program_field(program_id: int, field: str) -> any:
-    try:
-        # Retrieve the program document from the database
-        program = referdb.find_one({"_id": program_id})
-        print(program)
-        if program and field in program:
-            return program[field]
-        else:
-            return None
-    except Exception as e:
-        return None
+# def get_refer_program_field(program_id: int, field: str) -> any:
+#     try:
+#         # Retrieve the program document from the database
+#         program = referdb.find_one({"_id": program_id})
+#         print(program)
+#         if program and field in program:
+#             return program[field]
+#         else:
+#             return None
+#     except Exception as e:
+#         return None
 
-def get_user_name(user_id):
-    try:
-        # user = await cbot.get_users(user_id)
-        # if user:
-        #     name = user.first_name
-        #     if user.last_name:
-        #         name += " " + user.last_name
-        #     return name
-        name2 = get_refer_program_field(user_id, "name")
-        if name2:
-            print(name2)
-            return name2
-        return None
-    except Exception as e:
-        return None
+# def get_user_name(user_id):
+#     try:
+#         # user = await cbot.get_users(user_id)
+#         # if user:
+#         #     name = user.first_name
+#         #     if user.last_name:
+#         #         name += " " + user.last_name
+#         #     return name
+#         name2 = get_refer_program_field(user_id, "name")
+#         if name2:
+#             print(name2)
+#             return name2
+#         return None
+#     except Exception as e:
+#         return None
     
 
 # get_user_name(664985)
 # print(list((-1002050970665, 5131723020)))
 # SUBSCRIPTION = [-1002050970665, 5131723020]
 # print(subscription.split(","))
-import os
+import asyncio
+import asyncio
 
-# Set the environment variable
-os.environ["SUBSCRIPTION"] = "[-1002050970665]"
+SHEAR_WORDS_FILE = 'shear_words.txt'
 
-# Now you can access it using os.getenv()
-my_var_value = os.getenv("SUBSCRIPTION")
-print(my_var_value)  # Output: my value
-print(os.getenv("SUBSCRIPTION"))
+async def add_shear_word(word: str):
+    """Add a shear word to the file asynchronously"""
+    with open(SHEAR_WORDS_FILE, 'a') as f:
+        f.write(word.casefold() + '\n')
+
+async def is_shear(message: str) -> bool:
+    """Check if a given message contains any shear words asynchronously"""
+    with open(SHEAR_WORDS_FILE, 'r') as f:
+        shear_words = {line.strip().casefold() for line in f}
+    words = message.casefold().split()
+    return any(word in shear_words for word in words)
+
+async def get_all_shear_words() -> set:
+    """Return a set of all shear words"""
+    with open(SHEAR_WORDS_FILE, 'r') as f:
+        return f.read() #{line.strip().casefold() for line in f}
+
+async def main():
+    # await add_shear_word("vulgur")
+    print(await is_shear("suck my you bitch"))
+    # print(await get_all_shear_words())
+
+# Run the event loop
+asyncio.run(main())
