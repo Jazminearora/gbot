@@ -125,7 +125,7 @@ async def get_message_details(msg_id: int) -> dict:
     else:
         return {}
 
-async def get_messages_list():
+def get_messages_list():
     return scheduled_message_list
 
 
@@ -168,11 +168,10 @@ async def language_handler(_, query):
     global scheduled_message_list
     # Save the scheduled message to the local list
     scheduled_message_list.append((msg_id_str, duration, language))
-    await sheduled_promo_code(msg_id, msg_id_str, duration, language)
-    # Send a confirmation message
     text = f"Message {msg_id} scheduled successfully! 📝"
     await duration_input.delete()
     await query.message.edit_text(text)
+    await sheduled_promo_code(msg_id, msg_id_str, duration, language)
 
 @cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
 async def push_msg(_, message):
@@ -442,7 +441,7 @@ async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, langu
     while True:
         print("called2", msg_id)
         try:
-            messages_list = await get_messages_list()
+            messages_list = get_messages_list()
             if not messages_list:
                 await asyncio.sleep(60)  # sleep for 1 minute before checking again
                 continue
@@ -461,7 +460,7 @@ async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, langu
             photo_link = msg_details.get("photo_link")
             lang = language
 
-            users = await get_users_list(lang)
+            users = get_users_list(lang)
             for user in users:
                 await send_message(user, msg_id, msg_text, reply_markup, photo_link)
 
@@ -472,6 +471,6 @@ async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, langu
             await asyncio.sleep(60)  # sleep for 1 minute before retrying
 
         # check if the message is still in the list
-        messages_list = await get_messages_list()
+        messages_list = get_messages_list()
         if msg_id not in [msg[0] for msg in messages_list]:
             break  # break the loop if the message is no longer in the list
