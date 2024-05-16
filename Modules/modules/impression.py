@@ -140,6 +140,10 @@ async def schedule_msg_handler(_, query):
     msg_id_input = await pyrostep.wait_for(query.from_user.id)  
     msg_id = msg_id_input.text
 
+    msg_details = await get_message_details(msg_id)
+    if not msg_details:
+        await query.message.reply("Message not found, Please recheck message id.")
+        return
     # Ask user to choose language
     text = "Choose a language:"
     markup = InlineKeyboardMarkup([
@@ -164,7 +168,11 @@ async def language_handler(_, query):
 
     # Wait for user input
     duration_input = await pyrostep.wait_for(query.from_user.id)  
-    duration = int(duration_input.text)
+    try:
+        duration = int(duration_input.text)
+    except ValueError:
+        await query.message.edit_text("You have not entered integer value for lap duration.")
+        return
 
     global scheduled_message_list
     # Save the scheduled message to the local list
@@ -178,7 +186,7 @@ async def language_handler(_, query):
 async def unschedule_message_handler(_, query):
     # Ask user to enter the message ID to unschedule
     text = "Enter the message ID to unschedule:"
-    await query.message.edit_text(text)
+    suii = await query.message.reply_text(text)
 
     # Wait for user input
     msg_id_input = await pyrostep.wait_for(query.from_user.id)  
@@ -191,12 +199,12 @@ async def unschedule_message_handler(_, query):
             # Remove the scheduled message
             scheduled_message_list.remove(scheduled_msg)
             await msg_id_input.delete()
-            await query.message.edit_text(f"Message {msg_id} unscheduled successfully! 🗑️")
+            await suii.edit_text(f"Message {msg_id} unscheduled successfully! 🗑️")
             return
 
     # If the message ID is not found in the scheduled message list
     await msg_id_input.delete()
-    await query.message.edit_text(f"Message {msg_id} not found in scheduled messages! ❌")
+    await suii.edit_text(f"Message {msg_id} not found in scheduled messages! ❌")
 
 
 @cbot.on_message(filters.command("push_msg") & filters.user(ADMIN_IDS))
@@ -492,7 +500,7 @@ async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, langu
             for user in users:
                 await send_message(user, msg_id, msg_text, reply_markup, photo_link)
 
-            await asyncio.sleep(duration * 60 )  # sleep for the specified duration * 60
+            await asyncio.sleep(int(duration) * 60 * 60)  # sleep for the specified duration in hrs
 
         except Exception as e:
             print(f"Error in scheduled promo code: {e}")
