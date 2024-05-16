@@ -42,7 +42,7 @@ async def check_shear_url(user_id, message, lang):
     """)
         return True
 
-    if any(entity.type == "url" for entity in message.entities):
+    elif message.entities and any(entity.type == "url" for entity in message.entities):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: URLs are not allowed in this chat. Please refrain from sharing links. Thank you! 🚫", lang))
         await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
         await cbot.send_message(LOG_GROUP, f"""

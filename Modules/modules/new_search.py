@@ -509,6 +509,7 @@ async def forward_message(client, message: Message):
                 is_premium, _ = is_user_premium(user1)
                 message_timestamps[f"user_{user1}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if message.text:
+                    print(message.entities())
                     chk = await check_shear_url(user1, message, lang1)
                     if chk: return
                 if is_premium:
