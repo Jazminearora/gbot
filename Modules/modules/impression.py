@@ -3,6 +3,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message a
 from pyrogram.errors import RPCError
 import pyrostep
 import os
+from Modules.modules.advertisement import sheduled_promo_code
 from telegraph import upload_file
 import aiofiles
 import json
@@ -166,7 +167,7 @@ async def language_handler(_, query):
     global scheduled_message_list
     # Save the scheduled message to the local list
     scheduled_message_list.append((msg_id_str, duration, language))
-
+    await sheduled_promo_code(msg_id_str, duration, language)
     # Send a confirmation message
     text = f"Message {msg_id} scheduled successfully! 📝"
     await duration_input.delete()

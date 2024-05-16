@@ -3,7 +3,6 @@ import importlib
 from pyrogram import idle
 from Modules import cbot, mongodb
 from Modules.modules import ALL_MODULES
-from Modules.modules.advertisement import sheduled_promo_code
 from config import key
 from pyrogram import filters
 
@@ -38,7 +37,7 @@ async def cbot_boot():
         importlib.import_module("Modules.modules." + all_module)
     print("𝖻𝗈𝗍 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎lly 𝗌𝗍𝖺𝗋𝗍")
     await idle()
-    await sheduled_promo_code()
+    
 
 
 
