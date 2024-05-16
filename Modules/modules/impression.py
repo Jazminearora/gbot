@@ -68,7 +68,7 @@ Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO els
 async def toggle_auto_handler(_, query):
     AUTO_PROMO = not AUTO_PROMO
     text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
-            Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
+Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
         [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
