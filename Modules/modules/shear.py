@@ -1,5 +1,6 @@
 from pyrogram import filters
 from pyrogram.types import Message
+from pyrogram.enums import MessageEntityType
 from .. import cbot, ADMIN_IDS, LOG_GROUP
 from helpers.shear import add_shear_word, get_all_shear_words, is_shear
 from helpers.translator import translate_async
@@ -42,7 +43,7 @@ async def check_shear_url(user_id, message, lang):
     """)
         return True
 
-    elif message.entities and any(entity.type == "url" for entity in message.entities):
+    elif message.entities and any(entity.type == MessageEntityType.URL for entity in message.entities):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: URLs are not allowed in this chat. Please refrain from sharing links. Thank you! 🚫", lang))
         await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
         await cbot.send_message(LOG_GROUP, f"""
