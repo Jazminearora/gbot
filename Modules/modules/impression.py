@@ -2,7 +2,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message as mssg
 from pyrogram.errors import RPCError
 import pyrostep
-from ..modules.advertisement import send_message
+from ..modules.advertisement import send_message, AUTO_PROMO
 import asyncio
 from helpers.helper import get_users_list
 from telegraph import upload_file
@@ -14,8 +14,6 @@ from database.prdb import English, Russian, Azerbejani
 
 pyrostep.listen(cbot)
 scheduled_message_list = []
-
-AUTO_PROMO = True
 
 async def upload_image(path):
     try:

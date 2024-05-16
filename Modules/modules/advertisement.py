@@ -3,9 +3,9 @@ import asyncio
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.premiumdb import is_user_premium
 from database.prdb import English, Russian, Azerbejani
-from Modules.modules.impression import AUTO_PROMO
 from .. import cbot
 
+AUTO_PROMO = True
 
 prem_user_cache = {}
 
