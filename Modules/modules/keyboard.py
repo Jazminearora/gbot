@@ -18,13 +18,16 @@ from helpers.translator import translate_async
 from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
 
 
-SELECT_OPTION_TEXT = "Please select an option:"
 SELECT_OPTION_PHOTO = "https://iili.io/JgY8Fls.jpg"
 
 
 # Handle private messages with the reply markup
 @cbot.on_message(filters.command(["start"]) & filters.private & subscribed & user_registered)
 async def start_command(client, message):
+    await home_page(message)
+
+@cbot.on_message(filters.regex("Back|Назад|Geri") & filters.private & subscribed & user_registered) 
+async def home_page(message):
     try:
         user_id = message.from_user.id
         language = find_language(user_id)

@@ -87,10 +87,18 @@ async def search_interlocutor(client, message):
     await advert_user(message.from_user.id, user_language)
     # Create keyboard with start searching button
     keyboard = ReplyKeyboardMarkup([
-        [KeyboardButton(await translate_async("Normal Search", user_language)), 
-        KeyboardButton(await translate_async("Configured Search", user_language))],
-        [KeyboardButton(await translate_async("Find a Guy", user_language)),
-        KeyboardButton(await translate_async("Find a Girl", user_language))]],
+        [
+            KeyboardButton(await translate_async("Normal Search", user_language))
+        ],
+        [
+            KeyboardButton(await translate_async("Find a Guy", user_language)),
+            KeyboardButton(await translate_async("Find a Girl", user_language))
+        ],
+        [
+            KeyboardButton(await translate_async("Configured Search", user_language)),
+            KeyboardButton(await translate_async("Back", user_language))
+        ]
+    ],
         resize_keyboard=True)
     caption = await translate_async(f"Your language:{user_language}\nChoose the button below to find an interlocutor.", user_language)
     await message.reply(caption, reply_markup=keyboard)
