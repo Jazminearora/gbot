@@ -1,6 +1,7 @@
 import random
 import asyncio
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import filters
 from database.premiumdb import is_user_premium
 from database.prdb import English, Russian, Azerbejani
 from .. import cbot
@@ -8,6 +9,31 @@ from .. import cbot
 AUTO_PROMO = True
 
 prem_user_cache = {}
+
+@cbot.on_callback_query(filters.regex(r'^toggle_auto$'))
+async def toggle_auto_handler(_, query):
+    global AUTO_PROMO
+    AUTO_PROMO = not AUTO_PROMO
+    text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
+Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
+        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
+         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
+    ])
+    await query.message.edit_text(text, reply_markup=markup)
+
+@cbot.on_callback_query(filters.regex(r'^st_auto$'))
+async def auto_promo_handler(_, query):
+    global AUTO_PROMO
+    text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
+Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
+        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
+         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
+    ])
+    await query.message.edit_text(text, reply_markup=markup)
 
 async def advert_user(user_id, lang, prem: bool = None):
     if not AUTO_PROMO:

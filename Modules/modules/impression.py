@@ -2,7 +2,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message as mssg
 from pyrogram.errors import RPCError
 import pyrostep
-from ..modules.advertisement import send_message, AUTO_PROMO
+from ..modules.advertisement import send_message
 import asyncio
 from helpers.helper import get_users_list
 from telegraph import upload_file
@@ -52,29 +52,6 @@ Happy promoting! 🚀✨
      InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
 ])
     await query.message.edit_text(text, reply_markup = markup)
-
-@cbot.on_callback_query(filters.regex(r'^st_auto$'))
-async def auto_promo_handler(_, query):
-    text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
-Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
-    markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
-        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
-         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
-    ])
-    await query.message.edit_text(text, reply_markup=markup)
-
-@cbot.on_callback_query(filters.regex(r'^toggle_auto$'))
-async def toggle_auto_handler(_, query):
-    AUTO_PROMO = not AUTO_PROMO
-    text = f"Auto Promo Status: {'ON' if AUTO_PROMO else 'OFF'} 🔄\n\n\
-Auto Promo automatically promotes your content. Turn it {'OFF' if AUTO_PROMO else 'ON'} if you prefer manual control."
-    markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(f"Toggle {'❌ OFF' if AUTO_PROMO else '✅ ON'}", callback_data="toggle_auto")],
-        [InlineKeyboardButton(f"Back 🔙", callback_data="st_back"),
-         InlineKeyboardButton(f"Close ❌", callback_data="st_close")]
-    ])
-    await query.message.edit_text(text, reply_markup=markup)
 
 @cbot.on_callback_query(filters.regex(r'^st_scheduled$'))
 async def scheduled_handler(_, query):
