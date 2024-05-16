@@ -30,9 +30,9 @@ async def check_shear_url(user_id, message, lang):
     """
     Check if the message contains shear words or URLs and take appropriate action.
     """
-    if await is_shear(message.text):
+    if await is_shear(message.text) if message.text else await is_shear(message.caption):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: Inappropriate language or insults are not tolerated here. Let's maintain a respectful conversation. Thank you! 🚫", lang))
-        await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
+        sz = await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
         await cbot.send_message(LOG_GROUP, f"""
     🚨 **Reported Message** 🚨
 
@@ -40,12 +40,12 @@ async def check_shear_url(user_id, message, lang):
 
     **Admin Note:**
     This message has been reported for containing inappropriate language or insults. Please review and take appropriate action. Thank you! 🛑
-    """)
+    """, reply_to_message_id= sz.id)
         return True
 
     elif message.entities and any(entity.type == MessageEntityType.URL for entity in message.entities):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: URLs are not allowed in this chat. Please refrain from sharing links. Thank you! 🚫", lang))
-        await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
+        sk = await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
         await cbot.send_message(LOG_GROUP, f"""
     🚨 **Reported Message** 🚨
 
@@ -53,7 +53,7 @@ async def check_shear_url(user_id, message, lang):
 
     **Admin Note:**
     This message has been reported for containing a URL. Please review and take appropriate action. Thank you! 🛑
-    """)
+    """, reply_to_message_id= sk.id)
         return True
 
     return False
