@@ -10,7 +10,7 @@ async def add_shear_word(word: str):
 async def is_shear(message: str) -> bool:
     """Check if a given message contains any shear words asynchronously"""
     async with aiofiles.open(SHEAR_WORDS_FILE, 'r') as f:
-        shear_words = {line.strip().casefold() async for line in await f.read()}
+        shear_words = {line.strip().casefold() for line in await f}
     words = message.casefold().split()
     return any(word in shear_words for word in words)
 
