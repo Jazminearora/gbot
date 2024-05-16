@@ -27,6 +27,10 @@ async def start_command(client, message):
     await home_page(message)
 
 @cbot.on_message(filters.regex("Back|Назад|Geri") & filters.private & subscribed & user_registered) 
+async def back_command(client, message):
+    await home_page(message)
+
+    
 async def home_page(message):
     try:
         user_id = message.from_user.id
