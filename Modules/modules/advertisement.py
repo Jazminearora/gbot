@@ -5,7 +5,7 @@ from database.premiumdb import is_user_premium
 from database.prdb import English, Russian, Azerbejani
 from helpers.helper import get_users_list
 from helpers.helper import find_language
-from Modules.modules.impression import get_messages_list, get_message_details
+from ..modules.impression import get_messages_list, get_message_details
 from .. import cbot
 
 

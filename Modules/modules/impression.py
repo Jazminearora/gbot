@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message a
 from pyrogram.errors import RPCError
 import pyrostep
 import os
-from Modules.modules.advertisement import sheduled_promo_code
+from ..modules.advertisement import sheduled_promo_code
 from telegraph import upload_file
 import aiofiles
 import json
