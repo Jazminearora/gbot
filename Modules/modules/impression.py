@@ -2,8 +2,9 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message as mssg
 from pyrogram.errors import RPCError
 import pyrostep
-import os
-from ..modules.advertisement import sheduled_promo_code
+from ..modules.advertisement import send_message
+import asyncio
+from helpers.helper import get_users_list
 from telegraph import upload_file
 import aiofiles
 import json
@@ -429,3 +430,46 @@ async def delete_scheduled_message(msg_id):
             del scheduled_message_list[i]
             return True
     return False
+
+
+
+
+async def sheduled_promo_code(msg_id: int, duration: int, language: str) -> None:
+    """
+    Send scheduled promo codes to users.
+    """
+    while True:
+        try:
+            messages_list = await get_messages_list()
+            if not messages_list:
+                await asyncio.sleep(60)  # sleep for 1 minute before checking again
+                continue
+
+            msg_details = await get_message_details(msg_id)
+            if not msg_details:
+                break  # break the loop if the message is no longer in the list
+
+            msg_text = msg_details.get("text")
+            inline_btn = msg_details.get("button_details")
+            reply_markup = None
+            if inline_btn:
+                keyboard = [InlineKeyboardButton(btn['btn_text'], url=btn['btn_url']) for btn in inline_btn]
+                reply_markup = InlineKeyboardMarkup([keyboard])
+
+            photo_link = msg_details.get("photo_link")
+            lang = language
+
+            users = await get_users_list(lang)
+            for user in users:
+                await send_message(user, msg_id, msg_text, reply_markup, photo_link)
+
+            await asyncio.sleep(duration * 60 )  # sleep for the specified duration * 60
+
+        except Exception as e:
+            print(f"Error in scheduled promo code: {e}")
+            await asyncio.sleep(60)  # sleep for 1 minute before retrying
+
+        # check if the message is still in the list
+        messages_list = await get_messages_list()
+        if msg_id not in [msg[0] for msg in messages_list]:
+            break  # break the loop if the message is no longer in the list
