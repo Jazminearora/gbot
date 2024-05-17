@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import Message, CallbackQuery
+from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from .. import cbot, BOT_NAME, ADMIN_IDS, LOG_GROUP
 from database.residuedb import BLuser, add_bluser, unblock_user
 
@@ -81,4 +81,8 @@ Example: /block 123456789 or reply to the user's message to block them
 Example: /unblock 123456789 or reply to the user's message to unblock them
 
 """
-    await query.message.reply(txt)
+    home_btn = InlineKeyboardMarkup([
+            [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
+            InlineKeyboardButton(text="Close ❌", callback_data="st_close")]])
+
+    await query.message.edit_text(txt, reply_markup= home_btn)
