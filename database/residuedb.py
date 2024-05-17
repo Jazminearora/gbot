@@ -4,7 +4,7 @@ from pyrogram import filters
 blocked_users_cache = set()
 
 # Function to add a user to the blocklist
-async def add_bluser(user_id):
+async def add_bluser(user_id: int):
     print(f"Adding user {user_id} to the blocklist...")
     # Check if user is already blocked
     if await is_blocked(user_id):
@@ -35,7 +35,7 @@ async def add_bluser(user_id):
 
 
 # Function to unblock a user
-async def unblock_user(user_id):
+async def unblock_user(user_id: int):
     print(f"Unblocking user {user_id}...")
     # Remove user from the cache
     print(f"Removing user {user_id} from the cache...")
@@ -54,7 +54,7 @@ async def unblock_user(user_id):
 
 
 # Function to check if a user is blocked
-async def is_blocked(user_id):
+async def is_blocked(user_id: int):
     # Check if user is in the cache
     if user_id in blocked_users_cache:
         print(f"User {user_id} is in the cache.")
@@ -73,7 +73,7 @@ async def is_blocked(user_id):
 
 
 async def BLfilter(filter, client, update):
-    user_id = update.from_user.id
+    user_id = int(update.from_user.id)
     if user_id in ADMIN_IDS:
         return False
     banned = await is_blocked(user_id)

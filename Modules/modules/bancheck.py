@@ -24,7 +24,7 @@ Best regards,
 async def block_user(client, msg: Message):
     try:
         if msg.reply_to_message:
-            user_id = msg.reply_to_message.from_user.id
+            user_id = int(msg.reply_to_message.from_user.id)
             if user_id in ADMIN_IDS:
                 await msg.reply("I can't ban my admins!!")
                 return
@@ -34,11 +34,11 @@ async def block_user(client, msg: Message):
         if len(msg.command) < 2:
             await msg.reply_text("Usage: /block <user id> or reply to a message")
             return
-        user_id = msg.text.split(None, 1)[1]
+        user_id = int(msg.text.split(None, 1)[1])
         if user_id in ADMIN_IDS:
             await msg.reply("I can't ban my admins!!")
             return
-        await add_bluser(user_id)
+        await add_bluser(int(user_id))
         await msg.reply("User blocked successfully!")
     except Exception as e:
         await msg.reply(f"Error: {e}")
@@ -48,14 +48,14 @@ async def unblock_users(client, msg: Message):
     try:
         if msg.reply_to_message:
             user_id = msg.reply_to_message.from_user.id
-            await unblock_user(user_id)
+            await unblock_user(int(user_id))
             await msg.reply("User unblocked successfully!")
             return
         if len(msg.command) < 2:
             await msg.reply_text("Usage: /unblock <user id> or reply to a message")
             return
-        user_id = msg.text.split(None, 1)[1]
-        await unblock_user(user_id)
+        user_id = int(msg.text.split(None, 1)[1])
+        await unblock_user(int(user_id))
         await msg.reply("User unblocked successfully!")
     except Exception as e:
         await msg.reply(f"Error: {e}")

@@ -1,11 +1,17 @@
-# from pymongo import MongoClient
-# client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-# db = client["cboSot-primer"]
+from pymongo import MongoClient
+client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
+db = client["cboSot-primer"]
 # referdb = db["referdb"]
 # mongodb = db["tgtbot"]
 # premiumdb = db["premiumb"]
 # chatdb = db["chatdsd"]
-# residuedb = db["residuedb"]
+residuedb = db["residuedb"]
+
+#print all document in residuedb
+for x in residuedb.find():
+    print(x)
+
+
 
 
 # # # def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
@@ -259,32 +265,32 @@
 # print(list((-1002050970665, 5131723020)))
 # SUBSCRIPTION = [-1002050970665, 5131723020]
 # print(subscription.split(","))
-import asyncio
-import asyncio
+# import asyncio
+# import asyncio
 
-SHEAR_WORDS_FILE = 'shear_words.txt'
+# SHEAR_WORDS_FILE = 'shear_words.txt'
 
-async def add_shear_word(word: str):
-    """Add a shear word to the file asynchronously"""
-    with open(SHEAR_WORDS_FILE, 'a') as f:
-        f.write(word.casefold() + '\n')
+# async def add_shear_word(word: str):
+#     """Add a shear word to the file asynchronously"""
+#     with open(SHEAR_WORDS_FILE, 'a') as f:
+#         f.write(word.casefold() + '\n')
 
-async def is_shear(message: str) -> bool:
-    """Check if a given message contains any shear words asynchronously"""
-    with open(SHEAR_WORDS_FILE, 'r') as f:
-        shear_words = {line.strip().casefold() for line in f}
-    words = message.casefold().split()
-    return any(word in shear_words for word in words)
+# async def is_shear(message: str) -> bool:
+#     """Check if a given message contains any shear words asynchronously"""
+#     with open(SHEAR_WORDS_FILE, 'r') as f:
+#         shear_words = {line.strip().casefold() for line in f}
+#     words = message.casefold().split()
+#     return any(word in shear_words for word in words)
 
-async def get_all_shear_words() -> set:
-    """Return a set of all shear words"""
-    with open(SHEAR_WORDS_FILE, 'r') as f:
-        return f.read() #{line.strip().casefold() for line in f}
+# async def get_all_shear_words() -> set:
+#     """Return a set of all shear words"""
+#     with open(SHEAR_WORDS_FILE, 'r') as f:
+#         return f.read() #{line.strip().casefold() for line in f}
 
-async def main():
-    # await add_shear_word("vulgur")
-    print(await is_shear("suck my you bitch"))
-    # print(await get_all_shear_words())
+# async def main():
+#     # await add_shear_word("vulgur")
+#     print(await is_shear("suck my you bitch"))
+#     # print(await get_all_shear_words())
 
-# Run the event loop
-asyncio.run(main())
+# # Run the event loop
+# asyncio.run(main())
