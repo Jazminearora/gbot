@@ -9,7 +9,7 @@ from telegraph import upload_file
 import aiofiles
 import json
 
-from .. import cbot, BOT_USERNAME, ADMIN_IDS, msg_collection
+from .. import cbot, BOT_USERNAME, ADMIN_IDS, residuedb
 from database.prdb import English, Russian, Azerbejani
 
 pyrostep.listen(cbot)
@@ -221,11 +221,11 @@ async def push_msg(_, message):
         azerbejani_msgs = dict(Azerbejani)
 
         # Check if a document with the same _id exists in MongoDB
-        existing_doc = msg_collection.find_one({"_id": "messages"})
+        existing_doc = residuedb.find_one({"_id": "messages"})
 
         if existing_doc:
             # Update the existing document
-            msg_collection.update_one({"_id": "messages"}, {
+            residuedb.update_one({"_id": "messages"}, {
                 "$set": {
                     "english": english_msgs,
                     "russian": russian_msgs,
@@ -234,7 +234,7 @@ async def push_msg(_, message):
             })
         else:
             # Insert a new document with the specified _id
-            msg_collection.insert_one({
+            residuedb.insert_one({
                 "_id": "messages",
                 "english": english_msgs,
                 "russian": russian_msgs,
@@ -249,7 +249,7 @@ async def push_msg(_, message):
 async def pull_msg(_, message):
     try:
         # Fetch the document with the specified _id from MongoDB
-        saved_msgs = msg_collection.find_one({"_id": "messages"})
+        saved_msgs = residuedb.find_one({"_id": "messages"})
 
         if saved_msgs:
             # Update messages from MongoDB

@@ -5,7 +5,7 @@
 # mongodb = db["tgtbot"]
 # premiumdb = db["premiumb"]
 # chatdb = db["chatdsd"]
-# msg_collection = db["msg_collection"]
+# residuedb = db["residuedb"]
 
 
 # # # def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, frens: list = None):
@@ -201,9 +201,9 @@
 
 # create_refer_program(id = 400415, admin_ids=[4390234, 43344233, -1003434324], promotion_name= "shull") #, referred_users= 47394738, points= 1)
 
-# msg_collection.delete_many({'key': 'english'})
+# residuedb.delete_many({'key': 'english'})
 
-# msg_collection.find_one_and_delete({"663f8ab40092d6a76b7fd1bf"})
+# residuedb.find_one_and_delete({"663f8ab40092d6a76b7fd1bf"})
 # # referdb.delete_one({'_id': 314886})
 
 # doc = mongodb.find()#{'is_active': True})
