@@ -27,6 +27,9 @@ buttons = [
             InlineKeyboardButton("📊 Statistics", callback_data='statistics')
         ],
         [
+            InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
+        ],
+        [
             InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
             InlineKeyboardButton("👑 VIP Users", callback_data='vip_users')
         ],

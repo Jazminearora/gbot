@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import Message
+from pyrogram.types import Message, CallbackQuery
 from .. import cbot, BOT_NAME, ADMIN_IDS, LOG_GROUP
 from database.residuedb import BLuser, add_bluser, unblock_user
 
@@ -59,3 +59,26 @@ async def unblock_users(client, msg: Message):
         await msg.reply("User unblocked successfully!")
     except Exception as e:
         await msg.reply(f"Error: {e}")
+
+
+@cbot.on_callback_query(filters.regex("extra_admin") & filters.user(ADMIN_IDS))
+async def extra_admin(client, query: CallbackQuery):
+    txt = """
+👋 Hello Admins! 🛡️
+
+📝 Here's a quick overview of the commands available:
+
+✏️ /add_shear - Add a new word to the shear list (usage: /add_shear <word>)
+Example: /add_shear NewWord
+
+📋 /get_shear - Retrieve all shear words from the database
+Example: /get_shear
+
+🚫 /block - Block a user from the platform (usage: /block <user id> or reply to a message from the user)
+Example: /block 123456789 or reply to the user's message to block them
+
+🔓 /unblock - Unblock a user (usage: /unblock <user id> or reply to a message from the user)
+Example: /unblock 123456789 or reply to the user's message to unblock them
+
+"""
+    await query.message.reply(txt)
