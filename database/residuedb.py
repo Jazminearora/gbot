@@ -59,7 +59,7 @@ async def BLfilter(filter, client, update):
     user_id = update.from_user.id
     if user_id in ADMIN_IDS:
         return False
-    banned = is_blocked(user_id)
+    banned = await is_blocked(user_id)
     if banned:
         return True
     else:

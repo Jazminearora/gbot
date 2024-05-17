@@ -1,9 +1,9 @@
 from pyrogram import filters
 from pyrogram.types import Message
 from .. import cbot, BOT_NAME, ADMIN_IDS, LOG_GROUP
-from database.residuedb import BLfilter, add_bluser, unblock_user
+from database.residuedb import BLuser, add_bluser, unblock_user
 
-@cbot.on_message(filters.private & BLfilter)
+@cbot.on_message(filters.private & BLuser)
 async def Banned_users_handler(client, msg: Message):
     txt = f"""
 Hello,
@@ -44,7 +44,7 @@ async def block_user(client, msg: Message):
         await msg.reply(f"Error: {e}")
 
 @cbot.on_message(filters.command("unblock") & filters.user(ADMIN_IDS))
-async def unblock_user(client, msg: Message):
+async def unblock_users(client, msg: Message):
     try:
         if msg.reply_to_message:
             user_id = msg.reply_to_message.from_user.id
