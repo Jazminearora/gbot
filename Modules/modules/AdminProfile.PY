@@ -20,6 +20,7 @@ async def get_genral_markup(user_id):
 
 @cbot.on_message(filters.command("profile") & filters.user(ADMIN_IDS))
 async def get_users_profile(_, message: Message):
+    print("adminprofile")
     try:
         command = message.text
         user_id = int(command.split()[1])
