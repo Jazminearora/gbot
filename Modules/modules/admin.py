@@ -296,8 +296,15 @@ async def user_ditales(_, message):
     except (ValueError, IndexError):
         await message.reply("Usage: /profile <user_id>")
         return
-    markup = await get_genral_markup(user_id)
-    await message.reply("Please choose a option from below", reply_markup= markup)
+    genral_markup =  InlineKeyboardMarkup([
+            [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
+            InlineKeyboardButton("📣 Notify", callback_data=f'notify_{user_id}')],
+            [InlineKeyboardButton("🛑 Block Media", callback_data=f'block_media_{user_id}'),
+            InlineKeyboardButton("🚷 Block User", callback_data=f'block_completely_{user_id}')],
+            [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
+            [InlineKeyboardButton("❌ Close", callback_data='st_close')]
+        ])
+    await message.reply("Please choose a option from below", reply_markup= genral_markup)
 
 @cbot.on_callback_query(filters.regex("info_(.+)"))
 async def get_user_info(_, query: CallbackQuery):
