@@ -279,8 +279,7 @@ async def get_users_profile(_, message):
     try:
         command = message.text
         user_id = command.split()[1]
-        language = find_language(user_id)
-        profile_text, _ = await get_profile(user_id, language)
+        profile_text, _ = await get_profile(user_id, "English")
         await message.reply_text(profile_text)
     except Exception as e:
         await message.reply_text(f"An error occurred: \n\n{e}")
