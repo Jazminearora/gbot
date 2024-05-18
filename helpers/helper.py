@@ -139,8 +139,8 @@ async def get_profile(user_id, language):
             if premium:
                 message += f"\nPremium Expiry: {expiry}"
             message += "\n" + rating
-            message += f"\n\nTotal messages sent: {total_msg} in total dialogs: {dialogs}"
-            message += f"🔞 Offense Count: {offense}"
+            message += f"\n\nTotal messages sent: {total_msg}\n Total dialogs: {dialogs}"
+            message += f"\n\n🔞 Offense Count: {offense}"
             edit_button_text = "Edit ✏️"
             close_button_text = "Close ❌"
         elif language == "Russian":
@@ -151,8 +151,8 @@ async def get_profile(user_id, language):
             message += f"\nСтатус премиума: {premium}"
             if premium:
                 message += f"\nСрок действия премиума: {expiry}"
-            message += f"\n\nОбщее количество отправленных сообщений: {total_msg} в общем количестве диалогов: {dialogs}"
-            message += f"🔞 Количество нарушений: {offense}"
+            message += f"\n\nОбщее количество отправленных сообщений: {total_msg}\nОбщее количество диалогов: {dialogs}"
+            message += f"\n\n🔞 Количество нарушений: {offense}"
             edit_button_text = "Редактировать ✏️"
             close_button_text = "Закрыть ❌"
         elif language == "Azerbejani":
@@ -163,8 +163,8 @@ async def get_profile(user_id, language):
             message += f"\nPremium Statusu: {premium}"
             if premium:
                 message += f"\nPremiumun Bitiş Tarixi: {expiry}"
-            message += f"\n\nÜmumi göndərilmiş mesajların sayı: {total_msg} ümumi dialoqların sayı: {dialogs}"
-            message += f"🔞 Qaydaları pozma sayı: {offense}"
+            message += f"\n\nGöndərilən ümumi mesajlar: {total_msg}\nÜmumi dialoqlar: {dialogs}"
+            message += f"\n\n🔞 Qaydaları pozma sayı: {offense}"
             edit_button_text = "Redaktə et ✏️"
             close_button_text = "Bağla ❌"
         else:

@@ -3,7 +3,7 @@ from datetime import datetime
 import time
 import re
 from pyrogram import filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, Message
 
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
@@ -448,6 +448,8 @@ async def end_chat(_, message):
     for pair in chat_pairs:
         if user_id in pair:
             other_user_id = pair[1] if pair[0] == user_id else pair[0]
+            await reset_profanity_scores(other_user_id)
+            await reset_profanity_scores(user_id)
             other_user_lang = find_language(other_user_id)
             reply_markup2 = await get_reply_markup(other_user_lang)
             caption = await translate_async("Chat has been Ended by the other user.", other_user_lang)
@@ -552,10 +554,11 @@ async def check_profanity(user1, user2, message: Message):
     if profanity_scores[user1] >= 3:
         lang1 = find_language(user1)
         lang2 = find_language(user2)
-        await message.reply(await translate_async("🚫 You have been blocked from using this bot due to repeated violations of our guidelines.", lang1))
+        await message.reply(await translate_async("🚫 You have been blocked from using this bot due to repeated violations of our guidelines.", lang1), reply_markup=ReplyKeyboardRemove())
         await add_bluser(user1)
         await delete_pair(user1)
-        await cbot.send_message(user2, await translate_async("Chat has been Ended by the other user.", lang2))
+        markup = await get_reply_markup(lang2)
+        await cbot.send_message(user2, await translate_async("Chat has been Ended by the other user.", lang2), reply_markup= markup)
         await reset_profanity_scores(user1)
         await reset_profanity_scores(user2)
         return
@@ -580,6 +583,8 @@ async def check_inactive_chats():
             if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:
                 # Chat has been inactive for more than 10 minutes, end the chat
                 await delete_pair(user1)
+                await reset_profanity_scores(user1)
+                await reset_profanity_scores(user2)
                 lang1 = find_language(user1)
                 lang2 = find_language(user2)
                 reply_markup1 = await get_reply_markup(lang1)
