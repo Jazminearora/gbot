@@ -289,8 +289,7 @@ async def get_genral_markup(user_id):
 
 
 @cbot.on_message(filters.command("id", prefixes= ["/", ".", "#"]) & filters.user(ADMIN_IDS) & filters.private)
-async def get_users_profile(_, message: Message):
-    print("adminprofile")
+async def user_ditales(_, message):
     try:
         command = message.text
         user_id = int(command.split()[1])
