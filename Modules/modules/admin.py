@@ -10,7 +10,8 @@ from Modules import cbot
 from Modules import mongodb as collection
 from Modules.modules.broadcast import get_failed_users
 from config import key
-from helpers.helper import get_total_users, find_language, get_detailed_user_list
+from helpers.helper import get_total_users, find_language, get_detailed_user_list, get_profile
+from helpers.translator import translate_async
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
 
@@ -255,21 +256,31 @@ async def back_menu(_, query):
         pass
 
 
-@cbot.on_message(filters.command("add_vip", prefixes='/') & filters.user(ADMIN_IDS))
+@cbot.on_message(filters.command("add_vip") & filters.user(ADMIN_IDS))
 async def add_vip(client, message):
     try:
         command = message.text
-        print(command)
         user_id = command.split()[1]
         extend_hrs = int(command.split()[2])
-        print(user_id, extend_hrs)
         try:
             # Extend the user's premium hours
             extend_premium_user_hrs(user_id, extend_hrs)
             await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
-            await cbot.send_message(user_id, f"Received premium membership from admin for {extend_hrs} hours.")
+            lang = find_language(user_id)
+            await cbot.send_message(user_id, await translate_async(f"Received premium membership from admin for {extend_hrs} hours.", lang))
         except Exception as e:
             await message.reply_text(f"Failed to extend premium!\n\nException: {e}")
 
     except Exception as e:
         await message.reply_text(f"Error: {e}")
+
+@cbot.on_message(filters.command("profile") & filters.user(ADMIN_IDS))
+async def get_users_profile(_, message):
+    try:
+        command = message.text
+        user_id = command.split()[1]
+        language = find_language(user_id)
+        profile_text, _ = await get_profile(user_id, language)
+        await message.reply_text(profile_text)
+    except Exception as e:
+        await message.reply_text(f"An error occurred: \n\n{e}")
