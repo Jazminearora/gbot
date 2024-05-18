@@ -274,12 +274,12 @@ async def add_vip(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {e}")
 
-@cbot.on_message(filters.command("profile") & filters.user(ADMIN_IDS))
-async def get_users_profile(_, message):
-    try:
-        command = message.text
-        user_id = command.split()[1]
-        profile_text, _ = await get_profile(user_id, "English")
-        await message.reply_text(profile_text)
-    except Exception as e:
-        await message.reply_text(f"An error occurred: \n\n{e}")
+    # try:
+    #     command = message.text
+    #     user_id = command.split()[1]
+    #     raw_text, _ = await get_profile(user_id, "English")
+    #     lang = find_language(user_id)
+    #     profile_text = raw_text.replace("English", lang)
+    #     await message.reply_text(profile_text)
+    # except Exception as e:
+    #     await message.reply_text(f"An error occurred: \n\n{e}")

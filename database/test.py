@@ -8,8 +8,8 @@ db = client["cboSot-primer"]
 residuedb = db["residuedb"]
 
 #print all document in residuedb
-for x in residuedb.find():
-    print(x)
+# for x in residuedb.find():
+#     print(x)
 
 
 
@@ -294,3 +294,23 @@ for x in residuedb.find():
 
 # # Run the event loop
 # asyncio.run(main())
+
+text = """
+🌟 User Profile 🌟
+
+🗣 Language: English
+👦 Gender: male
+👨‍🦳 Age Group: 25-34
+💡 Interest: Movies
+
+Premium Status: True
+Premium Expiry: 91 days, 0:10:53
+👍: 7 👎: 0 ⛔️: 1
+
+Total messages sent: 37
+ Total dialogs: 25
+
+🔞 Offense Count: 6
+"""
+tst = text.replace("English", "English")
+print(tst)
