@@ -1,8 +1,9 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 
+from ..modules.new_search import is_user_searching
 from helpers.helper import find_language, get_profile
-from database.residuedb import add_bluser
+from database.residuedb import add_bluser, is_blocked
 from .. import cbot, ADMIN_IDS
 
 
@@ -37,6 +38,10 @@ async def get_user_info(_, query: CallbackQuery):
         raw_text, _ = await get_profile(user_id, "English")
         lang = find_language(user_id)
         profile_text = raw_text.replace("English", lang)
+        blckd = await is_blocked(user_id)
+        profile_text += f"\n🚷Blocked Status: {blckd}"
+        searching = await is_user_searching(user_id)
+        profile_text += f"\n\n🔍Searching status: {searching}"
         markup = await get_genral_markup(user_id)
         await query.message.edit_text(profile_text, reply_markup= markup)
     except Exception as e:
@@ -47,8 +52,11 @@ async def get_user_info(_, query: CallbackQuery):
 async def block_user_completely(_, query: CallbackQuery):
     try:
         user_id = int(query.data.split("_")[2])
-        await add_bluser(user_id)
-        markup = await get_genral_markup(user_id)
-        await query.message.edit_text("User Blocked Completely", reply_markup= markup)
+        if not await is_blocked(user_id):
+            await add_bluser(user_id)
+            markup = await get_genral_markup(user_id)
+            await query.message.edit_text("User Blocked Completely", reply_markup= markup)
+        else:
+            await query.message.edit_text("User is Already Blocked Completely.", reply_markup= markup)
     except Exception as e:
         await query.message.reply(f"An error occured: {e}")
