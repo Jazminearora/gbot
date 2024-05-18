@@ -4,7 +4,6 @@ from datetime import timedelta
 from apscheduler.triggers.cron import CronTrigger
 
 from database.premiumdb import get_top_chat_users, extend_premium_user_hrs, reset_chatime
-# from database.chatdb import reset_chatime
 from .. import cbot, scheduler
 from helpers.translator import translate_async
 from helpers.helper import find_language

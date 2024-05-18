@@ -14,7 +14,8 @@ from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
-from database.chatdb import save_user, users_chat_details
+from database.chatdb import save_user
+from database.residuedb import add_bluser
 from Modules.modules.shear import check_shear_url
 
 
@@ -30,6 +31,9 @@ message_timestamps = {}
 
 #dictionary to store start time
 start_stamp = {}
+
+# Track profanity; ban after 3 offenses
+profanity_scores = {}
 
 
 @cbot.on_message(filters.command("hlo") & filters.user(ADMIN_IDS) & filters.private & subscribed & user_registered)
@@ -495,7 +499,6 @@ async def handle_skip(_, query):
     except Exception as e:
         print("Error in close_profile:", e)
 
-
 # Handle incoming messages
 @cbot.on_message(filters.private & subscribed & user_registered)
 async def forward_message(client, message: Message):
@@ -510,7 +513,10 @@ async def forward_message(client, message: Message):
                 message_timestamps[f"user_{user1}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if message.text or message.caption:
                     chk = await check_shear_url(user1, message, lang1)
-                    if chk: return
+                    if chk:
+                        await check_profanity(user1, user2, message)
+                        save_user(user1, profanity_score=1)
+                        return
                 if is_premium:
                     await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
@@ -524,7 +530,10 @@ async def forward_message(client, message: Message):
                 message_timestamps[f"user_{user2}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
                 if message.text or message.caption:
                     chk = await check_shear_url(user2, message, lang2)
-                    if chk: return
+                    if chk: 
+                        await check_profanity(user2, user1, message)
+                        save_user(user2, profanity_score=1)
+                        return
                 if is_premium:
                     await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
@@ -534,16 +543,37 @@ async def forward_message(client, message: Message):
                         await cbot.send_message(user2, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang2))
             break
  
+
+async def check_profanity(user1, user2, message: Message):
+    if user1 in profanity_scores:
+        profanity_scores[user1] += 1
+    else:
+        profanity_scores[user1] = 1
+    if profanity_scores[user1] >= 3:
+        lang1 = find_language(user1)
+        lang2 = find_language(user2)
+        await message.reply(await translate_async("🚫 You have been blocked from using this bot due to repeated violations of our guidelines.", lang1))
+        await add_bluser(user1)
+        await delete_pair(user1)
+        await cbot.send_message(user2, await translate_async("Chat has been Ended by the other user.", lang2))
+        await reset_profanity_scores(user1)
+        await reset_profanity_scores(user2)
+        return
+
+ # function to remove the user id after the chat ends.
+async def reset_profanity_scores(user_id):
+    if user_id in profanity_scores:
+        del profanity_scores[user_id]
+
+
 # function to check for inactive chats
 async def check_inactive_chats():
     for pair in chat_pairs:
         if not pair:
             return
         user1, user2 = pair
-        msg_time1 = message_timestamps.get(f"user_{user1}")
-        msg_time2 = message_timestamps.get(f"user_{user2}")
-        last_message_time1 = datetime.strptime(msg_time1, "%Y-%m-%d %H:%M:%S")
-        last_message_time2 = datetime.strptime(msg_time2, "%Y-%m-%d %H:%M:%S")
+        last_message_time1 = datetime.strptime(message_timestamps.get(f"user_{user1}"), "%Y-%m-%d %H:%M:%S")
+        last_message_time2 = datetime.strptime(message_timestamps.get(f"user_{user2}"), "%Y-%m-%d %H:%M:%S")
         cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
         if last_message_time1 and last_message_time2:
             print((cr_time - last_message_time1).seconds)

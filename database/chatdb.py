@@ -63,10 +63,3 @@ def reset_ratings(user_id: int):
     except PyMongoError as e:
         print("Error:", e)
 
-def reset_chatime():
-    try:
-        result = chatdb.update_many({}, {"$set": {"chat_time": 0}})
-        return result.modified_count
-    except PyMongoError as e:
-        print("Error:", e)
-        return None
