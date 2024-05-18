@@ -1,7 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 
-from ..modules.new_search import is_user_searching
+from .new_search import is_user_searching
 from helpers.helper import find_language, get_profile
 from database.residuedb import add_bluser, is_blocked
 from .. import cbot, ADMIN_IDS
@@ -52,9 +52,9 @@ async def get_user_info(_, query: CallbackQuery):
 async def block_user_completely(_, query: CallbackQuery):
     try:
         user_id = int(query.data.split("_")[2])
+        markup = await get_genral_markup(user_id)
         if not await is_blocked(user_id):
             await add_bluser(user_id)
-            markup = await get_genral_markup(user_id)
             await query.message.edit_text("User Blocked Completely", reply_markup= markup)
         else:
             await query.message.edit_text("User is Already Blocked Completely.", reply_markup= markup)
