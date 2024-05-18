@@ -288,7 +288,7 @@ async def get_genral_markup(user_id):
     return genral_markup
 
 
-@cbot.on_message(filters.command("profile") & filters.user(ADMIN_IDS))
+@cbot.on_message(filters.command("id", prefixes= ["/", ".", "#"]) & filters.user(ADMIN_IDS))
 async def get_users_profile(_, message: Message):
     print("adminprofile")
     try:
