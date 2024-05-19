@@ -33,6 +33,9 @@ buttons = [
             InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
         ],
         [
+            InlineKeyboardButton("Get ID", callback_data='ID')
+        ]
+        [
             InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
             InlineKeyboardButton("👑 VIP Users", callback_data='vip_users')
         ],
@@ -288,13 +291,14 @@ async def get_genral_markup(user_id):
     return genral_markup
 
 
-@cbot.on_message(filters.command("id", prefixes= ["/", ".", "#"]) & filters.user(ADMIN_IDS) & filters.private)
-async def user_ditales(_, message):
+@cbot.on_callback_query(filters.regex("id") & filters.user(ADMIN_IDS) & filters.private)
+async def user_ditales(_, query: CallbackQuery):
     try:
-        command = message.text
-        user_id = int(command.split()[1])
+        await query.message.reply("Please enter the user id:")
+        user_id_str = await pyrostep.wait_for(query.from_user.id)  
+        user_id = int(user_id_str.text)
     except (ValueError, IndexError):
-        await message.reply("Usage: /profile <user_id>")
+        await query.message.reply("Usage: /profile <user_id>")
         return
     genral_markup =  InlineKeyboardMarkup([
             [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
@@ -304,7 +308,7 @@ async def user_ditales(_, message):
             [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
             [InlineKeyboardButton("❌ Close", callback_data='st_close')]
         ])
-    await message.reply("Please choose a option from below", reply_markup= genral_markup)
+    await query.message.reply("Please choose a option from below", reply_markup= genral_markup)
 
 @cbot.on_callback_query(filters.regex("info_(.+)"))
 async def get_user_info(_, query: CallbackQuery):
