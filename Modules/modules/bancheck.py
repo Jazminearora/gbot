@@ -3,22 +3,22 @@ from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineK
 from .. import cbot, BOT_NAME, ADMIN_IDS, LOG_GROUP
 from database.residuedb import BLuser, add_bluser, unblock_user
 
-@cbot.on_message(filters.private & BLuser)
-async def Banned_users_handler(client, msg: Message):
-    txt = f"""
-Hello,
+# @cbot.on_message(filters.private & BLuser)
+# async def Banned_users_handler(client, msg: Message):
+#     txt = f"""
+# Hello,
 
-Your account has been temporarily blocked for violating our community guidelines. 🚫 We've noticed inappropriate language in your messages, which is not tolerated on our platform. 🙅‍♂️
+# Your account has been temporarily blocked for violating our community guidelines. 🚫 We've noticed inappropriate language in your messages, which is not tolerated on our platform. 🙅‍♂️
 
-Please review our guidelines to ensure compliance upon your return. 📜 If you have any questions, feel free to contact our support team. 📧
+# Please review our guidelines to ensure compliance upon your return. 📜 If you have any questions, feel free to contact our support team. 📧
 
-Thank you for your cooperation. 🙏
+# Thank you for your cooperation. 🙏
 
-Best regards,
-{BOT_NAME} 💬
-"""
-    await msg.reply_text(txt)
-    await msg.stop_propagation()
+# Best regards,
+# {BOT_NAME} 💬
+# """
+#     await msg.reply_text(txt)
+#     await msg.stop_propagation()
 
 @cbot.on_message(filters.command("block") & filters.user(ADMIN_IDS))
 async def block_user(client, msg: Message):
