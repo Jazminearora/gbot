@@ -30,11 +30,9 @@ buttons = [
             InlineKeyboardButton("📊 Statistics", callback_data='statistics')
         ],
         [
-            InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
-        ],
-        [
+            InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin'),
             InlineKeyboardButton("Get ID", callback_data='ID')
-        ]
+        ],
         [
             InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
             InlineKeyboardButton("👑 VIP Users", callback_data='vip_users')
