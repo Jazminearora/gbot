@@ -289,7 +289,7 @@ async def get_genral_markup(user_id):
     return genral_markup
 
 
-@cbot.on_callback_query(filters.regex("id") & filters.user(ADMIN_IDS) & filters.private)
+@cbot.on_callback_query(filters.regex("IDUU") & filters.user(ADMIN_IDS) & filters.private)
 async def user_ditales(_, query: CallbackQuery):
     try:
         await query.message.reply("Please enter the user id:")
