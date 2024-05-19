@@ -30,8 +30,8 @@ buttons = [
             InlineKeyboardButton("📊 Statistics", callback_data='statistics')
         ],
         [
-            InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin'),
-            InlineKeyboardButton("Get ID", callback_data='ID')
+            InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
+            # ,InlineKeyboardButton("Get ID", callback_data='ID')
         ],
         [
             InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
@@ -277,16 +277,16 @@ async def add_vip(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {e}")
 
-async def get_genral_markup(user_id):
-    genral_markup =  InlineKeyboardMarkup([
-            [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
-            InlineKeyboardButton("📣 Notify", callback_data=f'notify_{user_id}')],
-            [InlineKeyboardButton("🛑 Block Media", callback_data=f'block_media_{user_id}'),
-            InlineKeyboardButton("🚷 Block User", callback_data=f'block_completely_{user_id}')],
-            [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
-            [InlineKeyboardButton("❌ Close", callback_data='st_close')]
-        ])
-    return genral_markup
+# async def get_genral_markup(user_id):
+#     genral_markup =  InlineKeyboardMarkup([
+#             [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
+#             InlineKeyboardButton("📣 Notify", callback_data=f'notify_{user_id}')],
+#             [InlineKeyboardButton("🛑 Block Media", callback_data=f'block_media_{user_id}'),
+#             InlineKeyboardButton("🚷 Block User", callback_data=f'block_completely_{user_id}')],
+#             [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
+#             [InlineKeyboardButton("❌ Close", callback_data='st_close')]
+#         ])
+#     return genral_markup
 
 
 # @cbot.on_callback_query(filters.regex("ID") & filters.user(ADMIN_IDS) & filters.private)
