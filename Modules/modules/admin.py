@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 import asyncio
 import datetime, time
 import pyrostep
@@ -304,21 +304,23 @@ async def user_ditales(_, query):
         ])
     await query.message.reply("Please choose a option from below", reply_markup= genral_markup)
 
-@cbot.on_callback_query(filters.regex("info_(.+)"))
-async def get_user_info(_, query):
+@cbot.on_message(filters.command("id", prefixes= ["/", ".", "#"]) & filters.user(ADMIN_IDS) & filters.private)
+async def user_ditales(_, message):
     try:
-        user_id = int(query.data.split("_")[1])
-        raw_text, _ = await get_profile(user_id, "English")
-        lang = find_language(user_id)
-        profile_text = raw_text.replace("English", lang)
-        blckd = await is_blckd(user_id)
-        profile_text += f"\n🚷Blocked Status: {blckd}"
-        searching = "Causing some issue!!"
-        profile_text += f"\n\n🔍Searching status: {searching}"
-        markup = await get_genral_markup(user_id)
-        await query.message.edit_text(profile_text, reply_markup= markup)
-    except Exception as e:
-        await query.message.reply(f"An error occured: {e}")
+        command = message.text
+        user_id = int(command.split()[1])
+    except (ValueError, IndexError):
+        await message.reply("Usage: /profile <user_id>")
+        return
+    genral_markup =  InlineKeyboardMarkup([
+            [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
+            InlineKeyboardButton("📣 Notify", callback_data=f'notify_{user_id}')],
+            [InlineKeyboardButton("🛑 Block Media", callback_data=f'block_media_{user_id}'),
+            InlineKeyboardButton("🚷 Block User", callback_data=f'block_completely_{user_id}')],
+            [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
+            [InlineKeyboardButton("❌ Close", callback_data='st_close')]
+        ])
+    await message.reply("Please choose a option from below", reply_markup= genral_markup)
 
 
 @cbot.on_callback_query(filters.regex("block_completely_(.+)"))
