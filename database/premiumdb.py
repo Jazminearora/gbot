@@ -15,7 +15,8 @@ def save_premium_user(
     chat_time: int = 0,
     weekly_chat_time: int = 0,
     frens: list = None,
-    block_media: bool = None
+    block_media: bool = None,
+    verified: bool = None
 ):
     try:
         # Check if the user already exists in the premium database
@@ -46,7 +47,8 @@ def save_premium_user(
                 update_dict["weekly_chat_time"] = weekly_chat_time
             if block_media is not None:
                 update_dict["block_media"] = block_media
-
+            if verified is not None:
+                update_dict["verified"] = verified
 
             if update_dict:
                 premiumdb.update_one(
@@ -71,7 +73,8 @@ def save_premium_user(
                 "chat_time": chat_time,
                 "weekly_chat_time": weekly_chat_time, 
                 "frens": frens,
-                "block_media": block_media
+                "block_media": block_media,
+                "verified": verified
             }
             premiumdb.insert_one(doc)
     except Exception as e:
