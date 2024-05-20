@@ -3,8 +3,20 @@ import time
 from pymongo.errors import PyMongoError
 from datetime import datetime, timedelta
 
-def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: str = None, expiry_time: str = None, gender: str = None, age_groups: list = None, room: str = None, total_dialog: int = 0, chat_time: int = 0, weekly_chat_time: int = 0, frens: list = None):
-    print("save_premium_user", str(user_id))
+def save_premium_user(
+    user_id: int,
+    premium_status: bool = None,
+    purchase_time: str = None,
+    expiry_time: str = None,
+    gender: str = None,
+    age_groups: list = None,
+    room: str = None,
+    total_dialog: int = 0,
+    chat_time: int = 0,
+    weekly_chat_time: int = 0,
+    frens: list = None,
+    block_media: bool = None
+):
     try:
         # Check if the user already exists in the premium database
         existing_user = premiumdb.find_one({"_id": str(user_id)})
@@ -32,6 +44,8 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
             if weekly_chat_time != 0:
                 print("weekly:", weekly_chat_time)
                 update_dict["weekly_chat_time"] = weekly_chat_time
+            if block_media is not None:
+                update_dict["block_media"] = block_media
 
 
             if update_dict:
@@ -56,7 +70,8 @@ def save_premium_user(user_id: int, premium_status: bool = None, purchase_time: 
                 "total_dialog": total_dialog,
                 "chat_time": chat_time,
                 "weekly_chat_time": weekly_chat_time, 
-                "frens": frens
+                "frens": frens,
+                "block_media": block_media
             }
             premiumdb.insert_one(doc)
     except Exception as e:

@@ -10,7 +10,7 @@ from Modules.modules.broadcast import get_failed_users
 # from Modules.modules.new_search import is_user_searching
 from helpers.helper import get_total_users, find_language, get_detailed_user_list, get_profile
 from helpers.translator import translate_async
-from database.premiumdb import get_premium_users, extend_premium_user_hrs
+from database.premiumdb import get_premium_users, extend_premium_user_hrs, vip_users_details, save_premium_user
 from database.registerdb import remove_user_id
 from database.residuedb import add_bluser, is_blocked as is_blckd
 
@@ -313,6 +313,7 @@ async def get_user_info(_, query):
         profile_text = raw_text.replace("English", lang)
         blckd = await is_blckd(user_id)
         profile_text += f"\n🚷Blocked Status: {blckd}"
+        profile_text += f"\n🚫🎥Blocked Media: {vip_users_details(user_id, "block_media") if vip_users_details(user_id, "block_media") else "False"}"
         searching = "await is_user_searching(user_id)"
         profile_text += f"\n\n🔍Searching status: {searching}"
         markup = await get_genral_markup(user_id)
@@ -331,5 +332,18 @@ async def block_user_completely(_, query):
             await query.message.edit_text("User Blocked Completely", reply_markup= markup)
         else:
             await query.message.edit_text("User is Already Blocked Completely.", reply_markup= markup)
+    except Exception as e:
+        await query.message.reply(f"An error occured: {e}")
+
+@cbot.on_callback_query(filters.regex("block_media_(.+)"))
+async def block_user_media(_, query):
+    try:
+        user_id = int(query.data.split("_")[2])
+        markup = await get_genral_markup(user_id)
+        if not await vip_users_details(user_id, "block_media"):
+            save_premium_user(user_id, block_media= True)
+            await query.message.edit_text("User Media Blocked.", reply_markup= markup)
+        else:
+            await query.message.edit_text("User is Already Media Blocked.", reply_markup= markup)
     except Exception as e:
         await query.message.reply(f"An error occured: {e}")
