@@ -71,6 +71,22 @@ async def is_blocked(user_id: int):
     print(f"User {user_id} is not blocked.")
     return False
 
+async def is_blckd(user_id: int):
+    # Check if user is in the cache
+    if user_id in blocked_users_cache:
+        print(f"User {user_id} is in the cache.")
+        return True
+
+    # Check if user is blocked in the database
+    blocked_users = residuedb.find_one({"_id": "BlockedUsers"})
+    if blocked_users and user_id in blocked_users["users"]:
+        print(f"User {user_id} is blocked in the database.")
+        # Add user to the cache
+        blocked_users_cache.add(user_id)
+        return True
+
+    print(f"User {user_id} is not blocked.")
+    return False
 
 async def BLfilter(filter, client, update):
     user_id = int(update.from_user.id)

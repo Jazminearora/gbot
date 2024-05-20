@@ -7,12 +7,12 @@ from config import  ADMINS as ADMIN_IDS
 from Modules import cbot, mongodb as collection
 from config import key
 from Modules.modules.broadcast import get_failed_users
-# from Modules.modules.new_search import is_user_searching
+from Modules.modules.new_search import is_user_searching
 from helpers.helper import get_total_users, find_language, get_detailed_user_list #, get_profile
 from helpers.translator import translate_async
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
-# from database.residuedb import is_blocked, add_bluser
+from database.residuedb import is_blckd, add_bluser
 
 pyrostep.listen(cbot)
 
@@ -273,3 +273,63 @@ async def add_vip(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {e}")
 
+async def get_genral_markup(user_id):
+    genral_markup =  InlineKeyboardMarkup([
+            [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
+            InlineKeyboardButton("📣 Notify", callback_data=f'notify_{user_id}')],
+            [InlineKeyboardButton("🛑 Block Media", callback_data=f'block_media_{user_id}'),
+            InlineKeyboardButton("🚷 Block User", callback_data=f'block_completely_{user_id}')],
+            [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
+            [InlineKeyboardButton("❌ Close", callback_data='st_close')]
+        ])
+    return genral_markup
+
+
+@cbot.on_callback_query(filters.regex("ID") & filters.user(ADMIN_IDS) & filters.private)
+async def user_ditales(_, query: CallbackQuery):
+    try:
+        await query.message.reply("Please enter the user id:")
+        user_id_str = await pyrostep.wait_for(query.from_user.id)  
+        user_id = int(user_id_str.text)
+    except (ValueError, IndexError):
+        await query.message.reply("Usage: /profile <user_id>")
+        return
+    genral_markup =  InlineKeyboardMarkup([
+            [InlineKeyboardButton("📋 Info", callback_data=f'info_{user_id}'),
+            InlineKeyboardButton("📣 Notify", callback_data=f'notify_{user_id}')],
+            [InlineKeyboardButton("🛑 Block Media", callback_data=f'block_media_{user_id}'),
+            InlineKeyboardButton("🚷 Block User", callback_data=f'block_completely_{user_id}')],
+            [InlineKeyboardButton("✅ Verify", callback_data=f'verify_{user_id}')],
+            [InlineKeyboardButton("❌ Close", callback_data='st_close')]
+        ])
+    await query.message.reply("Please choose a option from below", reply_markup= genral_markup)
+
+@cbot.on_callback_query(filters.regex("info_(.+)"))
+async def get_user_info(_, query: CallbackQuery):
+    try:
+        user_id = int(query.data.split("_")[1])
+        raw_text, _ = await get_profile(user_id, "English")
+        lang = find_language(user_id)
+        profile_text = raw_text.replace("English", lang)
+        blckd = await is_blocked(user_id)
+        profile_text += f"\n🚷Blocked Status: {blckd}"
+        searching = await is_user_searching(user_id)
+        profile_text += f"\n\n🔍Searching status: {searching}"
+        markup = await get_genral_markup(user_id)
+        await query.message.edit_text(profile_text, reply_markup= markup)
+    except Exception as e:
+        await query.message.reply(f"An error occured: {e}")
+
+
+@cbot.on_callback_query(filters.regex("block_completely_(.+)"))
+async def block_user_completely(_, query: CallbackQuery):
+    try:
+        user_id = int(query.data.split("_")[2])
+        markup = await get_genral_markup(user_id)
+        if not await is_blocked(user_id):
+            await add_bluser(user_id)
+            await query.message.edit_text("User Blocked Completely", reply_markup= markup)
+        else:
+            await query.message.edit_text("User is Already Blocked Completely.", reply_markup= markup)
+    except Exception as e:
+        await query.message.reply(f"An error occured: {e}")
