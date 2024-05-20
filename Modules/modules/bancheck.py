@@ -2,6 +2,8 @@ from pyrogram import filters
 from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from .. import cbot, BOT_NAME, ADMIN_IDS, LOG_GROUP
 from database.residuedb import BLuser, add_bluser, unblock_user
+from database.premiumdb import save_premium_user
+
 
 @cbot.on_message(filters.private & BLuser)
 async def Banned_users_handler(client, msg: Message):
@@ -60,6 +62,74 @@ async def unblock_users(client, msg: Message):
     except Exception as e:
         await msg.reply(f"Error: {e}")
 
+@cbot.on_message(filters.command("mblock") & filters.user(ADMIN_IDS))
+async def unblock_users_media(client, msg: Message):
+    try:
+        if msg.reply_to_message:
+            user_id = msg.reply_to_message.from_user.id
+            save_premium_user(user_id, block_media= True)
+            await msg.reply("User blocked from sending media successfully!")
+            return
+        if len(msg.command) < 2:
+            await msg.reply_text("Usage: /mblock <user id> or reply to a message")
+            return
+        user_id = int(msg.text.split(None, 1)[1])
+        save_premium_user(user_id, block_media= True)
+        await msg.reply("User blocked from sending media successfully!")
+    except Exception as e:
+        await msg.reply(f"Error: {e}")
+
+@cbot.on_message(filters.command("munblock") & filters.user(ADMIN_IDS))
+async def unblock_users_media(client, msg: Message):
+    try:
+        if msg.reply_to_message:
+            user_id = msg.reply_to_message.from_user.id
+            save_premium_user(user_id, block_media= False)
+            await msg.reply("User unblocked from sending media successfully!")
+            return
+        if len(msg.command) < 2:
+            await msg.reply_text("Usage: /munblock <user id> or reply to a message")
+            return
+        user_id = int(msg.text.split(None, 1)[1])
+        save_premium_user(user_id, block_media= False)
+        await msg.reply("User unblocked from sending media successfully!")
+    except Exception as e:
+        await msg.reply(f"Error: {e}")
+
+@cbot.on_message(filters.command("unverify") & filters.user(ADMIN_IDS))
+async def unblock_users_media(client, msg: Message):
+    try:
+        if msg.reply_to_message:
+            user_id = msg.reply_to_message.from_user.id
+            save_premium_user(user_id, verified= False)
+            await msg.reply("User unverified successfully!")
+            return
+        if len(msg.command) < 2:
+            await msg.reply_text("Usage: /unverify <user id> or reply to a message")
+            return
+        user_id = int(msg.text.split(None, 1)[1])
+        save_premium_user(user_id, verified= False)
+        await msg.reply("User unverified successfully!")
+    except Exception as e:
+        await msg.reply(f"Error: {e}")
+
+@cbot.on_message(filters.command("verify") & filters.user(ADMIN_IDS))
+async def unblock_users_media(client, msg: Message):
+    try:
+        if msg.reply_to_message:
+            user_id = msg.reply_to_message.from_user.id
+            save_premium_user(user_id, verified= True)
+            await msg.reply("User verified successfully!")
+            return
+        if len(msg.command) < 2:
+            await msg.reply_text("Usage: /verify <user id> or reply to a message")
+            return
+        user_id = int(msg.text.split(None, 1)[1])
+        save_premium_user(user_id, verified= False)
+        await msg.reply("User verified successfully!")
+    except Exception as e:
+        await msg.reply(f"Error: {e}")
+
 
 @cbot.on_callback_query(filters.regex("extra_admin") & filters.user(ADMIN_IDS))
 async def extra_admin(client, query: CallbackQuery):
@@ -80,6 +150,17 @@ Example: /block 123456789 or reply to the user's message to block them
 🔓 /unblock - Unblock a user (usage: /unblock <user id> or reply to a message from the user)
 Example: /unblock 123456789 or reply to the user's message to unblock them
 
+🚫 /mblock - Block a user from sending media (usage: /mblock <user id> or reply to a message from the user)
+Example: /mblock 123456789 or reply to the user's message to block media
+
+🔓 /munblock - Unblock a user from sending media (usage: /munblock <user id> or reply to a message from the user)
+Example: /munblock 123456789 or reply to the user's message to unblock media
+
+✅ /verify - Verify a user (usage: /verify <user id> or reply to a message from the user)
+Example: /verify 123456789 or reply to the user's message to verify them
+
+❌ /unverify - Unverify a user (usage: /unverify <user id> or reply to a message from the user)
+Example: /unverify 123456789 or reply to the user's message to unverify them
 """
     home_btn = InlineKeyboardMarkup([
             [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
