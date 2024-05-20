@@ -520,7 +520,12 @@ async def forward_message(client, message: Message):
                         save_user(user1, profanity_score=1)
                         return
                 if is_premium:
-                    await cbot.copy_message(user2, message.chat.id, message.id)
+                    if not vip_users_details(user1, "block_media"):
+                        await cbot.copy_message(user2, message.chat.id, message.id)
+                    elif not message.text:
+                        await cbot.send_message(user1, await translate_async("⚠️ Warning: You have been blocked to send media in chat. Please refrain from sending media. Thank you! 🚫", lang1))
+                    else:
+                        await cbot.copy_message(user2, message.chat.id, message.id)
                 else: 
                     if message.text:
                         await cbot.copy_message(user2, message.chat.id, message.id)
@@ -537,7 +542,12 @@ async def forward_message(client, message: Message):
                         save_user(user2, profanity_score=1)
                         return
                 if is_premium:
-                    await cbot.copy_message(user1, message.chat.id, message.id)
+                    if not vip_users_details(user2, "block_media"):
+                        await cbot.copy_message(user1, message.chat.id, message.id)
+                    elif not message.text:
+                        await cbot.send_message(user2, await translate_async("⚠️ Warning: You have been blocked to send media in chat. Please refrain from sending media. Thank you! 🚫", lang2))
+                    else:
+                        await cbot.copy_message(user1, message.chat.id, message.id)
                 else:
                     if message.text:
                         await cbot.copy_message(user1, message.chat.id, message.id)

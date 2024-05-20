@@ -101,7 +101,7 @@ async def verify_user(_, query):
 
 # function to notify users:
 @cbot.on_callback_query(filters.regex("notify_(.+)"))
-async def notify_user(_, query):
+async def notify_user(_, query: CallbackQuery):
     user_id = int(query.data.split("_")[1])
     markup = await get_genral_markup(user_id)        
     notify_msg = f"""
@@ -116,6 +116,7 @@ Best,
 """
     try:
         await cbot.send_message(user_id, notify_msg)
+        await query.answer("User notified successfully!!", show_alert= True)
     except FloodWait as e:
         await asyncio.sleep(e.value)
         cbot.send_message(user_id, notify_msg)
