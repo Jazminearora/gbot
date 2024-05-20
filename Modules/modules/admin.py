@@ -340,7 +340,7 @@ async def block_user_media(_, query):
     try:
         user_id = int(query.data.split("_")[2])
         markup = await get_genral_markup(user_id)
-        if not await vip_users_details(user_id, "block_media"):
+        if not vip_users_details(user_id, "block_media"):
             save_premium_user(user_id, block_media= True)
             await query.message.edit_text("User Media Blocked.", reply_markup= markup)
         else:
