@@ -350,7 +350,7 @@ async def block_user_media(_, query):
 @cbot.on_callback_query(filters.regex("verify_(.+)"))
 async def verify_user(_, query):
     try:
-        user_id = int(query.data.split("_")[2])
+        user_id = int(query.data.split("_")[1])
         markup = await get_genral_markup(user_id)
         if not vip_users_details(user_id, "verified"):
             save_premium_user(user_id, verified= True)
@@ -365,7 +365,7 @@ async def verify_user(_, query):
 # function to notify users:
 @cbot.on_callback_query(filters.regex("notify_(.+)"))
 async def notify_user(_, query):
-    user_id = int(query.data.split("_")[2])
+    user_id = int(query.data.split("_")[1])
     markup = await get_genral_markup(user_id)        
     notify_msg = f"""
 👋 Hello {await get_user_name(user_id)}!
