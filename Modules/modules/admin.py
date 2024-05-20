@@ -1,20 +1,18 @@
-import os
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
 import datetime, time
 import pyrostep
 from config import  ADMINS as ADMIN_IDS
-from Modules import cbot
-from Modules import mongodb as collection
+from Modules import cbot, mongodb as collection
 from config import key
 from Modules.modules.broadcast import get_failed_users
-from Modules.modules.new_search import is_user_searching
-from helpers.helper import get_total_users, find_language, get_detailed_user_list, get_profile
+# from Modules.modules.new_search import is_user_searching
+from helpers.helper import get_total_users, find_language, get_detailed_user_list #, get_profile
 from helpers.translator import translate_async
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
-from database.residuedb import is_blocked, add_bluser
+# from database.residuedb import is_blocked, add_bluser
 
 pyrostep.listen(cbot)
 
@@ -30,7 +28,6 @@ buttons = [
         ],
         [
             InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
-            # ,InlineKeyboardButton("Get ID", callback_data='ID')
         ],
         [
             InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
