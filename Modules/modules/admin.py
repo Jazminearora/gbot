@@ -12,7 +12,7 @@ from helpers.helper import get_total_users, find_language, get_detailed_user_lis
 from helpers.translator import translate_async
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
-from database.residuedb import is_blckd, add_bluser
+from database.residuedb import add_bluser
 
 pyrostep.listen(cbot)
 
