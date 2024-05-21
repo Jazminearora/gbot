@@ -157,7 +157,10 @@ Age Group(s): \n{await get_age_groups_text(message.from_user.id, language)}
 Room: {room if room else "Any"} """, language))
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         user_index = next((i for i, d in enumerate(prem_searching_mode) if d["user_id"] == user_id), None)
-        prem_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room}] if user_index is not None else prem_searching_mode.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        if user_index is not None:
+            prem_searching_mode.insert(user_index, {"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        else:
+            prem_searching_mode.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         try:
             await match_users()
             await asyncio.sleep(40)
@@ -204,7 +207,10 @@ async def normal_search(client, message):
         await message.reply(await translate_async("Searching for a Female interlocutor...", language), reply_markup=keyboard)
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         user_index = next((i for i, d in enumerate(prem_searching_mode) if d["user_id"] == user_id), None)
-        prem_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None}] if user_index is not None else prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
+        if user_index is not None:
+            prem_searching_mode.insert(user_index, {"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
+        else:
+            prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         print("chking")
         try:
@@ -252,7 +258,10 @@ async def normal_search(client, message):
         await message.reply(await translate_async("Searching for a Male interlocutor...", language), reply_markup=keyboard)
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
         user_index = next((i for i, d in enumerate(prem_searching_mode) if d["user_id"] == user_id), None)
-        prem_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None}] if user_index is not None else prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
+        if user_index is not None:
+            prem_searching_mode.insert(user_index, {"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
+        else:
+            prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
         print("chking")
         try:
             await match_users()
@@ -274,7 +283,7 @@ async def normal_search(client, message):
 
 #Normal search
 @cbot.on_message(filters.private & filters.regex("Normal Search|Обычный поиск|Normal Axtarış") & subscribed & user_registered)
-async def normal_search(client, message):
+async def normal_search(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
     await advert_user(user_id, language)
@@ -553,8 +562,7 @@ async def handle_rating(_, query):
     rating_emoji = query.data.split("_")[1]
     other_user_id = query.data.split("_")[2]
     rating = {str(rating_emoji): 1}
-    print(rating, other_user_id)
-
+    save_user(other_user_id, rating=rating)
     if rating_emoji == "⛔":
         # Ask for a report
         buttons = [
@@ -563,11 +571,17 @@ async def handle_rating(_, query):
                 InlineKeyboardButton(await translate_async("No, nevermind", language), callback_data=f"skip_handle")
             ]
         ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(await translate_async("Do you want to report this user?", language), reply_markup=reply_markup)
+        markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit_text(await translate_async("Do you want to report this user?", language), reply_markup=markup)
     else:
-        save_user(other_user_id, rating=rating)
-        await query.message.edit_text(await translate_async("Thank you for your feedback!", language))
+        buttons = [
+        [
+            InlineKeyboardButton(await translate_async("Close❌", language), callback_data=f"skip_handle"),
+            InlineKeyboardButton(await translate_async("Next➡️", language), callback_data="next_search")
+        ]
+    ]
+        markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit_text(await translate_async("Thank you for your feedback!", language), reply_markup = markup)
 
 # Handle the report response
 @cbot.on_callback_query(filters.regex(r"report_.*") & subscribed & user_registered)
@@ -589,8 +603,15 @@ async def handle_report(client, query):
                 await asyncio.sleep(e.value)
                 await message.forward(REPORT_CHAT)
     await client.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n\nAbove is his last 10 messages.")
+    buttons = [
+        [
+            InlineKeyboardButton(await translate_async("Close❌", language), callback_data=f"skip_handle"),
+            InlineKeyboardButton(await translate_async("Next➡️", language), callback_data="next_search")
+        ]
+    ]
+    markup = InlineKeyboardMarkup(buttons)
     # Send a confirmation message to the user
-    await query.message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language))
+    await query.message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language), reply_markup = markup)
 
 
 
