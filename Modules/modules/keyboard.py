@@ -56,12 +56,8 @@ async def handle_keyboard_response(client, message: Message):
     await advert_user(user_id, language)
     text = message.text
     if "Profile" in text or "Профиль" in text or "Profil" in text:
-        buttons = [
-            [InlineKeyboardButton(text=await translate_async('Statistics', language), callback_data="statistics"),
-             InlineKeyboardButton(text=await translate_async('Profile', language), callback_data="profile")]
-        ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_text(await translate_async('Choose an option', language), reply_markup=reply_markup)
+        text, reply_markup = await get_profile(user_id, language, "general")
+        await message.reply_text(text, reply_markup=reply_markup)
 
     elif "Add to group" in text or "Добавить в группу" in text or "Qrupa əlavə et" in text:
         bot = BOT_USERNAME
@@ -125,7 +121,7 @@ async def back(client, callback_query):
         user_id =callback_query.from_user.id
         language = find_language(user_id)
         await advert_user(user_id, language)
-        profile_text, reply_markup = await get_profile(user_id, language)
+        profile_text, reply_markup = await get_profile(user_id, language, "user_profile")
         try:
             await callback_query.message.edit_caption(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
         except Exception as e:

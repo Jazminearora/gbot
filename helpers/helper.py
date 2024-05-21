@@ -1,4 +1,4 @@
-from Modules import mongodb as collection, BOT_NAME
+from Modules import mongodb as collection, BOT_USERNAME
 from langdb.profile import text_1, text_2, text_3
 from config import key
 from helpers.translator import translate_text, translate_async
@@ -214,35 +214,54 @@ async def get_profile(user_id, language, mode):
     chat_details= users_rating_details(user_id, "rating")
     rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
 
-    if mode == "profile":
+    if mode == "user_profile":
         message = f"{await translate_async(f"🔎 ID: {user_id}", language)}\n\n🗣 {await translate_async( f"Language:{language}", language)}\n"
         message += f"🗂 {await translate_async('User Data', language)}:\n"
         message += f"👤 {await translate_async('Gender', language)}: {user_data['gender']}\n"
         message += f"🎂 {await translate_async('Age', language)}: {user_data['age_group']}\n"
         message += f"⚡ {await translate_async('Interest', language)}: {user_data['interest']}\n\n"
         message += f"📊 {await translate_async('Rating', language)}: {rating}\n\n"
-        message += f"💌 {await translate_async('Invite a friend', language)}: https://t.me/{BOT_NAME}?start=r{user_id}\n\n"
+        message += f"💌 {await translate_async('Invite a friend', language)}: https://t.me/{BOT_USERNAME}?start=r{user_id}\n\n"
 
         if premium:
             message += f"🌍 {await translate_async('Subscription 💎 PREMIUM: True', language)}\n"
-            message += f"🔔 {await translate_async('Premium Expiry in:', language)}: {time}\n"
+            message += f"🔔 {await translate_async(f'Premium Expiry in: {calculate_remaining_time(time)}', language)}\n"
 
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton(text=await translate_async('Edit✍️', language), callback_data="edit_profile")]
+                [InlineKeyboardButton(text=await translate_async('Back 🔙', language), callback_data="back_home")]
+            ]
+        )
 
-    elif mode == "statistics":
+    elif mode == "user_statistics":
         # message = f"📅 {await translate_async('Registration', language)}: {user_data['registration']}\n\n"
         message = f"💬 {await translate_async('Dialogues conducted', language)}: {user_data['dialogs']}\n"
         message += f"📩 {await translate_async('Messages sent', language)}: {user_data['total_msg']}\n"
         message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['time_in_dialogues']}s\n\n"
         message += f"🤬 {await translate_async('Swear words sent', language)}: {user_data['offense']}\n"
 
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton(text=await translate_async('Back 🔙', language), callback_data="back_home")]
+            ]
+        )
+    
+    elif mode == "general":
+        message = await translate_async("Choose an option:", language)
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text=await translate_async("👁️‍🗨️Profile", language), callback_data="user_profile"
+                    ),
+                    InlineKeyboardButton(
+                        text=await translate_async("🧮Statistics", language), callback_data="user_statistics"
+                    ),
+                ]
+            ]
+        )
     else:
-        return "Invalid mode specified."
-
-    reply_markup = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton(text=await translate_async('Edit', language), callback_data="edit_profile"),
-             InlineKeyboardButton(text=await translate_async('Close', language), callback_data="close_profile")]
-        ]
-    )
+            return "Invalid mode specified."
 
     return message, reply_markup
