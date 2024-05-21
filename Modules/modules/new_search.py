@@ -297,7 +297,7 @@ async def normal_search(client, message):
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
-        chk = await apppend_id(user_id, language, gender, age_groups, interest)
+        chk = await append_id(user_id, language, gender, age_groups, interest)
         print("chking")
         if chk:
             await match_users()
