@@ -343,12 +343,15 @@ async def remove_user_from_searching_lists(user_id):
     return
 
 
-async def apppend_id(user_id, language, gender, age_groups, interest):
+async def append_id(user_id, language, gender, age_groups, interest):
     await asyncio.sleep(2)
     searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
     # Append the normal user id into normal_searching_mode list
     user_index = next((i for i, d in enumerate(normal_searching_mode) if d["user_id"] == user_id), None)
-    normal_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, gender: "male", "age_groups": age_groups, "room": interest}] if user_index is not None else normal_searching_mode.append({"user_id": user_id, "language": language,  gender: "male", "age_groups": age_groups, "room": interest})
+    if user_index is not None:
+        normal_searching_mode.insert(user_index, {"user_id": user_id, "language": language, "gender": "male", "age_groups": age_groups, "room": interest})
+    else:
+        normal_searching_mode.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": age_groups, "room": interest})
     return True
 
 async def match_users():
