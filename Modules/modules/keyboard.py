@@ -91,7 +91,7 @@ async def handle_keyboard_response(client, message: Message):
             await message.reply(get_no_referers_text(lang), parse_mode=ParseMode.HTML)
 
 
-@cbot.on_callback_query(filters.regex(r'^profile|statistics'))
+@cbot.on_callback_query(filters.regex(r'^user_profile|user_statistics'))
 async def handle_profile_statistics_callback(client, callback_query):
     user_id = callback_query.from_user.id
     language = find_language(user_id)
