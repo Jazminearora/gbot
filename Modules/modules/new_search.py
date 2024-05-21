@@ -514,13 +514,14 @@ async def handle_report(client, query):
     user_id = query.from_user.id
     language = find_language(user_id)
     other_user_id = query.data.split("_")[1]
-
+    global messages
     # Retrieve the messages for the other user
     messages_from = messages.get(other_user_id, [])
 
     # Send each message to the report_chat
-    for message in messages_from:   
+    for message in messages_from:  
         try:
+            print(message)
             await client.forward_message(REPORT_CHAT, message.from_user, message.message_id)
         except FloodWait as e:
             await asyncio.sleep(e.value)
