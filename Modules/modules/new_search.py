@@ -28,6 +28,13 @@ searching_premium_users = []
 # List to store pairs of users for chatting
 chat_pairs = []
 
+
+#List to store premium users searching mode for next search
+prem_searching_mode = []
+
+#Lisr to store normal users searching mode for next search
+normal_searching_mode = []
+
 # Dictionary to store last message timestamps for each user
 message_timestamps = {}
 
@@ -149,6 +156,8 @@ Gender: {gender if gender else "Any"}
 Age Group(s): \n{await get_age_groups_text(message.from_user.id, language)}  
 Room: {room if room else "Any"} """, language))
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+        user_index = next((i for i, d in enumerate(prem_searching_mode) if d["user_id"] == user_id), None)
+        prem_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room}] if user_index is not None else prem_searching_mode.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
         try:
             await match_users()
             await asyncio.sleep(40)
@@ -193,6 +202,9 @@ async def normal_search(client, message):
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for a Female interlocutor...", language), reply_markup=keyboard)
+        searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
+        user_index = next((i for i, d in enumerate(prem_searching_mode) if d["user_id"] == user_id), None)
+        prem_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None}] if user_index is not None else prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         print("chking")
         try:
@@ -239,6 +251,8 @@ async def normal_search(client, message):
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for a Male interlocutor...", language), reply_markup=keyboard)
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
+        user_index = next((i for i, d in enumerate(prem_searching_mode) if d["user_id"] == user_id), None)
+        prem_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None}] if user_index is not None else prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
         print("chking")
         try:
             await match_users()
@@ -332,6 +346,9 @@ async def remove_user_from_searching_lists(user_id):
 async def apppend_id(user_id, language, gender, age_groups, interest):
     await asyncio.sleep(2)
     searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": interest})
+    # Append the normal user id into normal_searching_mode list
+    user_index = next((i for i, d in enumerate(normal_searching_mode) if d["user_id"] == user_id), None)
+    normal_searching_mode[user_index:user_index] = [{"user_id": user_id, "language": language, gender: "male", "age_groups": age_groups, "room": interest}] if user_index is not None else normal_searching_mode.append({"user_id": user_id, "language": language,  gender: "male", "age_groups": age_groups, "room": interest})
     return True
 
 async def match_users():
@@ -373,13 +390,6 @@ async def is_user_searching(user_id):
         if user["user_id"] == user_id:
             return True
     return False
-
-
-# def is_match(user1, user2):
-#     return (user1["language"] == user2["language"] and
-#             (user1["gender"] == user2["gender"] or user1["gender"] == "any gender" or user1["gender"] is None) and
-#             (user1["age_groups"] is None or user2["age_groups"] in user1["age_groups"] if user1["age_groups"] is not None else True) and
-#             (user1["room"] == user2["room"] or user1["room"] == "any" or user1["room"] is None))
 
 
 async def process_match(user1, user2):
@@ -454,12 +464,60 @@ async def get_rating_markup(user_id):
             InlineKeyboardButton(await translate_async("⛔ Fraudster/Scam/Advertising", lang), callback_data=f"emoji_⛔_{user_id}")
         ],
         [
-            InlineKeyboardButton(await translate_async("Skip for now!", lang), callback_data=f"skip_handle")
+            InlineKeyboardButton(await translate_async("Skip for now!", lang), callback_data=f"skip_handle"),
+            InlineKeyboardButton(await translate_async("Next➡️", lang), callback_data="next_search")
         ]
     ]
     
     reply_markup = InlineKeyboardMarkup(buttons)
     return reply_markup
+
+#code for next search
+@cbot.on_callback_query(filters.regex("next_search"))
+async def next_search(_, query):
+    user_id = query.from_user.id
+    lang = find_language(user_id)
+    # Check if user_id exists in premium searching mode list
+    for user in prem_searching_mode:
+        if user["user_id"] == user_id:
+            language = user["language"]
+            gender = user["gender"]
+            age_groups = user["age_groups"]
+            room = user["room"]
+            mode = "premium"
+            break
+    else:
+        # Check if user_id exists in normal searching mode list
+        for user in normal_searching_mode:
+            if user["user_id"] == user_id:
+                language = user["language"]
+                gender = user["gender"]
+                age_groups = user["age_groups"]
+                room = user["room"]
+                mode = "normal"
+                break
+        else:
+            # If user_id not found in either list, inform user to start a chat first
+            await query.message.reply("Please start a chat first to use this feature.")
+            return
+
+    # If user_id found, proceed with next search
+    if mode == "premium":
+       searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room}) 
+    elif mode == "normal":
+        searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
+    await query.message.edit_text(await translate_async("Started searching for a interlocutor... ", lang))
+    await match_users()
+    await asyncio.sleep(40)
+    for premium_user in searching_premium_users.copy():
+        if premium_user["user_id"] == user_id:
+            await remove_user_from_searching_lists(user_id)
+            await query.message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
+    for normal_user in searching_users.copy():
+        if normal_user["user_id"] == user_id:
+            await remove_user_from_searching_lists(user_id)
+            await query.message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
+
 
 @cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır|Завершить чат") & subscribed & user_registered)
 async def end_chat(_, message: Message):
@@ -527,7 +585,7 @@ async def handle_report(client, query):
             except FloodWait as e:
                 await asyncio.sleep(e.value)
                 await message.forward(REPORT_CHAT)
-    await client.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\n\nAbove is his last 10 messages.")
+    await client.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n\nAbove is his last 10 messages.")
     # Send a confirmation message to the user
     await query.message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language))
 
