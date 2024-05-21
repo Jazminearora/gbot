@@ -513,7 +513,7 @@ async def handle_rating(_, query):
 async def handle_report(client, query):
     user_id = query.from_user.id
     language = find_language(user_id)
-    other_user_id = query.data.split("_")[1]
+    other_user_id = int(query.data.split("_")[1])
     global messages
     # Retrieve the messages for the other user
     messages_from = messages.get(other_user_id, [])
@@ -598,6 +598,7 @@ async def forward_message(client, message: Message):
 
 def store_message(user_id, message):
     """Store the user's message in a deque and add it to the messages dictionary."""
+    print("called", message)
     if user_id not in messages:
         # Create a new deque for the user and add the message
         messages[user_id] = deque([message], maxlen=10)
