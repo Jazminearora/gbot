@@ -1,7 +1,7 @@
-from Modules import mongodb as collection
+from Modules import mongodb as collection, BOT_NAME
 from langdb.profile import text_1, text_2, text_3
 from config import key
-from helpers.translator import translate_text
+from helpers.translator import translate_text, translate_async
 from database.premiumdb import is_user_premium, calculate_remaining_time, vip_users_details
 from database.chatdb import users_rating_details, users_chat_details
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -183,3 +183,66 @@ async def get_profile(user_id, language):
         return "An error occurred while fetching the profile.", None
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async def get_profile(user_id, language, mode):
+    premium, time = is_user_premium(str(user_id))
+    user_data = {
+        "gender": get_gender(user_id, language),
+        "age_group": get_age_group(user_id, language),
+        "interest": get_interest(user_id, language),
+        "total_msg": users_chat_details(user_id, "total_message"),
+        "dialogs": vip_users_details(user_id, "total_dialog"),
+        "offense": users_chat_details(user_id, "profanity_score")
+    }
+    chat_details= users_rating_details(user_id, "rating")
+    rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
+
+    if mode == "profile":
+        message = f"{await translate_async(f"🔎 ID: {user_id}", language)}\n\n🗣 {await translate_async( f"Language:{language}", language)}\n"
+        message += f"🗂 {await translate_async('User Data', language)}:\n"
+        message += f"👤 {await translate_async('Gender', language)}: {user_data['gender']}\n"
+        message += f"🎂 {await translate_async('Age', language)}: {user_data['age_group']}\n"
+        message += f"⚡ {await translate_async('Interest', language)}: {user_data['interest']}\n\n"
+        message += f"📊 {await translate_async('Rating', language)}: {rating}\n\n"
+        message += f"💌 {await translate_async('Invite a friend', language)}: https://t.me/{BOT_NAME}?start=r{user_id}\n\n"
+
+        if premium:
+            message += f"🌍 {await translate_async('Subscription 💎 PREMIUM: True', language)}\n"
+            message += f"🔔 {await translate_async('Premium Expiry in:', language)}: {time}\n"
+
+
+    elif mode == "statistics":
+        # message = f"📅 {await translate_async('Registration', language)}: {user_data['registration']}\n\n"
+        message = f"💬 {await translate_async('Dialogues conducted', language)}: {user_data['dialogs']}\n"
+        message += f"📩 {await translate_async('Messages sent', language)}: {user_data['total_msg']}\n"
+        message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['time_in_dialogues']}s\n\n"
+        message += f"🤬 {await translate_async('Swear words sent', language)}: {user_data['offense']}\n"
+
+    else:
+        return "Invalid mode specified."
+
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(text=await translate_async('Edit', language), callback_data="edit_profile"),
+             InlineKeyboardButton(text=await translate_async('Close', language), callback_data="close_profile")]
+        ]
+    )
+
+    return message, reply_markup

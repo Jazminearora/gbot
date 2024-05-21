@@ -56,16 +56,13 @@ async def handle_keyboard_response(client, message: Message):
     await advert_user(user_id, language)
     text = message.text
     if "Profile" in text or "Профиль" in text or "Profil" in text:
-        wait_message = await message.reply_text("💭")
-        try:
-            profile_text, reply_markup = await get_profile(user_id, language)
-            await asyncio.sleep(0.2)
-            try:
-                await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
-            except Exception as e:
-                await wait_message.edit_text(f"An error occurred: {str(e)}")
-        except Exception as e:
-            await wait_message.edit_text(f"An error occurred: {str(e)}")
+        buttons = [
+            [InlineKeyboardButton(text=await translate_async('Statistics', language), callback_data="statistics"),
+             InlineKeyboardButton(text=await translate_async('Profile', language), callback_data="profile")]
+        ]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await message.reply_text(await translate_async('Choose an option', language), reply_markup=reply_markup)
+
     elif "Add to group" in text or "Добавить в группу" in text or "Qrupa əlavə et" in text:
         bot = BOT_USERNAME
         markup = InlineKeyboardMarkup([
@@ -98,7 +95,21 @@ async def handle_keyboard_response(client, message: Message):
             await message.reply(get_no_referers_text(lang), parse_mode=ParseMode.HTML)
 
 
-
+@cbot.on_callback_query(filters.regex(r'^profile|statistics'))
+async def handle_profile_statistics_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    language = find_language(user_id)
+    mode = callback_query.data
+    wait_message = await callback_query.message.edit_text("💭")
+    try:
+        profile_text, reply_markup = await get_profile(user_id, language, mode)
+        await asyncio.sleep(0.2)
+        try:
+            await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+        except Exception as e:
+            await wait_message.edit_text(f"An error occurred: {str(e)}")
+    except Exception as e:
+        await wait_message.edit_text(f"An error occurred: {str(e)}")
 
 @cbot.on_callback_query(filters.regex("^close_profile$"))
 async def close_profile(client, callback_query):
