@@ -2,14 +2,16 @@ import asyncio
 from datetime import datetime
 import time
 import re
+from collections import deque
 from pyrogram import filters
+from pyrogram.errors import FloodWait
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, Message
 
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
-from Modules import cbot, scheduler, ADMIN_IDS, LOG_GROUP
+from Modules import cbot, scheduler, ADMIN_IDS, LOG_GROUP, REPORT_CHAT
 from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
@@ -29,10 +31,13 @@ chat_pairs = []
 # Dictionary to store last message timestamps for each user
 message_timestamps = {}
 
+# Initialize a dictionary to store the messages for each user
+messages = {}
+
 #dictionary to store start time
 start_stamp = {}
 
-# Track profanity; ban after 3 offenses
+# Track profanity; ban after 3 offenses in a single chat
 profanity_scores = {}
 
 
@@ -361,10 +366,10 @@ async def match_users():
             count += 1
 
 async def is_user_searching(user_id):
-    for user in searching_users:
+    for user in searching_users.copy():
         if user["user_id"] == user_id:
             return True
-    for user in searching_premium_users:
+    for user in searching_premium_users.copy():
         if user["user_id"] == user_id:
             return True
     return False
@@ -437,10 +442,27 @@ async def send_match_messages(user1, user2):
         caption = await interlocutor_normal_message(lang2)
     await cbot.send_message(user2["user_id"], caption, reply_markup=keyboard)
 
+async def get_rating_markup(user_id):
+    lang = find_language(user_id) 
+    # Buttons for rating emojis
+    buttons = [
+        [
+            InlineKeyboardButton(await translate_async("👍 Good", lang), callback_data=f"emoji_👍_{user_id}"),
+            InlineKeyboardButton(await translate_async("👎 Bad", lang), callback_data=f"emoji_👎_{user_id}")
+        ],
+        [
+            InlineKeyboardButton(await translate_async("⛔ Fraudster/Scam/Advertising", lang), callback_data=f"emoji_⛔_{user_id}")
+        ],
+        [
+            InlineKeyboardButton(await translate_async("Skip for now!", lang), callback_data=f"skip_handle")
+        ]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(buttons)
+    return reply_markup
 
-# Handle cancel button
 @cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır|Завершить чат") & subscribed & user_registered)
-async def end_chat(_, message):
+async def end_chat(_, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
     await advert_user(user_id, language)
@@ -462,25 +484,6 @@ async def end_chat(_, message):
     await cbot.send_message(other_user_id, await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(user_id))
 
 
-async def get_rating_markup(user_id):
-    lang = find_language(user_id) 
-    # Buttons for rating emojis
-    buttons = [
-        [
-            InlineKeyboardButton(await translate_async("👍 Good", lang), callback_data=f"emoji_👍_{user_id}"),
-            InlineKeyboardButton(await translate_async("👎 Bad", lang), callback_data=f"emoji_👎_{user_id}")
-        ],
-        [
-            InlineKeyboardButton(await translate_async("⛔ Fraudster/Scam/Advertising", lang), callback_data=f"emoji_⛔_{user_id}")
-        ],
-        [
-            InlineKeyboardButton(await translate_async("Skip for now!", lang), callback_data=f"skip_handle")
-        ]
-    ]
-    
-    reply_markup = InlineKeyboardMarkup(buttons)
-    return reply_markup
-
 # Handle the rating response
 @cbot.on_callback_query(filters.regex(r"emoji_.*") & subscribed & user_registered)
 async def handle_rating(_, query):
@@ -490,8 +493,43 @@ async def handle_rating(_, query):
     other_user_id = query.data.split("_")[2]
     rating = {str(rating_emoji): 1}
     print(rating, other_user_id)
-    save_user(other_user_id, rating=rating)
-    await query.message.edit_text(await translate_async("Thank you for your feedback!", language))
+
+    if rating_emoji == "⛔":
+        # Ask for a report
+        buttons = [
+            [
+                InlineKeyboardButton(await translate_async("Yes, report this user", language), callback_data=f"report_{other_user_id}"),
+                InlineKeyboardButton(await translate_async("No, nevermind", language), callback_data=f"skip_handle")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit_text(await translate_async("Do you want to report this user?", language), reply_markup=reply_markup)
+    else:
+        save_user(other_user_id, rating=rating)
+        await query.message.edit_text(await translate_async("Thank you for your feedback!", language))
+
+# Handle the report response
+@cbot.on_callback_query(filters.regex(r"report_.*") & subscribed & user_registered)
+async def handle_report(client, query):
+    user_id = query.from_user.id
+    language = find_language(user_id)
+    other_user_id = query.data.split("_")[1]
+
+    # Retrieve the messages for the other user
+    messages_from = messages.get(other_user_id, [])
+
+    # Send each message to the report_chat
+    for message in messages_from:   
+        try:
+            await client.forward_message(REPORT_CHAT, message.from_user, message.message_id)
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+            await client.forward_message(REPORT_CHAT, message.from_user, message.message_id)
+    await client.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\n\nAbove is his last 10 messages.")
+    # Send a confirmation message to the user
+    await query.message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language))
+
+
 
 @cbot.on_callback_query(filters.regex(r"skip_handle") & subscribed & user_registered)
 async def handle_skip(_, query):
@@ -531,6 +569,7 @@ async def forward_message(client, message: Message):
                         await cbot.copy_message(user2, message.chat.id, message.id)
                     else:
                         await cbot.send_message(user1, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang1))
+                store_message(user1, message)
             elif message.from_user.id == user2:
                 save_user(user2, total_message= 1)
                 is_premium, _ = is_user_premium(user2)
@@ -553,8 +592,17 @@ async def forward_message(client, message: Message):
                         await cbot.copy_message(user1, message.chat.id, message.id)
                     else:
                         await cbot.send_message(user2, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang2))
+                store_message(user2, message)           
             break
- 
+
+def store_message(user_id, message):
+    """Store the user's message in a deque and add it to the messages dictionary."""
+    if user_id not in messages:
+        # Create a new deque for the user and add the message
+        messages[user_id] = deque([message], maxlen=10)
+    else:
+        # Add the message to the existing deque for the user
+        messages[user_id].append(message)
 
 async def check_profanity(user1, user2, message: Message):
     if user1 in profanity_scores:
