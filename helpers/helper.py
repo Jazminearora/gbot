@@ -120,67 +120,67 @@ def get_detailed_user_list(language):
         return None
     
 
-async def get_profile(user_id, language):
-    premium, time = is_user_premium(str(user_id))
-    if premium:
-        expiry = calculate_remaining_time(time)
-    try:
-        gender = get_gender(user_id, language)
-        age_group = get_age_group(user_id, language)
-        interest = get_interest(user_id, language)
-        chat_details = users_rating_details(user_id, "rating")
-        total_msg = users_chat_details(user_id, "total_message")
-        dialogs = vip_users_details(user_id, "total_dialog")
-        rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
-        offense = users_chat_details(user_id, "profanity_score")
-        if language == "English":
-            message = text_1.format(gender=gender, age_group=age_group, interest=interest)
-            message += f"\nPremium Status: {premium}"
-            if premium:
-                message += f"\nPremium Expiry: {expiry}"
-            message += "\n" + rating
-            message += f"\n\nTotal messages sent: {total_msg}\n Total dialogs: {dialogs}"
-            message += f"\n\n🔞 Offense Count: {offense}"
-            edit_button_text = "Edit ✏️"
-            close_button_text = "Close ❌"
-        elif language == "Russian":
-            ru_gender = translate_text(gender, target_language="ru")
-            ru_age_group = translate_text(age_group, target_language="ru")
-            ru_interest = translate_text(interest, target_language="ru")
-            message = text_2.format(gender=ru_gender, age_group=ru_age_group, interest=ru_interest)
-            message += f"\nСтатус премиума: {premium}"
-            if premium:
-                message += f"\nСрок действия премиума: {expiry}"
-            message += f"\n\nОбщее количество отправленных сообщений: {total_msg}\nОбщее количество диалогов: {dialogs}"
-            message += f"\n\n🔞 Количество нарушений: {offense}"
-            edit_button_text = "Редактировать ✏️"
-            close_button_text = "Закрыть ❌"
-        elif language == "Azerbejani":
-            az_gender = translate_text(gender, target_language="az")
-            az_age_group = translate_text(age_group, target_language="az")
-            az_interest = translate_text(interest, target_language="az")
-            message = text_3.format(gender=az_gender, age_group=az_age_group, interest=az_interest)
-            message += f"\nPremium Statusu: {premium}"
-            if premium:
-                message += f"\nPremiumun Bitiş Tarixi: {expiry}"
-            message += f"\n\nGöndərilən ümumi mesajlar: {total_msg}\nÜmumi dialoqlar: {dialogs}"
-            message += f"\n\n🔞 Qaydaları pozma sayı: {offense}"
-            edit_button_text = "Redaktə et ✏️"
-            close_button_text = "Bağla ❌"
-        else:
-            return "Invalid language specified."
+# async def get_profile(user_id, language):
+#     premium, time = is_user_premium(str(user_id))
+#     if premium:
+#         expiry = calculate_remaining_time(time)
+#     try:
+#         gender = get_gender(user_id, language)
+#         age_group = get_age_group(user_id, language)
+#         interest = get_interest(user_id, language)
+#         chat_details = users_rating_details(user_id, "rating")
+#         total_msg = users_chat_details(user_id, "total_message")
+#         dialogs = vip_users_details(user_id, "total_dialog")
+#         rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
+#         offense = users_chat_details(user_id, "profanity_score")
+#         if language == "English":
+#             message = text_1.format(gender=gender, age_group=age_group, interest=interest)
+#             message += f"\nPremium Status: {premium}"
+#             if premium:
+#                 message += f"\nPremium Expiry: {expiry}"
+#             message += "\n" + rating
+#             message += f"\n\nTotal messages sent: {total_msg}\n Total dialogs: {dialogs}"
+#             message += f"\n\n🔞 Offense Count: {offense}"
+#             edit_button_text = "Edit ✏️"
+#             close_button_text = "Close ❌"
+#         elif language == "Russian":
+#             ru_gender = translate_text(gender, target_language="ru")
+#             ru_age_group = translate_text(age_group, target_language="ru")
+#             ru_interest = translate_text(interest, target_language="ru")
+#             message = text_2.format(gender=ru_gender, age_group=ru_age_group, interest=ru_interest)
+#             message += f"\nСтатус премиума: {premium}"
+#             if premium:
+#                 message += f"\nСрок действия премиума: {expiry}"
+#             message += f"\n\nОбщее количество отправленных сообщений: {total_msg}\nОбщее количество диалогов: {dialogs}"
+#             message += f"\n\n🔞 Количество нарушений: {offense}"
+#             edit_button_text = "Редактировать ✏️"
+#             close_button_text = "Закрыть ❌"
+#         elif language == "Azerbejani":
+#             az_gender = translate_text(gender, target_language="az")
+#             az_age_group = translate_text(age_group, target_language="az")
+#             az_interest = translate_text(interest, target_language="az")
+#             message = text_3.format(gender=az_gender, age_group=az_age_group, interest=az_interest)
+#             message += f"\nPremium Statusu: {premium}"
+#             if premium:
+#                 message += f"\nPremiumun Bitiş Tarixi: {expiry}"
+#             message += f"\n\nGöndərilən ümumi mesajlar: {total_msg}\nÜmumi dialoqlar: {dialogs}"
+#             message += f"\n\n🔞 Qaydaları pozma sayı: {offense}"
+#             edit_button_text = "Redaktə et ✏️"
+#             close_button_text = "Bağla ❌"
+#         else:
+#             return "Invalid language specified."
         
-        # Creating reply markup with two buttons
-        reply_markup = InlineKeyboardMarkup(
-            [
-               [ InlineKeyboardButton(text = edit_button_text, callback_data = "edit_profile"), InlineKeyboardButton(text = close_button_text, callback_data = "close_profile")]
-            ]
-        )
+#         # Creating reply markup with two buttons
+#         reply_markup = InlineKeyboardMarkup(
+#             [
+#                [ InlineKeyboardButton(text = edit_button_text, callback_data = "edit_profile"), InlineKeyboardButton(text = close_button_text, callback_data = "close_profile")]
+#             ]
+#         )
         
-        return message, reply_markup
-    except Exception as e:
-        print("Error in get_profile:", e)
-        return "An error occurred while fetching the profile.", None
+#         return message, reply_markup
+#     except Exception as e:
+#         print("Error in get_profile:", e)
+#         return "An error occurred while fetching the profile.", None
 
 
 
