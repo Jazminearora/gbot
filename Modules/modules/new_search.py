@@ -518,14 +518,15 @@ async def handle_report(client, query):
     # Retrieve the messages for the other user
     messages_from = messages.get(other_user_id, [])
 
-    # Send each message to the report_chat
-    for message in messages_from:  
-        try:
-            print(message)
-            await client.forward_message(REPORT_CHAT, message.from_user, message.message_id)
-        except FloodWait as e:
-            await asyncio.sleep(e.value)
-            await client.forward_message(REPORT_CHAT, message.from_user, message.message_id)
+    if messages_from:
+        # Send each message to the report_chat
+        for message in messages_from:  
+            try:
+                print(message)
+                await message.forward(REPORT_CHAT)
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+                await message.forward(REPORT_CHAT)
     await client.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\n\nAbove is his last 10 messages.")
     # Send a confirmation message to the user
     await query.message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language))
