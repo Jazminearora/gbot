@@ -238,7 +238,7 @@ async def get_profile(user_id, language, mode):
         # message = f"📅 {await translate_async('Registration', language)}: {user_data['registration']}\n\n"
         message = f"💬 {await translate_async('Dialogues conducted', language)}: {user_data['dialogs']}\n"
         message += f"📩 {await translate_async('Messages sent', language)}: {user_data['total_msg']}\n"
-        message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['time_in_dialogues']}s\n\n"
+        # message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['time_in_dialogues']}s\n\n"
         message += f"🤬 {await translate_async('Swear words sent', language)}: {user_data['offense']}\n"
 
         reply_markup = InlineKeyboardMarkup(

@@ -98,10 +98,11 @@ async def handle_profile_statistics_callback(client, callback_query):
     mode = callback_query.data
     wait_message = await callback_query.message.edit_text("💭")
     try:
-        profile_text, reply_markup = await get_profile(user_id, language, mode)
+        profile_text, markup = await get_profile(user_id, language, mode)
+        print(markup)
         await asyncio.sleep(0.2)
         try:
-            await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+            await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=markup)
         except Exception as e:
             await wait_message.edit_text(f"An error occurred: {str(e)}")
     except Exception as e:
