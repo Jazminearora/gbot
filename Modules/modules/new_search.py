@@ -470,6 +470,7 @@ async def get_rating_markup(user_id):
     buttons = [
         [
             InlineKeyboardButton(await translate_async("👍 Good", lang), callback_data=f"emoji_👍_{user_id}"),
+            InlineKeyboardButton(await translate_async("🤡 Dumb", lang), callback_data=f"emoji_🤡_{user_id}"),
             InlineKeyboardButton(await translate_async("👎 Bad", lang), callback_data=f"emoji_👎_{user_id}")
         ],
         [

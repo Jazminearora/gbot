@@ -27,7 +27,7 @@ def save_user(user_id: int, total_message: int = 0, profanity_score: int = 0, ra
                 "_id": str(user_id),
                 "total_message": total_message,
                 "profanity_score": profanity_score,
-                "rating": rating or {"👍": 0, "👎": 0, "⛔": 0},
+                "rating": rating or {"👍": 0, "👎": 0,"🤡": 0, "⛔": 0},
             }
             chatdb.insert_one(doc)
     except PyMongoError as e:
