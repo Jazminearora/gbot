@@ -116,6 +116,20 @@ async def close_profile(client, callback_query):
     except Exception as e:
         print("Error in close_profile:", e)
 
+@cbot.on_callback_query(filters.regex("^back_home$"))
+async def back(client, callback_query):
+    try:
+        user_id =callback_query.from_user.id
+        language = find_language(user_id)
+        await advert_user(user_id, language)
+        profile_text, reply_markup = await get_profile(user_id, language, "general")
+        try:
+            await callback_query.message.edit_caption(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+        except Exception as e:
+            await callback_query.message.edit_caption(f"An error occurred: {str(e)}")
+    except Exception as e:
+        await callback_query.message.edit_caption(f"An error occurred: {str(e)}")
+
 @cbot.on_callback_query(filters.regex("^back$"))
 async def back(client, callback_query):
     try:
