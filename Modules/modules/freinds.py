@@ -60,7 +60,7 @@ async def add_friend(client, query):
             friend_id = friend_id
             try:
                 detail = await client.get_users(user_id)
-                await client.send_message(friend_id, f"{await translate_async("Friend request from")} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
+                await cbot.send_message(friend_id, f"{await translate_async("Friend request from")} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
                      [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
                     ]))                
                 await query.message.reply_text(await translate_async("Friend request sent successfully!", language))
