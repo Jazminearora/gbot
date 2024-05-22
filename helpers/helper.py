@@ -229,7 +229,7 @@ async def get_profile(user_id, language, mode):
 
         reply_markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton(text=await translate_async('Edit✍️', language), callback_data="edit_profile")]
+                [InlineKeyboardButton(text=await translate_async('Edit✍️', language), callback_data="edit_profile")],
                 [InlineKeyboardButton(text=await translate_async('Back 🔙', language), callback_data="back_home")]
             ]
         )
