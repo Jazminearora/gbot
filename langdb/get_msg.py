@@ -370,38 +370,40 @@ async def get_premium_msg(language):
         buttons = InlineKeyboardMarkup([])
     return caption, buttons
 
-async def interlocutor_vip_message(language, name, gender, age_group):
+async def interlocutor_vip_message(language, name, gender, age_group, verify_status):
     # Cool emojis and formatting
     interlocutor_found = await translate_async("""
-    🌟 Interlocutor found! 🌟
+🌟 Interlocutor found! 🌟
 
-    📋 User's details:
-    🔹 Name: """, language)
+📋 User's details:
+🔹 Name: """, language)
     
     details_and_chatting = await translate_async(f"""
-    🔹 Gender: {gender}
-    🔹 Age group: {age_group}
+🔹 Gender: {gender}
+🔹 Age group: {age_group}
+🔹 Verified: {verify_status}
 
-    💬 You can start chatting now.""", language)
+💬 You can start chatting now.""", language)
     
     message = f"{interlocutor_found}{name}\n{details_and_chatting}"
     return message
 
 
 
-async def interlocutor_normal_message(language):
+async def interlocutor_normal_message(language, verify_status):
     # Full message with placeholders and emojis
-    message_template = """
-    🎉 Interlocutor found! 🎉
+    message_template = f"""
+🎉 Interlocutor found! 🎉
 
-    📋 User's details:
-    🔹 Name: *****
-    🔹 Gender: *****
-    🔹 Age group: *****
+📋 User's details:
+🔹 Name: 🔒🔒🔒
+🔹 Gender:🔒🔒🔒
+🔹 Age group: 🔒🔒🔒
+🔹 Verified: {verify_status}
 
-    🌟 Purchase Premium to know the details of the Interlocutor 😈!
+🌟 Purchase Premium to know the details of the Interlocutor 😈!
 
-    💬 You can start chatting now.
+💬 You can start chatting now.
     """
     
     # Translate the entire message template
