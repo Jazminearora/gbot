@@ -8,7 +8,6 @@ from helpers.helper import find_language, get_profile
 from Modules.modules.register import get_user_name
 from database.residuedb import add_bluser, is_blocked as is_blckd
 from database.premiumdb import vip_users_details, save_premium_user
-from helpers.helper import get_profile
 from .. import cbot, ADMIN_IDS, BOT_NAME
 
 
@@ -39,7 +38,9 @@ async def user_ditales(_, message):
 async def get_user_info(_, query):
     try:
         user_id = int(query.data.split("_")[1])
-        raw_text, _ = await get_profile(user_id, "English")
+        raw_text1, _ = await get_profile(user_id, "English", "user_profile")
+        raw_text2, _ = await get_profile(user_id, "English", "user_statistics")
+        raw_text = f"{raw_text1}\n\n{raw_text2}"
         lang = find_language(user_id)
         profile_text = raw_text.replace("English", lang)
         blckd = await is_blckd(user_id)
