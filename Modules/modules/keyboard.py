@@ -142,10 +142,17 @@ async def edit_profile(client, callback_query):
         new_reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    (await translate_async("Change language 🌐", language), "change_language"),
-                    (await translate_async("Change Interest ❤️", language), "edit_interest"),
+                    InlineKeyboardButton(
+                        text=await translate_async("Change language 🌐", language), callback_data="change_language"
+                    ),
+                    InlineKeyboardButton(
+                        text=await translate_async("Change Interest ❤️", language), callback_data="edit_interest"
+                    ),
                 ],
-                [(await translate_async("Back 🔙", language), "back"), (await translate_async("Close ❌", language), "close_profile")],
+                [
+                    InlineKeyboardButton(text=await translate_async("Back 🔙", language), callback_data="back"),
+                    InlineKeyboardButton(text=await translate_async("Close ❌", language), callback_data="close_profile"),
+                ],
             ]
         )
 
