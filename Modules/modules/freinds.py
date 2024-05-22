@@ -30,7 +30,7 @@ async def frens(client, message):
             frens_text += f"{detail.mention}({friend_id})\n"
         await message.reply_text(frens_text, reply_markup=keyboard)
     else:
-        tr_txt = f"f{await translate_async("You don't have any friends yet!", language)}\n\n{await translate_async("Add your friends now!", language)}"
+        tr_txt = f"{await translate_async("You don't have any friends yet!", language)}\n\n{await translate_async("Add your friends now!", language)}"
         await message.reply_text(tr_txt, reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex("add_friend"))
@@ -60,7 +60,7 @@ async def add_friend(client, query):
             friend_id = friend_id
             try:
                 detail = await client.get_users(user_id)
-                await cbot.send_message(friend_id, f"{await translate_async("Friend request from")} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
+                await cbot.send_message(friend_id, f"{await translate_async("Friend request from", language)} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
                      [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
                     ]))                
                 await query.message.reply_text(await translate_async("Friend request sent successfully!", language))
