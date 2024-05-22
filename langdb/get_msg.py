@@ -1,5 +1,7 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from helpers.helper import get_total_users
+from helpers.translator import translate_async
+
 # Registration message for register.py file
 async def get_registration_text(language, step):
     if language == "English":
@@ -369,28 +371,44 @@ async def get_premium_msg(language):
     return caption, buttons
 
 async def interlocutor_vip_message(language, name, gender, age_group):
-    if language == "English":
-        message = f"Interlocutor found!\n\nUsers details:\nName: {name}\nGender: {gender}\nAge group: {age_group}\n\nYou can start chatting now."
-    elif language == "Russian":
-        message = f"Собеседник найден!\n\nДанные пользователя:\nИмя: {name}\nПол: {gender}\nВозрастная группа: {age_group}\n\nТеперь вы можете начать общение."
-    elif language == "Azerbejani":
-        message = f"Müşayiətçi tapıldı!\n\nİstifadəçinin məlumatları:\nAd: {name}\nCins: {gender}\nYaş qrupu: {age_group}\n\nSiz artıq söhbətə başlaya bilərsiniz."
-    else:
-        message = "Language not supported."
+    # Cool emojis and formatting
+    interlocutor_found = await translate_async("""
+    🌟 Interlocutor found! 🌟
+
+    📋 User's details:
+    🔹 Name: """, language)
+    
+    details_and_chatting = await translate_async(f"""
+    🔹 Gender: {gender}
+    🔹 Age group: {age_group}
+
+    💬 You can start chatting now.""", language)
+    
+    message = f"{interlocutor_found}{name}\n{details_and_chatting}"
     return message
+
 
 
 async def interlocutor_normal_message(language):
-    if language == "English":
-        message = "Interlocutor found!\nPurchase Premium to know the details of Interlocutor😈! \n\nYou can start chatting now."
-    elif language == "Russian":
-        message = "Собеседник найден!\nКупите Premium, чтобы узнать подробности о собеседнике😈! \n\nТеперь вы можете начать общение."
-    elif language == "Azerbejani":
-        message = "Müşayiətçi tapıldı!\nMəlumatlarını öyrənmək üçün Premium alın😈! \n\nSiz artıq söhbətə başlaya bilərsiniz."
-    else:
-        message = "Language not supported."
+    # Full message with placeholders and emojis
+    message_template = """
+    🎉 Interlocutor found! 🎉
+
+    📋 User's details:
+    🔹 Name: *****
+    🔹 Gender: *****
+    🔹 Age group: *****
+
+    🌟 Purchase Premium to know the details of the Interlocutor 😈!
+
+    💬 You can start chatting now.
+    """
     
-    return message
+    # Translate the entire message template
+    translated_message = await translate_async(message_template, language)
+    
+    return translated_message
+
 
 
 def get_points_text(lang):
