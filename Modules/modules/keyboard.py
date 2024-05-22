@@ -116,27 +116,14 @@ async def close_profile(client, callback_query):
     except Exception as e:
         print("Error in close_profile:", e)
 
-@cbot.on_callback_query(filters.regex("^back_home$"))
+@cbot.on_callback_query(filters.regex("^back(_home)?$"))
 async def back(client, callback_query):
     try:
-        user_id =callback_query.from_user.id
+        user_id = callback_query.from_user.id
         language = find_language(user_id)
         await advert_user(user_id, language)
-        profile_text, reply_markup = await get_profile(user_id, language, "general")
-        try:
-            await callback_query.message.edit_caption(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
-        except Exception as e:
-            await callback_query.message.edit_caption(f"An error occurred: {str(e)}")
-    except Exception as e:
-        await callback_query.message.edit_caption(f"An error occurred: {str(e)}")
-
-@cbot.on_callback_query(filters.regex("^back$"))
-async def back(client, callback_query):
-    try:
-        user_id =callback_query.from_user.id
-        language = find_language(user_id)
-        await advert_user(user_id, language)
-        profile_text, reply_markup = await get_profile(user_id, language, "user_profile")
+        profile_type = "general" if callback_query.data == "back_home" else "user_profile"
+        profile_text, reply_markup = await get_profile(user_id, language, profile_type)
         try:
             await callback_query.message.edit_caption(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
         except Exception as e:
@@ -152,27 +139,15 @@ async def edit_profile(client, callback_query):
         language = find_language(user_id)
 
         # Create the reply markup with the new buttons
-        if language == "English":
-            change_language_button = InlineKeyboardButton("Change language 🌐", callback_data="change_language")
-            interest_button = InlineKeyboardButton("Change Interest ❤️", callback_data="edit_interest")
-            back_close_buttons = [InlineKeyboardButton("Back 🔙", callback_data="back"), InlineKeyboardButton("Close ❌", callback_data="close_profile")]
-        elif language == "Russian":
-            change_language_button = InlineKeyboardButton("Изменить язык 🌐", callback_data="change_language")
-            interest_button = InlineKeyboardButton("Изменить интерес ❤️", callback_data="edit_interest")
-            back_close_buttons = [InlineKeyboardButton("Назад 🔙", callback_data="back"), InlineKeyboardButton("Закрыть ❌", callback_data="close_profile")]
-        elif language == "Azerbejani":
-            change_language_button = InlineKeyboardButton("Dili dəyiş 🌐", callback_data="change_language")
-            interest_button = InlineKeyboardButton("Maragı dəyiş ❤️", callback_data="edit_interest")
-            back_close_buttons = [InlineKeyboardButton("Geri 🔙", callback_data="back"), InlineKeyboardButton("Bağla ❌", callback_data="close_profile")]
-        else:
-            return
-
-
-        new_reply_markup = InlineKeyboardMarkup([
-            [change_language_button],
-            [interest_button],
-            back_close_buttons
-        ])
+        new_reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    (await translate_async("Change language 🌐", language), "change_language"),
+                    (await translate_async("Change Interest ❤️", language), "edit_interest"),
+                ],
+                [(await translate_async("Back 🔙", language), "back"), (await translate_async("Close ❌", language), "close_profile")],
+            ]
+        )
 
         # Edit the message with the new buttons
         await callback_query.message.edit_reply_markup(reply_markup=new_reply_markup)
