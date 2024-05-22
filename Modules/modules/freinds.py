@@ -72,7 +72,7 @@ async def add_friend(client, query):
         except ValueError:
             await query.message.reply_text(await translate_async("Invalid ID!", language))
         except Exception as e:
-            await query.message.reply_text(await translate_async("Unable to send friend request!\n\ne", language))
+            await query.message.reply_text(f"{await translate_async("Unable to send friend request!\n\ne", language)} {e}")
 
 @cbot.on_callback_query(filters.regex("accept_friend_"))
 async def accept_friend(client, query):
