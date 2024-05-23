@@ -2,10 +2,11 @@ from pyrogram import filters
 from pyrogram.errors import UserBlocked, UserIdInvalid, RPCError
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 import re
+import pyrostep
 
 from database.premiumdb import save_premium_user, vip_users_details, remove_item_from_field
 from.. import cbot
-import pyrostep
+from helpers.helper import get_profile
 from helpers.helper import find_language
 from helpers.forcesub import subscribed, user_registered
 from helpers.translator import translate_async
@@ -19,18 +20,17 @@ async def frens(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     frens_list = vip_users_details(user_id, "frens")
-    keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton(await translate_async("Add friend", language), callback_data="add_friend")]
-        ])
-    if frens_list:
-        tr_txt = await translate_async("Here is the list of your friends:", language)
-        frens_text = f"{tr_txt}\n\n"
-        for friend_id in frens_list:
-            detail = await client.get_users(friend_id)
-            frens_text += f"{detail.mention}({friend_id})\n"
-        await message.reply_text(frens_text, reply_markup=keyboard)
+
+    if not frens_list:
+        tr_txt = await translate_async("You don't have any friends yet! Make some friends during chats!", language)
+        await message.reply_text(tr_txt)
     else:
-        tr_txt = f"{await translate_async("You don't have any friends yet!", language)}\n\n{await translate_async("Add your friends now!", language)}"
+        tr_txt = await translate_async("Here are your friends:", language)
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton(f"{detail.mention}", callback_data=f"fren_{friend_id}")]
+            for friend_id in frens_list
+            for detail in [await client.get_users(friend_id)]
+        ])
         await message.reply_text(tr_txt, reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex("add_friend"))
@@ -101,18 +101,14 @@ async def decline_friend(client, query):
     language = find_language(query.from_user.id)
     await query.message.edit_text(await translate_async("You have declined the friend request!", language))
 
-@cbot.on_message(filters.command("unfriend") & filters.private)
-async def unfriend(client, message: Message):
-    user_id = message.from_user.id
+@cbot.on_callback_query(filters.regex(r"unfriend_(\d+)"))
+async def unfriend_callback(_, callback_query):
+    user_id = int(callback_query.from_user.id)
     language = find_language(user_id)
-    args = message.text.split()
-    if len(args) != 2:
-        await message.reply_text(await translate_async("Usage: /unfriend <user_id>", language))
-        return
-    friend_id = int(args[1])
+    friend_id = int(callback_query.data.split("_")[1])
     frens_list = vip_users_details(user_id, "frens")
     if frens_list is None or friend_id not in frens_list:
-        await message.reply_text(await translate_async("This user is not your friend.", language))
+        await callback_query.answer(await translate_async("This user is not your friend.", language), show_alert=True)
         return
     confirm_text = await translate_async("Are you sure you want to unfriend {}?", language)
     
@@ -125,7 +121,7 @@ async def unfriend(client, message: Message):
             ]
         )
 
-    await message.reply(confirm_text.format(friend_id), reply_markup= reply_markup)
+    await callback_query.message.reply(confirm_text.format(friend_id), reply_markup= reply_markup)
 
 @cbot.on_callback_query(filters.regex("unfriend_confirm_"))
 async def unfriend_confirm(client, query):
@@ -135,9 +131,31 @@ async def unfriend_confirm(client, query):
     await query.message.edit_text(await translate_async("You have unfriended the user!", language))
     remove_item_from_field(user_id, "frens", friend_id)
     remove_item_from_field(friend_id, "frens", user_id)
-    await cbot.send_message(friend_id, await translate_async("You have been unfriended by the user!", language))
+    await cbot.send_message(friend_id, await translate_async("You have been unfriended by your one of friend!", language))
 
 
 @cbot.on_callback_query(filters.regex("unfriend_cancel"))
 async def unfriend_cancel(client, query):
     await query.message.edit_text(await translate_async("Unfriend action cancelled.", query.from_user.id))
+
+
+#```````````````````````````````````````````````````````````````````````````````````````````````````````````````````#
+#```````````````````````````````````````````````````````````````````````````````````````````````````````````````````#
+
+@cbot.on_callback_query(filters.regex(r"friend_(\d+)"))
+async def friend_profile(client, callback_query):
+    user_id = int(callback_query.data.split("_")[1])
+    language = find_language(callback_query.from_user.id)
+    profile_text, _ = await get_profile(user_id, language, "user_profile")
+
+    keyboard = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(await translate_async("Request chat", language), callback_data=f"request_chat_{user_id}"),
+            InlineKeyboardButton(await translate_async("Unfriend", language), callback_data=f"unfriend_{user_id}"),
+        ],
+        [
+            InlineKeyboardButton(await translate_async("Back", language), callback_data="frens"),
+        ]
+    ])
+
+    await callback_query.message.edit_text(profile_text, reply_markup=keyboard)

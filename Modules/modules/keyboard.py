@@ -9,7 +9,6 @@ import re
 
 
 # Helper functions
-from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from helpers.forcesub import subscribed, user_registered
 from database.referdb import get_top_referers

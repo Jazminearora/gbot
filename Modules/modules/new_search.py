@@ -547,7 +547,6 @@ async def next_search(_, query):
 async def add_as_friend(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    print("Add as Friend called")
     for pair in chat_pairs:
         if user_id in pair:
             friend_id = pair[1] if pair[0] == user_id else pair[0]
