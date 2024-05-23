@@ -791,6 +791,7 @@ async def request_chat_callback(_, callback_query: CallbackQuery):
         keyboard = [[InlineKeyboardButton(await translate_async("Yes, start chat!", friend_language), callback_data=f"accept_chat_{user_id}"), 
                     InlineKeyboardButton(await translate_async("No, not now!", friend_language), callback_data=f"decline_chat_{user_id}")]]
         await cbot.send_message(friend_id, tr_txt.format(user_name), reply_markup=InlineKeyboardMarkup(keyboard))
+        await callback_query.message.reply(text = await translate_async("Yoo! 🤩 Your chat request has been sent to your friend! 📲 Now it's their turn to join the party! 🎉 If they accept, the dialogue will begin shortly! ⏱️ Stay tuned for the green light, and we'll get this chat started! 💚👫", user_language))
     except Exception as e:
         print(f"An exception occured while sending chat request to a friend: {e}")
         await callback_query.message.reply(f"{await translate_async("Failed to send chat request.", user_language)}")
@@ -801,10 +802,6 @@ async def accept_chat_callback(client, callback_query):
     my_id = callback_query.from_user.id
     new_pair = (user_id, my_id)
     add_pair(new_pair)
-    # tr_txt = await translate_async("Chat started!", callback_query.from_user.language)
-    # await callback_query.message.edit_text(tr_txt)
-    # await update_user_dialogs(user_id, callback_query.from_user.id)
-    # await send_match_messages(user_id, callback_query.from_user.id)
     motel1 = vip_users_details(user_id, "total_dialog")
     motel2 = vip_users_details(my_id, "total_dialog")
     total1 = motel1 if motel1 else 0
@@ -824,7 +821,7 @@ async def accept_chat_callback(client, callback_query):
     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     cap1 = await interlocutor_vip_message(lang1, name2, get_gender(my_id, lang2), get_age_group(my_id, lang2), verify_status2)
     await cbot.send_message(user_id, cap1, reply_markup=keyboard)
-    caption = await interlocutor_vip_message(lang2, name1, get_gender(user_id), get_age_group(user_id), verify_status1)
+    caption = await interlocutor_vip_message(lang2, name1, get_gender(user_id), get_age_group(user_id, lang1), verify_status1)
     await cbot.send_message(my_id, caption, reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
