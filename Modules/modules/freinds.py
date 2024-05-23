@@ -148,5 +148,5 @@ async def unfriend_cancel(client, query):
 
 
 """
-The code for send chat request, accept chat request and start a dialoge is defined in new_search.py file from line 760 to 809
+The code for send chat request, accept chat request and start a dialoge is defined in new_search.py file from line 760 to 830
 """

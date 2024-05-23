@@ -35,7 +35,7 @@ async def user_ditales(_, message):
 
 
 @cbot.on_callback_query(filters.regex("info_(.+)"))
-async def get_user_info(_, query):
+async def get_user_info(_, query: CallbackQuery):
     try:
         user_id = int(query.data.split("_")[1])
         raw_text1, _ = await get_profile(user_id, "English", "user_profile")
@@ -49,6 +49,8 @@ async def get_user_info(_, query):
         profile_text += f"\n☑️Verify Status: {vip_users_details(user_id, "verified") if vip_users_details(user_id, "verified") else "False"}"
         # profile_text += f"\n\n🔍Searching status: {searching}"
         markup = await get_genral_markup(user_id)
+        if query.message.text == profile_text:
+            return
         await query.message.edit_text(profile_text, reply_markup= markup)
     except Exception as e:
         await query.message.reply(f"An error occured: {e}")
