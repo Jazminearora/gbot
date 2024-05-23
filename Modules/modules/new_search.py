@@ -798,9 +798,43 @@ async def request_chat_callback(_, callback_query: CallbackQuery):
 @cbot.on_callback_query(filters.regex(r"accept_chat_(\d+)"))
 async def accept_chat_callback(client, callback_query):
     user_id = int(callback_query.data.split("_")[2])
-    add_pair(user_id, callback_query.from_user.id)
-    tr_txt = await translate_async("Chat started!", callback_query.from_user.language)
-    await callback_query.message.edit_text(tr_txt)
+    my_id = callback_query.from_user.id
+    new_pair = (user_id, my_id)
+    add_pair(new_pair)
+    # tr_txt = await translate_async("Chat started!", callback_query.from_user.language)
+    # await callback_query.message.edit_text(tr_txt)
+    # await update_user_dialogs(user_id, callback_query.from_user.id)
+    # await send_match_messages(user_id, callback_query.from_user.id)
+    motel1 = vip_users_details(user_id, "total_dialog")
+    motel2 = vip_users_details(my_id, "total_dialog")
+    total1 = motel1 if motel1 else 0
+    total2 = motel2 if motel2 else 0
+    save_premium_user(user_id, total_dialog=total1 + 1)
+    save_premium_user(my_id, total_dialog=total2 + 1)
+    start_stamp[f"user_{user_id}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    start_stamp[f"user_{my_id}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    message_timestamps[f"user_{user_id}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    message_timestamps[f"user_{my_id}"] = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    lang1 = find_language(user_id)
+    lang2 = find_language(my_id)
+    name1 = await get_user_name(user_id)
+    name2 = await get_user_name(my_id)
+    verify_status1 = vip_users_details(user_id, "verified") if vip_users_details(user_id, "verified") else "False"
+    verify_status2 = vip_users_details(my_id, "verified") if vip_users_details(my_id, "verified") else "False"
+    keyboard = ReplyKeyboardMarkup(
+        [
+            [
+                KeyboardButton(await translate_async("End chat", lang1)),
+                KeyboardButton(await translate_async("Add as Friend", lang1))
+            ]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
+    cap1 = await interlocutor_vip_message(lang1, name2, get_gender(my_id, lang2), get_age_group(my_id, lang2), verify_status2)
+    await cbot.send_message(user_id, cap1, reply_markup=keyboard)
+    caption = await interlocutor_vip_message(lang2, name1, get_gender(user_id), get_age_group(user_id), verify_status1)
+    await cbot.send_message(my_id, caption, reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
 async def decline_chat_callback(client, callback_query):
