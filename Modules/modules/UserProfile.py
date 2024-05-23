@@ -20,6 +20,7 @@ profile_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤$")
 
 @cbot.on_message(filters.regex(profile_pattern) & filters.private & subscribed & user_registered)
 async def handle_profile_response(client, message: Message):
+    print("function called")
     user_id = message.from_user.id
     language = find_language(user_id)
     await advert_user(user_id, language)
