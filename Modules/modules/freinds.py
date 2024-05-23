@@ -10,7 +10,7 @@ from helpers.helper import find_language
 from helpers.forcesub import subscribed, user_registered
 from helpers.translator import translate_async
 from Modules.modules.register import get_user_name
-from Modules.modules.new_search import is_chatting, is_user_searching, add_pair
+from Modules.modules.new_search import is_chatting, is_user_searching #, add_pair
 
 pyrostep.listen(cbot)
 
@@ -152,53 +152,53 @@ async def unfriend_cancel(client, query):
 #```````````````````````````````````````````````````````````````````````````````````````````````````````````````````#
 
 
-@cbot.on_callback_query(filters.regex(r"request_chat_(\d+)"))
-async def request_chat_callback(_, callback_query: CallbackQuery):
-    friend_id = int(callback_query.data.split("_")[1])
-    user_id = callback_query.from_user.id
-    user_name = await get_user_name(user_id)
-    user_language = find_language(user_id)
-    friend_language = find_language(friend_id)
+# @cbot.on_callback_query(filters.regex(r"request_chat_(\d+)"))
+# async def request_chat_callback(_, callback_query: CallbackQuery):
+#     friend_id = int(callback_query.data.split("_")[1])
+#     user_id = callback_query.from_user.id
+#     user_name = await get_user_name(user_id)
+#     user_language = find_language(user_id)
+#     friend_language = find_language(friend_id)
 
-    if await is_chatting(user_id, callback_query.message, user_language):
-        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", user_language))]], resize_keyboard=True, one_time_keyboard=True)
-        tr_txt = await translate_async("You are already in a chat. End the chat first by using below button!", user_language)
-        await callback_query.message.reply(tr_txt, reply_markup= keyboard)
-        return
+#     if await is_chatting(user_id, callback_query.message, user_language):
+#         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", user_language))]], resize_keyboard=True, one_time_keyboard=True)
+#         tr_txt = await translate_async("You are already in a chat. End the chat first by using below button!", user_language)
+#         await callback_query.message.reply(tr_txt, reply_markup= keyboard)
+#         return
 
-    if await is_user_searching(user_id):
-        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", user_language))]], resize_keyboard=True, one_time_keyboard=True)
-        tr_txt = await translate_async("You are already searching. Stop searching first by using below button!", user_language)
-        await callback_query.message.reply(tr_txt,  reply_markup= keyboard)
-        return
+#     if await is_user_searching(user_id):
+#         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", user_language))]], resize_keyboard=True, one_time_keyboard=True)
+#         tr_txt = await translate_async("You are already searching. Stop searching first by using below button!", user_language)
+#         await callback_query.message.reply(tr_txt,  reply_markup= keyboard)
+#         return
     
-    if await is_user_searching(friend_id):
-        tr_txt = await translate_async("You friend is already searching for anyone!", user_language)
-        await callback_query.message.reply(tr_txt,  reply_markup= keyboard)
-        return
+#     if await is_user_searching(friend_id):
+#         tr_txt = await translate_async("You friend is already searching for anyone!", user_language)
+#         await callback_query.message.reply(tr_txt,  reply_markup= keyboard)
+#         return
 
-    if await is_chatting(friend_id, callback_query.message, friend_language):
-        tr_txt = await translate_async("Your friend is already chatting with someone!", user_language)
-        await callback_query.message.reply(tr_txt,  reply_markup= keyboard)
-        return
-    try:
-        tr_txt = await translate_async("Your friend {} wants to chat with you. Do you want to chat with him?", friend_language)
-        keyboard = [[InlineKeyboardButton(translate_async("Yes, start chat!", friend_language), callback_data=f"accept_chat_{user_id}"), 
-                    InlineKeyboardButton(translate_async("No, not now!", friend_language), callback_data=f"decline_chat_{user_id}")]]
-        await cbot.send_message(friend_id, tr_txt.format(user_name), reply_markup=InlineKeyboardMarkup(keyboard))
-    except Exception as e:
-        print(f"An exception occured while sending chat request to a friend: {e}")
-        await callback_query.message.reply(f"{translate_async("Failed to send chat request.", user_language)}")
+#     if await is_chatting(friend_id, callback_query.message, friend_language):
+#         tr_txt = await translate_async("Your friend is already chatting with someone!", user_language)
+#         await callback_query.message.reply(tr_txt,  reply_markup= keyboard)
+#         return
+#     try:
+#         tr_txt = await translate_async("Your friend {} wants to chat with you. Do you want to chat with him?", friend_language)
+#         keyboard = [[InlineKeyboardButton(translate_async("Yes, start chat!", friend_language), callback_data=f"accept_chat_{user_id}"), 
+#                     InlineKeyboardButton(translate_async("No, not now!", friend_language), callback_data=f"decline_chat_{user_id}")]]
+#         await cbot.send_message(friend_id, tr_txt.format(user_name), reply_markup=InlineKeyboardMarkup(keyboard))
+#     except Exception as e:
+#         print(f"An exception occured while sending chat request to a friend: {e}")
+#         await callback_query.message.reply(f"{translate_async("Failed to send chat request.", user_language)}")
 
-@cbot.on_callback_query(filters.regex(r"accept_chat_(\d+)"))
-async def accept_chat_callback(client, callback_query):
-    user_id = int(callback_query.data.split("_")[1])
-    add_pair(user_id, callback_query.from_user.id)
-    tr_txt = await translate_async("Chat started!", callback_query.from_user.language)
-    await callback_query.message.edit_text(tr_txt)
+# @cbot.on_callback_query(filters.regex(r"accept_chat_(\d+)"))
+# async def accept_chat_callback(client, callback_query):
+#     user_id = int(callback_query.data.split("_")[1])
+#     add_pair(user_id, callback_query.from_user.id)
+#     tr_txt = await translate_async("Chat started!", callback_query.from_user.language)
+#     await callback_query.message.edit_text(tr_txt)
 
-@cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
-async def decline_chat_callback(client, callback_query):
-    user_id = int(callback_query.data.split("_")[1])
-    tr_txt = await translate_async("Chat request declined.", callback_query.from_user.language)
-    await callback_query.message.edit_text(tr_txt)
+# @cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
+# async def decline_chat_callback(client, callback_query):
+#     user_id = int(callback_query.data.split("_")[1])
+#     tr_txt = await translate_async("Chat request declined.", callback_query.from_user.language)
+#     await callback_query.message.edit_text(tr_txt)
