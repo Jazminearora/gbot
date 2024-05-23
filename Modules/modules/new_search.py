@@ -797,7 +797,7 @@ async def request_chat_callback(_, callback_query: CallbackQuery):
         await callback_query.message.reply(f"{await translate_async("Failed to send chat request.", user_language)}")
 
 @cbot.on_callback_query(filters.regex(r"accept_chat_(\d+)"))
-async def accept_chat_callback(client, callback_query):
+async def accept_chat_callback(client, callback_query: CallbackQuery):
     user_id = int(callback_query.data.split("_")[2])
     my_id = callback_query.from_user.id
     new_pair = (user_id, my_id)
@@ -821,8 +821,8 @@ async def accept_chat_callback(client, callback_query):
     keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     cap1 = await interlocutor_vip_message(lang1, name2, get_gender(my_id, lang2), get_age_group(my_id, lang2), verify_status2)
     await cbot.send_message(user_id, cap1, reply_markup=keyboard)
-    caption = await interlocutor_vip_message(lang2, name1, get_gender(user_id), get_age_group(user_id, lang1), verify_status1)
-    await cbot.send_message(my_id, caption, reply_markup=keyboard)
+    caption = await interlocutor_vip_message(lang2, name1, get_gender(user_id, lang1), get_age_group(user_id, lang1), verify_status1)
+    await callback_query.edit_message_text(caption, reply_markup=keyboard)
 
 @cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
 async def decline_chat_callback(client, callback_query):
