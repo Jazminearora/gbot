@@ -543,6 +543,20 @@ async def next_search(_, query):
             await remove_user_from_searching_lists(user_id)
             await query.message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
 
+@cbot.on_message(filters.private & filters.regex("Add as Friend") & subscribed & user_registered)
+async def add_as_friend(client, message: Message):
+    user_id = message.from_user.id
+    language = find_language(user_id)
+    print("Add as Friend called")
+    for pair in chat_pairs:
+        if user_id in pair:
+            friend_id = pair[1] if pair[0] == user_id else pair[0]
+            break
+    else:
+        # reply that you are not in a chat
+        await message.reply(text = await translate_async("You are not in a chat!!", language))
+        return
+    await process_friend_request(client, message, user_id, friend_id, language)
 
 @cbot.on_message(filters.private & filters.regex("End chat|Söhbəti bitirin|Конец чат|Söhbəti sonlandır|Завершить чат") & subscribed & user_registered)
 async def end_chat(_, message: Message):
@@ -723,20 +737,6 @@ async def reset_profanity_scores(user_id):
     if user_id in profanity_scores:
         del profanity_scores[user_id]
 
-
-@cbot.on_message(filters.private & filters.regex("Add as Friend") & subscribed & user_registered)
-async def add_as_friend(client, message: Message):
-    user_id = message.from_user.id
-    language = find_language(user_id)
-    print("Add as Friend called")
-    for pair in chat_pairs:
-        if user_id in pair:
-            friend_id = pair[1] if pair[0] == user_id else pair[0]
-        else:
-            # reply that you are not in a chat
-            await message.reply(text = await translate_async("You are not in a chat!!", language))
-            return
-    await process_friend_request(client, message, user_id, friend_id, language)
 
 # function to check for inactive chats
 async def check_inactive_chats():
