@@ -694,7 +694,6 @@ async def forward_message(client, message: Message):
 
 def store_message(user_id, message):
     """Store the user's message in a deque and add it to the messages dictionary."""
-    print("called", message)
     if user_id not in messages:
         # Create a new deque for the user and add the message
         messages[user_id] = deque([message], maxlen=10)
@@ -725,10 +724,11 @@ async def reset_profanity_scores(user_id):
         del profanity_scores[user_id]
 
 
-@cbot.on_message(filters.private & filters.regex("Add as Friend|Прекратиfh|Axtfsarışı dayandırın") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("Add as Friend") & subscribed & user_registered)
 async def add_friend(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
+    print("Add as Friend called")
     for pair in chat_pairs:
         if user_id in pair:
             friend_id = pair[1] if pair[0] == user_id else pair[0]
@@ -748,7 +748,6 @@ async def check_inactive_chats():
         last_message_time2 = datetime.strptime(message_timestamps.get(f"user_{user2}"), "%Y-%m-%d %H:%M:%S")
         cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
         if last_message_time1 and last_message_time2:
-            print((cr_time - last_message_time1).seconds)
             if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:
                 # Chat has been inactive for more than 10 minutes, end the chat
                 await delete_pair(user1)
