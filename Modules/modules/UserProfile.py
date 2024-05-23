@@ -245,7 +245,7 @@ async def set_age_group(client, callback_query):
         current_age_group = get_age_group(user_id, language).lower()
         try:
             remove_str_id(user_id, current_age_group) 
-            remove_user_id(user_id, current_age_group) 
+            remove_user_id("_", user_id, current_age_group) 
         except Exception as e:
             print("Exception:", e)    
             return  
