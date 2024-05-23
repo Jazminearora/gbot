@@ -753,35 +753,6 @@ async def reset_profanity_scores(user_id):
         del profanity_scores[user_id]
 
 
-# function to check for inactive chats
-async def check_inactive_chats():
-    for pair in chat_pairs:
-        if not pair:
-            return
-        user1, user2 = pair
-        last_message_time1 = datetime.strptime(message_timestamps.get(f"user_{user1}"), "%Y-%m-%d %H:%M:%S")
-        last_message_time2 = datetime.strptime(message_timestamps.get(f"user_{user2}"), "%Y-%m-%d %H:%M:%S")
-        cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
-        if last_message_time1 and last_message_time2:
-            if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:
-                # Chat has been inactive for more than 10 minutes, end the chat
-                await delete_pair(user1)
-                await reset_profanity_scores(user1)
-                await reset_profanity_scores(user2)
-                lang1 = find_language(user1)
-                lang2 = find_language(user2)
-                reply_markup1 = await get_reply_markup(lang1)
-                reply_markup2 = await get_reply_markup(lang2)
-                caption1 = await translate_async("Chat has been ended due to inactivity.", lang1)
-                caption2 = await translate_async("Chat has been ended due to inactivity.", lang2)
-                await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
-                await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
-
-
-# Schedule the task to run every 1 minute
-scheduler.add_job(check_inactive_chats, 'interval', minutes=1)
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -836,3 +807,35 @@ async def decline_chat_callback(client, callback_query):
     user_id = int(callback_query.data.split("_")[1])
     tr_txt = await translate_async("Chat request declined.", callback_query.from_user.language)
     await callback_query.message.edit_text(tr_txt)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
+# function to check for inactive chats
+async def check_inactive_chats():
+    for pair in chat_pairs:
+        if not pair:
+            return
+        user1, user2 = pair
+        last_message_time1 = datetime.strptime(message_timestamps.get(f"user_{user1}"), "%Y-%m-%d %H:%M:%S")
+        last_message_time2 = datetime.strptime(message_timestamps.get(f"user_{user2}"), "%Y-%m-%d %H:%M:%S")
+        cr_time = datetime.strptime(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()), "%Y-%m-%d %H:%M:%S")
+        if last_message_time1 and last_message_time2:
+            if (cr_time - last_message_time1).seconds > 60 and (cr_time - last_message_time2).seconds > 60:
+                # Chat has been inactive for more than 10 minutes, end the chat
+                await delete_pair(user1)
+                await reset_profanity_scores(user1)
+                await reset_profanity_scores(user2)
+                lang1 = find_language(user1)
+                lang2 = find_language(user2)
+                reply_markup1 = await get_reply_markup(lang1)
+                reply_markup2 = await get_reply_markup(lang2)
+                caption1 = await translate_async("Chat has been ended due to inactivity.", lang1)
+                caption2 = await translate_async("Chat has been ended due to inactivity.", lang2)
+                await cbot.send_message(user1, caption1, reply_markup=reply_markup1)
+                await cbot.send_message(user2, caption2, reply_markup=reply_markup2)
+
+
+# Schedule the task to run every 1 minute
+scheduler.add_job(check_inactive_chats, 'interval', minutes=1)
