@@ -759,7 +759,7 @@ async def reset_profanity_scores(user_id):
 
 @cbot.on_callback_query(filters.regex(r"request_chat_(\d+)"))
 async def request_chat_callback(_, callback_query: CallbackQuery):
-    friend_id = int(callback_query.data.split("_")[1])
+    friend_id = int(callback_query.data.split("_")[2])
     user_id = callback_query.from_user.id
     user_name = await get_user_name(user_id)
     user_language = find_language(user_id)
@@ -797,14 +797,13 @@ async def request_chat_callback(_, callback_query: CallbackQuery):
 
 @cbot.on_callback_query(filters.regex(r"accept_chat_(\d+)"))
 async def accept_chat_callback(client, callback_query):
-    user_id = int(callback_query.data.split("_")[1])
+    user_id = int(callback_query.data.split("_")[2])
     add_pair(user_id, callback_query.from_user.id)
     tr_txt = await translate_async("Chat started!", callback_query.from_user.language)
     await callback_query.message.edit_text(tr_txt)
 
 @cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
 async def decline_chat_callback(client, callback_query):
-    user_id = int(callback_query.data.split("_")[1])
     tr_txt = await translate_async("Chat request declined.", callback_query.from_user.language)
     await callback_query.message.edit_text(tr_txt)
 
