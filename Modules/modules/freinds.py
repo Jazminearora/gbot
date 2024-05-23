@@ -40,27 +40,27 @@ async def add_friend(client, query):
     await query.message.edit_text(await translate_async("Enter the ID of the friend you want to add:", language))
     friend_id_input = await pyrostep.wait_for(user_id)
     friend_id = friend_id_input.text
-    await process_friend_request(client, query, user_id, friend_id, language)
+    await process_friend_request(client, query.message, user_id, friend_id, language)
 
-async def process_friend_request(client, query, user_id, friend_id, language):
+async def process_friend_request(client, message, user_id, friend_id, language):
     frens_list = vip_users_details(user_id, "frens")
 
     if frens_list is not None:
         for id in frens_list:
             if id == friend_id:
-                await query.message.reply_text(await translate_async("This user is already your friend.", language))
+                await message.reply_text(await translate_async("This user is already your friend.", language))
                 return
     
     try:
         await client.get_users(friend_id)
     except UserIdInvalid:
-        await query.message.reply_text(await translate_async("User ID invalid", language))
+        await message.reply_text(await translate_async("User ID invalid", language))
         return
     except:
-        await query.message.reply_text(await translate_async("User not found in my database! Tell him to register first!", language))
+        await message.reply_text(await translate_async("User not found in my database! Tell him to register first!", language))
         return
     
-    if friend_id != str(query.from_user.id):
+    if friend_id != str(message.from_user.id):
         try:
             friend_id = friend_id
             try:
@@ -68,16 +68,16 @@ async def process_friend_request(client, query, user_id, friend_id, language):
                 await cbot.send_message(friend_id, f"{await translate_async("Friend request from", language)} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
                      [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
                 ]))                
-                await query.message.reply_text(await translate_async("Friend request sent successfully!", language))
+                await message.reply_text(await translate_async("Friend request sent successfully!", language))
             except UserBlocked:
-                await query.message.reply_text(await translate_async("User has blocked the bot!", language))
+                await message.reply_text(await translate_async("User has blocked the bot!", language))
             except RPCError as rc:
-                await query.message.reply_text(await translate_async("Unable to send friend request! Please try again later.", language))
+                await message.reply_text(await translate_async("Unable to send friend request! Please try again later.", language))
                 print("rc:", rc)
         except ValueError:
-            await query.message.reply_text(await translate_async("Invalid ID!", language))
+            await message.reply_text(await translate_async("Invalid ID!", language))
         except Exception as e:
-            await query.message.reply_text(f"{await translate_async("Unable to send friend request!\n\ne", language)} {e}")
+            await message.reply_text(f"{await translate_async("Unable to send friend request!\n\ne", language)} {e}")
 
 @cbot.on_callback_query(filters.regex("accept_friend_"))
 async def accept_friend(client, query):

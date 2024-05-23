@@ -14,6 +14,7 @@ from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interl
 from Modules import cbot, scheduler, ADMIN_IDS, LOG_GROUP, REPORT_CHAT
 from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
+from Modules.modules.freinds import process_friend_request
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 from database.chatdb import save_user
@@ -454,7 +455,16 @@ async def send_match_messages(user1, user2):
     name2 = await get_user_name(user2["user_id"])
     verify_status1 = vip_users_details(user1["user_id"], "verified") if vip_users_details(user1["user_id"], "verified") else "False"
     verify_status2 = vip_users_details(user2["user_id"], "verified") if vip_users_details(user2["user_id"], "verified") else "False"
-    keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
+    keyboard = ReplyKeyboardMarkup(
+        [
+            [
+                KeyboardButton(await translate_async("End chat", lang1)),
+                KeyboardButton(await translate_async("Add as Friend", lang1))
+            ]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
     if is_vip1:
         cap1 = await interlocutor_vip_message(lang1, name2, user2["gender"], user2["age_groups"], verify_status2)
     else:
@@ -714,6 +724,19 @@ async def reset_profanity_scores(user_id):
     if user_id in profanity_scores:
         del profanity_scores[user_id]
 
+
+@cbot.on_message(filters.private & filters.regex("Add as Friend|Прекратиfh|Axtfsarışı dayandırın") & subscribed & user_registered)
+async def add_friend(client, message: Message):
+    user_id = message.from_user.id
+    language = find_language(user_id)
+    for pair in chat_pairs:
+        if user_id in pair:
+            friend_id = pair[1] if pair[0] == user_id else pair[0]
+        else:
+            # reply that you are not in a chat
+            await message.reply(text = await translate_async("You are not in a chat!!", language))
+            return
+    await process_friend_request(client, message, user_id, friend_id, language)
 
 # function to check for inactive chats
 async def check_inactive_chats():
