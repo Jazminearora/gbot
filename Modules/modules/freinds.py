@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.errors import UserBlocked, UserIdInvalid, RPCError
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 import re
 
 from database.premiumdb import save_premium_user, vip_users_details, remove_item_from_field
@@ -102,7 +102,7 @@ async def decline_friend(client, query):
     await query.message.edit_text(await translate_async("You have declined the friend request!", language))
 
 @cbot.on_message(filters.command("unfriend") & filters.private)
-async def unfriend(client, message):
+async def unfriend(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
     args = message.text.split()
@@ -125,7 +125,7 @@ async def unfriend(client, message):
             ]
         )
 
-    confirm_msg = await message.reply_text(confirm_text.format(friend_id), reply_markup)
+    await message.reply(confirm_text.format(friend_id), reply_markup= reply_markup)
 
 @cbot.on_callback_query(filters.regex("unfriend_confirm_"))
 async def unfriend_confirm(client, query):
