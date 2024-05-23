@@ -2,7 +2,7 @@ from pyrogram.errors import UserBlocked, UserIdInvalid, RPCError
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from database.premiumdb import vip_users_details
-from Modules.modules import cbot
+from Modules import cbot
 from helpers.translator import translate_async
 
 
