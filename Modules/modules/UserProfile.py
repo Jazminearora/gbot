@@ -164,7 +164,7 @@ async def change_gender(client, callback_query):
     except Exception as e:
         print("Error in change_gender:", e)
 
-@cbot.on_callback_query(filters.regex("^set_gender"))
+@cbot.on_callback_query(filters.regex("^set_gender$"))
 async def set_interest(client, callback_query):
     try:
         user_id = callback_query.from_user.id
