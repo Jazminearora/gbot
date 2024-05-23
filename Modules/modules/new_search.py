@@ -725,7 +725,7 @@ async def reset_profanity_scores(user_id):
 
 
 @cbot.on_message(filters.private & filters.regex("Add as Friend") & subscribed & user_registered)
-async def add_friend(client, message: Message):
+async def add_as_friend(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
     print("Add as Friend called")
