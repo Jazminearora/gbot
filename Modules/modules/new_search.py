@@ -145,7 +145,7 @@ async def configured_search(client, message):
                 await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
-        if await is_user_searching(user_id):
+        if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
             await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
@@ -207,7 +207,7 @@ async def normal_search(client, message):
                 await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
-        if await is_user_searching(user_id):
+        if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
             await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
@@ -258,7 +258,7 @@ async def normal_search(client, message):
                 await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
-        if await is_user_searching(user_id):
+        if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
             await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
@@ -290,7 +290,7 @@ async def normal_search(client, message):
     except Exception as e:
         await message.reply(f"Error: {e}")
 
-async def is_chatting(user_id, message, language):
+def is_chatting(user_id, message, language):
     # Check if user is already in a chat
     for pair in chat_pairs:
         if user_id in pair:
@@ -312,7 +312,7 @@ async def normal_search(client, message: Message):
                 await message.reply(await translate_async("You are already in a chat. End the chat first by using below button!", language), reply_markup = keyboard)
                 return
         # Check if user is already searching
-        if await is_user_searching(user_id):
+        if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
             await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
             return
@@ -411,7 +411,7 @@ async def match_users():
         if not matched:
             count += 1
 
-async def is_user_searching(user_id):
+def is_user_searching(user_id):
     for user in searching_users.copy():
         if user["user_id"] == user_id:
             return True
