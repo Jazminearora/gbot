@@ -821,16 +821,7 @@ async def accept_chat_callback(client, callback_query):
     name2 = await get_user_name(my_id)
     verify_status1 = vip_users_details(user_id, "verified") if vip_users_details(user_id, "verified") else "False"
     verify_status2 = vip_users_details(my_id, "verified") if vip_users_details(my_id, "verified") else "False"
-    keyboard = ReplyKeyboardMarkup(
-        [
-            [
-                KeyboardButton(await translate_async("End chat", lang1)),
-                KeyboardButton(await translate_async("Add as Friend", lang1))
-            ]
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
+    keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", lang1))]], resize_keyboard=True, one_time_keyboard=True)
     cap1 = await interlocutor_vip_message(lang1, name2, get_gender(my_id, lang2), get_age_group(my_id, lang2), verify_status2)
     await cbot.send_message(user_id, cap1, reply_markup=keyboard)
     caption = await interlocutor_vip_message(lang2, name1, get_gender(user_id), get_age_group(user_id), verify_status1)
