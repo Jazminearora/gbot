@@ -1,5 +1,4 @@
 import re
-from pyrogram.errors import PeerIdInvalid
 from pyrogram.enums import ParseMode
 from pyrogram import filters
 from datetime import timedelta
@@ -73,6 +72,9 @@ async def top_list(_, message):
         disable_web_page_preview=True,
     )
 
+"""
+Below is the code for listing top referers and can be modified for uses.
+"""
 # async def frens(client, message):
 #     lang = find_language(message.from_user.id)
 #     top_referers = await get_top_referers()
