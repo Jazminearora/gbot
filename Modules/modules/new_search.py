@@ -11,10 +11,10 @@ from helpers.forcesub import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
-from Modules import cbot, scheduler, ADMIN_IDS, LOG_GROUP, REPORT_CHAT
+from Modules import cbot, scheduler, ADMIN_IDS, REPORT_CHAT
 from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
-from Modules.modules.freinds import process_friend_request
+from helpers.fren_req import process_friend_request
 from Modules.modules.configure import get_age_groups_text
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 from database.chatdb import save_user
