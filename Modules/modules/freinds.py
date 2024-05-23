@@ -10,13 +10,14 @@ from helpers.helper import get_profile
 from helpers.helper import find_language
 from helpers.forcesub import subscribed, user_registered
 from helpers.translator import translate_async
+from Modules.modules.register import get_user_name
 
 pyrostep.listen(cbot)
 
 button_pattern = re.compile(r"^(👫 (Friends|Друзья|Dostlar) 👫)$")
 
 @cbot.on_message((filters.command("frens")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
-async def frens(client, message):
+async def frens(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     frens_list = vip_users_details(user_id, "frens")
@@ -27,9 +28,8 @@ async def frens(client, message):
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton(f"{detail.mention}", callback_data=f"fren_{friend_id}")]
+            [InlineKeyboardButton(f"{await get_user_name(friend_id)}", callback_data=f"fren_{friend_id}")]
             for friend_id in frens_list
-            for detail in [await client.get_users(friend_id)]
         ])
         await message.reply_text(tr_txt, reply_markup=keyboard)
 
@@ -142,7 +142,7 @@ async def unfriend_cancel(client, query):
 #```````````````````````````````````````````````````````````````````````````````````````````````````````````````````#
 #```````````````````````````````````````````````````````````````````````````````````````````````````````````````````#
 
-@cbot.on_callback_query(filters.regex(r"friend_(\d+)"))
+@cbot.on_callback_query(filters.regex(r"fren_(\d+)"))
 async def friend_profile(client, callback_query):
     user_id = int(callback_query.data.split("_")[1])
     language = find_language(callback_query.from_user.id)
