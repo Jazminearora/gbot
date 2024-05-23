@@ -43,6 +43,11 @@ async def handle_profile_statistics_callback(client, callback_query):
     except Exception as e:
         await wait_message.edit_text(f"An error occurred: {str(e)}")
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
 @cbot.on_callback_query(filters.regex("^close_profile$"))
 async def close_profile(client, callback_query):
     try:
@@ -65,6 +70,11 @@ async def back(client, callback_query):
             await callback_query.message.edit_caption(f"An error occurred: {str(e)}")
     except Exception as e:
         await callback_query.message.edit_caption(f"An error occurred: {str(e)}")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 
 @cbot.on_callback_query(filters.regex("^edit_profile$"))
 async def edit_profile(client, callback_query):
@@ -105,7 +115,11 @@ async def edit_profile(client, callback_query):
     except Exception as e:
         print("Error in edit_profile:", e)
 
-    
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
 @cbot.on_callback_query(filters.regex("^change_language"))
 async def change_language(client, callback_query):
     try:
@@ -150,6 +164,10 @@ async def set_language(client, callback_query):
         print("Error in set_language:", e)
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
 @cbot.on_callback_query(filters.regex("^change_gender$"))
 async def change_gender(client, callback_query: CallbackQuery):
     try:
@@ -185,16 +203,72 @@ async def set_interest(client, callback_query):
             print("Exception:", e) 
             return
         try:
-            # If language change is successful, inform the user
-            await callback_query.answer(f"↪️ {new_gender} ✅", show_alert=True)
-            # Edit the message to display the success message in the new language
             success_message = await translate_async("Gender changed successfully!", language)
-            reply_markup = await get_reply_markup(language)
-            await trumk.edit_caption(success_message, reply_markup=reply_markup)
+            # If language change is successful, inform the user
+            await callback_query.answer(success_message, show_alert=True)
+            profile_text, reply_markup = await get_profile(user_id, language, "user_profile")
+            await trumk.edit_caption(profile_text, reply_markup=reply_markup)
         except Exception as e:
             print("Error in changing language:", e)
     except Exception as e:
         print("Error in set_language:", e)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+
+@cbot.on_callback_query(filters.regex("^change_age_group$"))
+async def change_age_group(client, callback_query: CallbackQuery):
+    try:
+        # Get the user ID and old language
+        user_id = callback_query.from_user.id
+        lang = find_language(user_id)
+        markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Below 18", callback_data=f"set_age_below-18")],
+                [InlineKeyboardButton("18-24", callback_data=f"set_age_18-24")],
+                [InlineKeyboardButton("25-34", callback_data=f"set_age_25-34")],
+                [InlineKeyboardButton("Above 35", callback_data=f"set_age_above-35")]
+                ])
+        txt = await translate_async("Choose your age group:", lang)
+        await callback_query.edit_message_text(txt, reply_markup= markup)
+    except Exception as e:
+        print("Error in change_age_group:", e)
+
+@cbot.on_callback_query(filters.regex("^set_age.*$"))
+async def set_age_group(client, callback_query):
+    try:
+        user_id = callback_query.from_user.id
+        language = find_language(user_id)
+        new_age_group = callback_query.data.split("_")[2].replace("-", "_")
+        muks = await callback_query.message.edit_caption("🔍")
+        current_age_group = get_age_group(user_id, language).lower()
+        try:
+            remove_str_id(user_id, current_age_group)  
+        except Exception as e:
+            print("Exception:", e)    
+            return  
+        trumk = await muks.edit_caption("🤖")
+        try:
+            store_str_id(user_id, new_age_group)
+        except Exception as e:
+            print("Exception:", e) 
+            return
+        try:
+            success_message = await translate_async("Age group changed successfully!", language)
+            # If language change is successful, inform the user
+            await callback_query.answer(success_message, show_alert=True)
+            profile_text, reply_markup = await get_profile(user_id, language, "user_profile")
+            await trumk.edit_caption(profile_text, reply_markup=reply_markup)
+        except Exception as e:
+            print("Error in changing language:", e)
+    except Exception as e:
+        print("Error in set_age_group:", e)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 
 @cbot.on_callback_query(filters.regex("^edit_interest$"))
 async def edit_interest(client, callback_query):
@@ -235,12 +309,11 @@ async def set_interest(client, callback_query):
             print("Exception:", e) 
             return
         try:
-            # If language change is successful, inform the user
-            await callback_query.answer(f"↪️ {new_interest} ✅", show_alert=True)
-            # Edit the message to display the success message in the new language
             success_message = await translate_async("Interest changed successfully!", language)
-            reply_markup = await get_reply_markup(language)
-            await trumk.edit_caption(success_message, reply_markup=reply_markup)
+            # If language change is successful, inform the user
+            await callback_query.answer(success_message, show_alert=True)
+            profile_text, reply_markup = await get_profile(user_id, language, "user_profile")
+            await trumk.edit_caption(profile_text, reply_markup=reply_markup)
         except Exception as e:
             print("Error in changing language:", e)
     except Exception as e:
