@@ -115,9 +115,8 @@ async def unfriend(client, message):
         await message.reply_text(await translate_async("This user is not your friend.", language))
         return
     confirm_text = await translate_async("Are you sure you want to unfriend {}?", language)
-    confirm_msg = await message.reply_text(confirm_text.format(friend_id))
-    await confirm_msg.reply_markup(
-        InlineKeyboardMarkup(
+    
+    reply_markup= InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton("Yes", callback_data=f"unfriend_confirm_{friend_id}"),
@@ -125,8 +124,8 @@ async def unfriend(client, message):
                 ]
             ]
         )
-    )
 
+    confirm_msg = await message.reply_text(confirm_text.format(friend_id), reply_markup)
 
 @cbot.on_callback_query(filters.regex("unfriend_confirm_"))
 async def unfriend_confirm(client, query):
