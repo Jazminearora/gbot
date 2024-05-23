@@ -788,12 +788,12 @@ async def request_chat_callback(_, callback_query: CallbackQuery):
         return
     try:
         tr_txt = await translate_async("Your friend {} wants to chat with you. Do you want to chat with him?", friend_language)
-        keyboard = [[InlineKeyboardButton(translate_async("Yes, start chat!", friend_language), callback_data=f"accept_chat_{user_id}"), 
-                    InlineKeyboardButton(translate_async("No, not now!", friend_language), callback_data=f"decline_chat_{user_id}")]]
+        keyboard = [[InlineKeyboardButton(await translate_async("Yes, start chat!", friend_language), callback_data=f"accept_chat_{user_id}"), 
+                    InlineKeyboardButton(await translate_async("No, not now!", friend_language), callback_data=f"decline_chat_{user_id}")]]
         await cbot.send_message(friend_id, tr_txt.format(user_name), reply_markup=InlineKeyboardMarkup(keyboard))
     except Exception as e:
         print(f"An exception occured while sending chat request to a friend: {e}")
-        await callback_query.message.reply(f"{translate_async("Failed to send chat request.", user_language)}")
+        await callback_query.message.reply(f"{await translate_async("Failed to send chat request.", user_language)}")
 
 @cbot.on_callback_query(filters.regex(r"accept_chat_(\d+)"))
 async def accept_chat_callback(client, callback_query):
