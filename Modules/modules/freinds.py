@@ -10,7 +10,7 @@ from helpers.helper import find_language
 from helpers.forcesub import subscribed, user_registered
 from helpers.translator import translate_async
 from Modules.modules.register import get_user_name
-from Modules.modules.new_search import is_chatting, add_pair #, is_user_searching 
+from Modules.modules.new_search import is_user_searching , add_pair #,is_chatting
 
 pyrostep.listen(cbot)
 
