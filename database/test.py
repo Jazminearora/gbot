@@ -1,11 +1,11 @@
-from pymongo import MongoClient
-client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-db = client["cboSot-primer"]
-# referdb = db["referdb"]
-# mongodb = db["tgtbot"]
-# premiumdb = db["premiumb"]
-# chatdb = db["chatdsd"]
-residuedb = db["residuedb"]
+# from pymongo import MongoClient
+# client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
+# db = client["cboSot-primer"]
+# # referdb = db["referdb"]
+# # mongodb = db["tgtbot"]
+# # premiumdb = db["premiumb"]
+# # chatdb = db["chatdsd"]
+# residuedb = db["residuedb"]
 
 #print all document in residuedb
 # for x in residuedb.find():
@@ -295,22 +295,32 @@ residuedb = db["residuedb"]
 # # Run the event loop
 # asyncio.run(main())
 
-text = """
-🌟 User Profile 🌟
+def remove_line_by_keyword(message: str, keyword: str) -> str:
+    # Split the message into lines
+    lines = message.split('\n')
+    # Filter out lines that contain the keyword
+    filtered_lines = [line for line in lines if keyword not in line]
+    # Join the remaining lines back into a single message
+    return '\n'.join(filtered_lines)
 
-🗣 Language: English
-👦 Gender: male
-👨‍🦳 Age Group: 25-34
-💡 Interest: Movies
+# Example usage
+message = """
+🔎 ID: 5131723020
 
-Premium Status: True
-Premium Expiry: 91 days, 0:10:53
-👍: 7 👎: 0 ⛔️: 1
+🗣 Language:English
+🗂 User Data:
+👤 Gender: male
+🎂 Age: 25-34
+⚡️ Interest: Communication
 
-Total messages sent: 37
- Total dialogs: 25
+📊 Rating: 👍: 4 👎: 1 ⛔️: 2 🤡: 1
 
-🔞 Offense Count: 6
+💌 Invite a friend: https://t.me/Ninjatesbot?start=r5131723020
+
+🌍 Subscription 💎 PREMIUM: True
+🔔 Premium Expiry in: 134 days, 18:31:26
 """
-tst = text.replace("English", "English")
-print(tst)
+keyword = "?start=r"
+
+new_message = remove_line_by_keyword(message, keyword)
+print(new_message)

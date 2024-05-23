@@ -282,6 +282,14 @@ async def normal_search(client, message):
     except Exception as e:
         await message.reply(f"Error: {e}")
 
+async def is_chatting(user_id, message, language):
+    # Check if user is already in a chat
+    for pair in chat_pairs:
+        if user_id in pair:
+            return True
+            break
+    return False
+            
 #Normal search
 @cbot.on_message(filters.private & filters.regex("Normal Search|Обычный поиск|Normal Axtarış") & subscribed & user_registered)
 async def normal_search(client, message: Message):
