@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
 from pyrogram.enums import ParseMode
 import asyncio
 
@@ -151,8 +151,7 @@ async def set_language(client, callback_query):
 
 
 @cbot.on_callback_query(filters.regex("^change_gender$"))
-async def change_gender(client, callback_query):
-    print("function called")
+async def change_gender(client, callback_query: CallbackQuery):
     try:
         # Get the user ID and old language
         user_id = callback_query.from_user.id
@@ -162,6 +161,7 @@ async def change_gender(client, callback_query):
                 [InlineKeyboardButton("Female👧", callback_data=f"set_gender_female")]
                 ])
         txt = await translate_async("Choose your gender:", lang)
+        await callback_query.edit_message_text(txt, reply_markup= markup)
     except Exception as e:
         print("Error in change_gender:", e)
 
