@@ -59,7 +59,7 @@ user_registered = filters.create(is_registered)
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 async def lens_2(filter, client, update):
-    mesg = update.text.split(" ")
+    mesg = update.text
     print(mesg)
     if len(mesg)>= 2:
         return True
