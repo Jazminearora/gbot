@@ -19,7 +19,7 @@ async def get_anonymous(client, message: Message):
     try:
         command_parts = message.text.split(" ")
         anom_user_id = int(command_parts[1].replace("a", ""))
-        name = get_user_name(anom_user_id)
+        name = await get_user_name(anom_user_id)
     except ValueError:
         await message.reply(await translate_async("Invalid user id", language))
         return
@@ -46,7 +46,8 @@ async def answer_msg(client, callback_query: CallbackQuery):
     anom_user_id = int(callback_query.data.split("_")[2])
     user_id = callback_query.from_user.id
     language = find_language(user_id)
-    await callback_query.message.edit_text(await translate_async("Enter your answer:", language))
+    await callback_query.message.reply(await translate_async("Enter your answer:", language))
+    await callback_query.message.delete()
     answer = await pyrostep.wait_for(user_id)
     markup = InlineKeyboardMarkup(
         [
@@ -56,7 +57,7 @@ async def answer_msg(client, callback_query: CallbackQuery):
     )
     await client.send_message(anom_user_id, await translate_async("You got a response:", language), reply_markup=markup)
     await answer.copy(anom_user_id)
-    await callback_query.message.edit_text(await translate_async("Answer sent successfully.", language))
+    await answer.reply(await translate_async("Answer sent successfully.", language))
 
 
     # markup = InlineKeyboardMarkup(
