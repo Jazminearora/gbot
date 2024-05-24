@@ -175,9 +175,11 @@ async def change_gender(client, callback_query: CallbackQuery):
         user_id = callback_query.from_user.id
         lang = find_language(user_id)
         markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("Male👦", callback_data=f"set_gender_male")],
-                [InlineKeyboardButton("Female👧", callback_data=f"set_gender_female")]
-                ])
+            [InlineKeyboardButton(await translate_async("Male 👦", lang), callback_data="set_gender_male")],
+            [InlineKeyboardButton(await translate_async("Female 👧", lang), callback_data="set_gender_female")],
+            [InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="back"), InlineKeyboardButton(await translate_async("Close ❌", lang), callback_data="close_profile")]
+        ])
+
         txt = await translate_async("Choose your gender:", lang)
         await callback_query.edit_message_text(txt, reply_markup= markup)
     except Exception as e:
@@ -225,11 +227,12 @@ async def change_age_group(client, callback_query: CallbackQuery):
         user_id = callback_query.from_user.id
         lang = find_language(user_id)
         markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("Below 18", callback_data=f"set_age_below-18")],
-                [InlineKeyboardButton("18-24", callback_data=f"set_age_18-24")],
-                [InlineKeyboardButton("25-34", callback_data=f"set_age_25-34")],
-                [InlineKeyboardButton("Above 35", callback_data=f"set_age_above-35")]
-                ])
+            [InlineKeyboardButton(await translate_async("Below 18 🧒", lang), callback_data="set_age_below-18")],
+            [InlineKeyboardButton(await translate_async("18-24 👨‍🎓", lang), callback_data="set_age_18-24")],
+            [InlineKeyboardButton(await translate_async("25-34 🧑‍💼", lang), callback_data="set_age_25-34")],
+            [InlineKeyboardButton(await translate_async("Above 35 👴", lang), callback_data="set_age_above-35")],
+            [InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="back"), InlineKeyboardButton(await translate_async("Close ❌", lang), callback_data="close_profile")]
+        ])
         txt = await translate_async("Choose your age group:", lang)
         await callback_query.edit_message_text(txt, reply_markup= markup)
     except Exception as e:
