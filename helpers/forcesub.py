@@ -60,10 +60,11 @@ user_registered = filters.create(is_registered)
 
 async def lens_2(filter, client, update):
     mesg = update.text    
-    # Define the regex pattern
-    pattern = r'^/start a\d+$'
-    # Check if the message matches the pattern
-    if re.match(pattern, mesg):
+    # Split the message into words
+    words = mesg.split()
+    # Check if the message has exactly two words and starts with "/start" followed by "a" and a number
+    if len(words) == 2 and words[0] == "/start" and words[1].startswith("a"):
+        print("true")
         return True
     return False
 
