@@ -7,6 +7,7 @@ from .. import cbot
 from helpers.forcesub import subscribed, user_registered, anoms_filter
 from helpers.translator import translate_async
 from helpers.helper import find_language
+from database.premiumdb import save_premium_user, vip_users_details
 from Modules.modules.register import get_user_name
 
 pyrostep.listen(cbot)
@@ -59,10 +60,16 @@ async def answer_msg(client, callback_query: CallbackQuery):
     await answer.copy(anom_user_id)
     await answer.reply(await translate_async("Answer sent successfully.", language))
 
-
-    # markup = InlineKeyboardMarkup(
-    #     [
-    #         [InlineKeyboardButton(text=await translate_async('Good', language), callback_data="send_msg")],
-    #         [InlineKeyboardButton(text=await translate_async('Bad 🔙', language), callback_data="guhing")]
-    #     ]
-    # )   
+@cbot.on_callback_query(filters.regex(r"block_msg_(\d+)"))
+async def block_msg(client, callback_query: CallbackQuery):
+    anom_id = int(callback_query.data.split("_")[2])
+    user_id = callback_query.from_user.id
+    language = find_language(user_id)
+    blckd_list = vip_users_details(user_id, "blckd_user")
+    if blckd_list is not None:
+        for id in blckd_list:
+            if id == anom_id:
+                await callback_query.message.reply_text(await translate_async("This user is already blocked.", language))
+                return
+    save_premium_user(user_id, blckd_user=[anom_id])
+    await callback_query.message.reply_text(await translate_async("User blocked successfully.", language))

@@ -15,6 +15,7 @@ def save_premium_user(
     chat_time: int = 0,
     weekly_chat_time: int = 0,
     frens: list = None,
+    blckd_user: list = None,
     block_media: bool = None,
     verified: bool = None
 ):
@@ -37,7 +38,19 @@ def save_premium_user(
             if room is not None:
                 update_dict["room"] = room
             if frens is not None:
-                update_dict["frens"] = frens
+                # Fetch the current list of friends from the database
+                current_frens = existing_user.get("frens", [])
+                # Append the new friend ID to the list
+                current_frens.append(frens)
+                # Update the database with the modified list
+                update_dict["frens"] = current_frens
+            if blckd_user is not None:
+                # Fetch the current list of blocked users from the database
+                current_blckd_user = existing_user.get("blckd_user", [])
+                # Append the new blocked user ID to the list
+                current_blckd_user.append(blckd_user)
+                # Update the database with the modified list
+                update_dict["blckd_user"] = current_blckd_user
             if total_dialog != 0:
                 update_dict["total_dialog"] = total_dialog
             if chat_time != 0:
@@ -72,7 +85,8 @@ def save_premium_user(
                 "total_dialog": total_dialog,
                 "chat_time": chat_time,
                 "weekly_chat_time": weekly_chat_time, 
-                "frens": frens,
+                "frens": frens if frens else [],
+                "blckd_user": blckd_user if blckd_user else [],
                 "block_media": block_media,
                 "verified": verified
             }
