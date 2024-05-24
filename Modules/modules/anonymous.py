@@ -27,7 +27,7 @@ async def get_anonymous(_, message: Message):
             [InlineKeyboardButton(text=await translate_async('Bad 🔙', language), callback_data="guhing")]
         ]
     )    
-    await message.reply("hey buddy! Whats up?", reply_markup= markup)
+    await message.reply(f"hey buddy! Whats up? {anom_user_id}", reply_markup= markup)
 
 @cbot.on_callback_query(filters.regex(r'^send_msg$'))
 async def send_anom_msg(client, query: CallbackQuery):

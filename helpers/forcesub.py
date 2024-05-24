@@ -59,9 +59,11 @@ user_registered = filters.create(is_registered)
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 async def lens_2(filter, client, update):
-    mesg = update.text
-    print(mesg)
-    if len(mesg)>= 2:
+    mesg = update.text    
+    # Define the regex pattern
+    pattern = r'^/start a\d+$'
+    # Check if the message matches the pattern
+    if re.match(pattern, mesg):
         return True
     return False
 
