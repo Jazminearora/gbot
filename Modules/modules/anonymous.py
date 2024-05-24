@@ -71,5 +71,5 @@ async def block_msg(client, callback_query: CallbackQuery):
         if anom_id in blckd_list:
             await callback_query.message.reply_text(await translate_async("This user is already blocked.", language))
             return
-    save_premium_user(user_id, blckd_user=[anom_id])
+    save_premium_user(user_id, blckd_user=anom_id)
     await callback_query.message.reply_text(await translate_async("User blocked successfully.", language))
