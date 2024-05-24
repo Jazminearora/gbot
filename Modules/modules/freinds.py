@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 import re
 import pyrostep
 
-from.. import cbot
+from.. import cbot 
 from database.premiumdb import save_premium_user, vip_users_details, remove_item_from_field
 from helpers.helper import get_profile
 from helpers.helper import find_language
@@ -46,8 +46,8 @@ async def accept_friend(client, query):
     await query.message.edit_text(await translate_async("You have accepted the friend request!", language))
     detail = await client.get_users(friend_id)
     await cbot.send_message(user_id, f"{detail.mention} {await translate_async("has accepted your friend request!", language)}")
-    save_premium_user(user_id, frens=[friend_id])
-    save_premium_user(friend_id, frens=[user_id])
+    save_premium_user(user_id, frens=friend_id)
+    save_premium_user(friend_id, frens=user_id)
 
 @cbot.on_callback_query(filters.regex("decline_friend"))
 async def decline_friend(client, query):

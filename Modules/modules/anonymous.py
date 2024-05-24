@@ -12,21 +12,38 @@ from Modules.modules.register import get_user_name
 
 pyrostep.listen(cbot)
 
+async def is_blocked(user_id, chk_id):
+    blckd_list = vip_users_details(user_id, "blckd_user")
+    if blckd_list is not None:
+        if chk_id in blckd_list:
+            return True
+    return False
+
 @cbot.on_message(filters.private & subscribed & user_registered & anoms_filter)
 async def get_anonymous(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
-    anom_lang = find_language(user_id)
     try:
         command_parts = message.text.split(" ")
         anom_user_id = int(command_parts[1].replace("a", ""))
         name = await get_user_name(anom_user_id)
-    except ValueError:
+        anom_lang = find_language(anom_user_id)
+    except (IndexError, ValueError):
         await message.reply(await translate_async("Invalid user id", language))
         return
+
+    if user_id == anom_user_id:
+        await message.reply(await translate_async("You can't send anonymous message to yourself.", language))
+        return
+    
     if not name:
         await message.reply(await translate_async("Invalid user id", language))
+        return    
+
+    if await is_blocked(user_id, anom_user_id):
+        await message.reply(await translate_async("This user has blocked you!", language))
         return
+    
     await message.reply(await translate_async(f"Leave a message here to send {name}. Don't worry, this message will be fully anonymous and your identity will not be revealed.\n\n You can send Text/Photo/Video etc anything you want.", language))
     message = await pyrostep.wait_for(user_id)
     markup = InlineKeyboardMarkup(
@@ -65,11 +82,10 @@ async def block_msg(client, callback_query: CallbackQuery):
     anom_id = int(callback_query.data.split("_")[2])
     user_id = callback_query.from_user.id
     language = find_language(user_id)
-    blckd_list = vip_users_details(user_id, "blckd_user")
-    print(blckd_list)
-    if blckd_list is not None:
-        if anom_id in blckd_list:
-            await callback_query.message.reply_text(await translate_async("This user is already blocked.", language))
-            return
+    if await is_blocked(user_id, anom_id):
+        await callback_query.answer(await translate_async("This user is already blocked.", language), show_alert= True)
+        return 
     save_premium_user(user_id, blckd_user=anom_id)
-    await callback_query.message.reply_text(await translate_async("User blocked successfully.", language))
+    await callback_query.answer(await translate_async("User blocked successfully.", language), show_alert= True)
+
+    
