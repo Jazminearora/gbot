@@ -242,7 +242,7 @@ async def set_age_group(client, callback_query):
         language = find_language(user_id)
         new_age_group = callback_query.data.split("_")[2].replace("-", "_")
         muks = await callback_query.message.edit_caption("🔍")
-        current_age_group = get_age_group(user_id, language).lower()
+        current_age_group = get_age_group(user_id, language).replace("-", "_").lower()
         try:
             remove_str_id(str(user_id), current_age_group) 
             remove_user_id("_", user_id, current_age_group) 
