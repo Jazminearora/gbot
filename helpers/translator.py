@@ -1,6 +1,6 @@
 from gpytranslate import SyncTranslator, Translator
 from proxy_randomizer import RegisteredProviders
-from json import JSONDecodeError
+from json.decoder import JSONDecodeError
 
 rp = RegisteredProviders()
 rp.parse_providers()
