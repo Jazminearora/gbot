@@ -6,7 +6,7 @@ import asyncio
 from Modules import cbot
 import re
 
-# Helper functions
+# helper functions
 from Modules.modules.advertisement import advert_user
 from helpers.forcesub import subscribed, user_registered
 from helpers.helper import get_profile, find_language, get_interest, get_age_group, get_gender

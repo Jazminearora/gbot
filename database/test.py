@@ -1,15 +1,30 @@
-# from pymongo import MongoClient
-# client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
-# db = client["cboSot-primer"]
-# # referdb = db["referdb"]
-# # mongodb = db["tgtbot"]
-# # premiumdb = db["premiumb"]
-# # chatdb = db["chatdsd"]
+from pymongo import MongoClient
+client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
+db = client["cboSot-primer"]
+# referdb = db["referdb"]
+mongodb = db["tgtbot"]# premiumdb = db["premiumb"]
+# chatdb = db["chatdsd"]
 # residuedb = db["residuedb"]
 
-#print all document in residuedb
+key ='sundar'
+def remove_user_id(_, user_id, field):
+    try:
+        mongodb.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})
+    except Exception as e:
+        print("Error in removing user ID:", e)
+
+def remove_str_id(user_id, field):
+    try:
+        mongodb.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": {"$in": [str(user_id), user_id]}}})
+    except Exception as e:
+        print("Error in removing user ID:", e)
+
+remove_str_id( 5131723020, "above_35" )
+
+remove_user_id("c", 5131723020, "above_35" )
+for x in mongodb.find():
 # for x in residuedb.find():
-#     print(x)
+    print(x)
 
 
 
@@ -295,32 +310,3 @@
 # # Run the event loop
 # asyncio.run(main())
 
-def remove_line_by_keyword(message: str, keyword: str) -> str:
-    # Split the message into lines
-    lines = message.split('\n')
-    # Filter out lines that contain the keyword
-    filtered_lines = [line for line in lines if keyword not in line]
-    # Join the remaining lines back into a single message
-    return '\n'.join(filtered_lines)
-
-# Example usage
-message = """
-🔎 ID: 5131723020
-
-🗣 Language:English
-🗂 User Data:
-👤 Gender: male
-🎂 Age: 25-34
-⚡️ Interest: Communication
-
-📊 Rating: 👍: 4 👎: 1 ⛔️: 2 🤡: 1
-
-💌 Invite a friend: https://t.me/Ninjatesbot?start=r5131723020
-
-🌍 Subscription 💎 PREMIUM: True
-🔔 Premium Expiry in: 134 days, 18:31:26
-"""
-keyword = "?start=r"
-
-new_message = remove_line_by_keyword(message, keyword)
-print(new_message)

@@ -1,16 +1,15 @@
 from config import ADMINS as ADMIN_IDS
 from Modules import BOT_ID
 import os
+import re
 from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, ChatAdminRequired, PeerIdInvalid, UsernameNotOccupied, UsernameInvalid
 from pyrogram.enums import ChatMemberStatus
+from pyrogram.filters import Update
 from helpers.helper import is_user_registered
-
-# chat_ids = [-1001997140154, -1001943241575]
 
 async def is_subscribed(filter, client, update):
     promo_status = os.environ.get('PROMO_STATUS')
-    print(promo_status)
     if not promo_status or promo_status == "False":
         return True
     user_id = update.from_user.id
@@ -46,7 +45,7 @@ subscribed = filters.create(is_subscribed)
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 
-async def is_registered(filter, client, update):
+async def is_registered(filter, client, update: Update):
     user_id = update.from_user.id
     is_ok = is_user_registered(user_id)
     if is_ok:
@@ -55,3 +54,15 @@ async def is_registered(filter, client, update):
         return False
     
 user_registered = filters.create(is_registered)
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+
+async def lens_2(filter, client, update):
+    mesg = update.text.split(" ")
+    print(mesg)
+    if len(mesg)>= 2:
+        return True
+    return False
+
+anoms_filter = filters.create(lens_2)

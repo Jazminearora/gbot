@@ -22,6 +22,7 @@ def remove_user_id(_, user_id, field):
 
 def remove_str_id(user_id, field):
     try:
-        collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": {"$in": [str(user_id), user_id]}}})
+        updt = collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": {"$in": [str(user_id), user_id]}}})
+        print(f"removed user id {user_id} from field {field}:- {updt.modified_count}")
     except Exception as e:
         print("Error in removing user ID:", e)
