@@ -27,7 +27,7 @@ def translate_text(text, target_language):
 async def translate_async(text, target_language):
     try:
         if target_language == 'English':
-            tr_lang = "en"
+            return text
         elif target_language == "Russian":
             tr_lang = "ru"
         elif target_language == "Azerbejani":
@@ -45,6 +45,6 @@ async def translate_async(text, target_language):
             t = Translator(proxies=[proxy])
             translation = await t.translate(text, targetlang=tr_lang)
             return translation.text
-        except:
+        except Exception as e:
             print(f'Error occurred during translation: {e}')
             return None
