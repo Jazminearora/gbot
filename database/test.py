@@ -2,7 +2,8 @@ from pymongo import MongoClient
 client = MongoClient("mongodb+srv://queenxytra:queenxytra@cluster0.ivuxz80.mongodb.net/?retryWrites=true&w=majority")
 db = client["cboSot-primer"]
 # referdb = db["referdb"]
-mongodb = db["tgtbot"]# premiumdb = db["premiumb"]
+mongodb = db["tgtbot"]# 
+premiumdb = db["premiumb"]
 # chatdb = db["chatdsd"]
 # residuedb = db["residuedb"]
 
@@ -19,10 +20,16 @@ def remove_str_id(user_id, field):
     except Exception as e:
         print("Error in removing user ID:", e)
 
-remove_str_id( 5131723020, "above_35" )
+# remove_str_id( 5131723020, "above_35" )
 
-remove_user_id("c", 5131723020, "above_35" )
-for x in mongodb.find():
+# remove_user_id("c", 5131723020, "above_35" )
+
+# Update the 'frens' field to an empty list for all documents
+result = premiumdb.update_many({}, {"$set": {"frens": []}})
+
+# Print the number of documents updated
+print(f"Number of documents updated: {result.modified_count}")
+for x in premiumdb.find():
 # for x in residuedb.find():
     print(x)
 

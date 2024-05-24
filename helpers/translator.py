@@ -1,4 +1,10 @@
 from gpytranslate import SyncTranslator, Translator
+from proxy_randomizer import RegisteredProviders
+from json import JSONDecodeError
+
+rp = RegisteredProviders()
+rp.parse_providers()
+
 
 def translate_text(text, target_language):
     try:
@@ -16,7 +22,8 @@ def translate_text(text, target_language):
     except Exception as e:
         print(f'Error occurred during translation: {e}')
         return None
-    
+
+
 async def translate_async(text, target_language):
     try:
         if target_language == 'English':
@@ -28,6 +35,13 @@ async def translate_async(text, target_language):
         else:
             tr_lang = target_language
         t = Translator()
+        translation = await t.translate(text, targetlang=tr_lang)
+        return translation.text
+    except JSONDecodeError:
+        # Get a new random proxy
+        proxy = rp.get_random_proxy()
+        print(f"Using new proxy: {proxy}")
+        t = Translator(proxies=[proxy])
         translation = await t.translate(text, targetlang=tr_lang)
         return translation.text
     except Exception as e:
