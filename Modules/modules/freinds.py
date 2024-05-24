@@ -39,11 +39,10 @@ async def accept_friend(client, query):
     language = find_language(user_id)
     friend_id = query.from_user.id
     frens_list = vip_users_details(user_id, "frens")
-    if frens_list is not  None:
-        for id in frens_list:
-            if id == friend_id:
-                query.message.reply_text(await translate_async("This user is already your friend.", language))
-                return   
+    if frens_list is not None and isinstance(frens_list, list):
+        if friend_id in frens_list:
+            query.message.reply_text(await translate_async("This user is already your friend.", language))
+            return
     await query.message.edit_text(await translate_async("You have accepted the friend request!", language))
     detail = await client.get_users(friend_id)
     await cbot.send_message(user_id, f"{detail.mention} {await translate_async("has accepted your friend request!", language)}")
@@ -97,9 +96,7 @@ async def back_frens(_, callback_query):
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(f"{await get_user_name(friend_id)}", callback_data=f"fren_{friend_id}")
-            ]
+            [InlineKeyboardButton(f"{await get_user_name(friend_id)}", callback_data=f"fren_{friend_id}")]
             for friend_id in frens_list
         ])
         await callback_query.message.edit_text(tr_txt, reply_markup=keyboard)
