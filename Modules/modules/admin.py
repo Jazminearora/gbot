@@ -2,7 +2,6 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 import asyncio
 import datetime, time
-import pyrostep
 from config import  ADMINS as ADMIN_IDS
 from Modules import cbot, mongodb as collection, BOT_NAME
 from config import key
@@ -11,8 +10,6 @@ from helpers.helper import get_total_users, find_language, get_detailed_user_lis
 from helpers.translator import translate_async
 from database.premiumdb import get_premium_users, extend_premium_user_hrs
 from database.registerdb import remove_user_id
-
-pyrostep.listen(cbot)
 
 
 buttons = [
