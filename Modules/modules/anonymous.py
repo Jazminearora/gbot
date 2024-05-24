@@ -69,8 +69,8 @@ async def answer_msg(client, callback_query: CallbackQuery):
     answer = await pyrostep.wait_for(user_id)
     markup = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(text=await translate_async('Answer ✅', language), callback_data=f"answer_msg_{anom_user_id}"),
-            InlineKeyboardButton(text=await translate_async('Block ❌', language), callback_data=f"block_msg_{anom_user_id}")]
+            [InlineKeyboardButton(text=await translate_async('Answer ✅', language), callback_data=f"answer_msg_{user_id}"),
+            InlineKeyboardButton(text=await translate_async('Block ❌', language), callback_data=f"block_msg_{user_id}")]
         ]
     )
     await client.send_message(anom_user_id, await translate_async("You got a response:", language), reply_markup=markup)
