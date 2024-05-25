@@ -274,6 +274,9 @@ async def set_age_group(client, callback_query):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 
+
+interest_dict = {}  # dictionary to store chosen interests for each user
+
 @cbot.on_callback_query(filters.regex("^edit_interest$"))
 async def edit_interest(client, callback_query):
     try:
@@ -285,10 +288,15 @@ async def edit_interest(client, callback_query):
         current_interest = get_interest(user_id, language)
 
         # Get reply markup and caption
-        reply_arkup, captoion = await get_interest_reply_markup(current_interest, language)
+        reply_markup, caption = await get_interest_reply_markup(current_interest, language)
+
+        # Add current chosen interests to the caption
+        if user_id in interest_dict:
+            chosen_interests = interest_dict[user_id]
+            caption += "\n\nCurrently chosen interests: " + ", ".join(chosen_interests)
 
         # Edit the message with the new interest options
-        await callback_query.message.edit_caption(captoion, reply_markup=reply_arkup)
+        await callback_query.message.edit_caption(caption, reply_markup=reply_markup)
 
     except Exception as e:
         print("Error in edit_interest:", e)
@@ -299,26 +307,36 @@ async def set_interest(client, callback_query):
         user_id = callback_query.from_user.id
         language = find_language(user_id)
         new_interest = callback_query.data.split("_")[2]
-        muks = await callback_query.message.edit_caption("🔍")
-        current_interest = get_interest(user_id, language).lower()
-        try:
-            remove_str_id(user_id, current_interest)  
-        except Exception as e:
-            print("Exception:", e)    
-            return  
-        trumk = await muks.edit_caption("🤖")
-        try:
-            store_str_id(user_id, new_interest)
-        except Exception as e:
-            print("Exception:", e) 
-            return
-        try:
+
+        # Update the interest dictionary
+        if user_id not in interest_dict:
+            interest_dict[user_id] = []
+        if new_interest in interest_dict[user_id]:
+            interest_dict[user_id].remove(new_interest)
+        else:
+            interest_dict[user_id].append(new_interest)
+
+        # Check if 3 interests are chosen
+        if len(interest_dict[user_id]) == 3:
+            # Remove old interests from DB
+            current_interest = get_interest(user_id, language)
+            remove_str_id(user_id, current_interest)
+
+            # Store new interests in DB
+            for interest in interest_dict[user_id]:
+                store_str_id(user_id, interest)
+
+            # Update the message
             success_message = await translate_async("Interest changed successfully!", language)
-            # If language change is successful, inform the user
             await callback_query.answer(success_message, show_alert=True)
             profile_text, reply_markup = await get_profile(user_id, language, "user_profile")
-            await trumk.edit_caption(profile_text, reply_markup=reply_markup)
-        except Exception as e:
-            print("Error in changing language:", e)
+            await callback_query.message.edit_caption(profile_text, reply_markup=reply_markup)
+        else:
+            # Update the message with the new chosen interests
+            caption = "Choose at least 3 interests:\n"
+            if interest_dict[user_id]:
+                caption += "Currently chosen interests: " + ", ".join(interest_dict[user_id])
+            await callback_query.message.edit_caption(caption, reply_markup=await get_interest_reply_markup(None, language))
+
     except Exception as e:
-        print("Error in set_language:", e)
+        print("Error in set_interest:", e)hu

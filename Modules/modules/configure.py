@@ -181,5 +181,9 @@ async def room_configuration_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     room_type = callback_query.data.replace("config_", "")
-    save_premium_user(user_id, room=room_type)
-    await callback_query.answer(await translate_async(f"Your room configuration has been updated to {room_type}.", lang), show_alert=True)
+    is_premium, _ = is_user_premium(user_id)
+    if is_premium:
+        save_premium_user(user_id, room=room_type)
+        await callback_query.answer(await translate_async(f"Your room configuration has been updated to {room_type}.", lang), show_alert=True)
+    else:
+        await callback_query.answer(await translate_async("You need to be a premium user to update your interest.", lang), show_alert=True)

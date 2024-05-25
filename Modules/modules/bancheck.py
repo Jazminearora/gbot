@@ -164,6 +164,9 @@ Example: /unverify 123456789 or reply to the user's message to unverify them
 
 ℹ️ /id - Get the information about any user(usage: /id <user id>)
 Example: /id 123456789
+
+💎 /add_vip- Gift vip to your user (usage: /add_vip <user id>)
+Example: /id 123456789
 """
     home_btn = InlineKeyboardMarkup([
             [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
