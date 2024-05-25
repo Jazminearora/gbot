@@ -329,7 +329,7 @@ async def set_interest(client, callback_query):
             for interest in interest_dict[user_id]:
                 store_str_id(user_id, interest)
             interest_dict[user_id].clear()
-            
+
             # Update the message
             success_message = await translate_async("Interest changed successfully!", language)
             await callback_query.answer(success_message, show_alert=True)
@@ -337,9 +337,10 @@ async def set_interest(client, callback_query):
             await callback_query.message.edit_caption(profile_text, reply_markup=reply_markup)
         else:
             # Update the message with the new chosen interests
-            caption = "Choose at least 3 interests:\n"
+            caption = await translate_async("Choose at least 3 interests:\n", language)
             if interest_dict[user_id]:
-                caption += "Currently chosen interests: " + ", ".join(interest_dict[user_id])
+                tgt = "Currently chosen interests: " + ", ".join(interest_dict[user_id])
+                caption +=await translate_async(tgt, language)
                 reply_markup, _ = await get_interest_reply_markup("_", language)
             await callback_query.message.edit_caption(caption, reply_markup= reply_markup)
 
