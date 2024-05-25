@@ -203,81 +203,71 @@ async def get_lang_change(old_lang):
     return caption, reply_markup
 
 async def get_interest_reply_markup(current_interest, language):
-    interest_options = {
-            "English": {
-                "Communication": ["Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Intimacy": ["Communication 👥", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Selling": ["Communication 👥", "Intimacy 💕", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Movies": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Anime": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Music": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Gaming": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Memes": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Relationships": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "TikTok": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Flirting": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Travel 🌍", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Travel": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Study 📖", "Food 🍔", "Fitness 💪"],
-                "Study": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Food 🍔", "Fitness 💪"],
-                "Food": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Fitness 💪"],
-                "Fitness": ["Communication 👥", "Intimacy 💕", "Selling 💰", "Movies 🎬", "Anime 🎌", "Music 🎵", "Gaming 🎮", "Memes 😂", "Relationships 💑", "TikTok 🎵", "Flirting 😘", "Travel 🌍", "Study 📖", "Food 🍔"]
-            },
-            "Russian": {
-                    "Communication": ["Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Intimacy": ["Общение 👥", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Selling": ["Общение 👥", "Близость 💕", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Movies": ["Общение 👥", "Близость 💕", "Продажи 💰", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Anime": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Music": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Gaming": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Memes": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Relationships": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "TikTok": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Flirting": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Путешествия 🌍", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Travel": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Учеба 📖", "Еда 🍔", "Фитнес 💪"],
-                    "Study": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Еда 🍔", "Фитнес 💪"],
-                    "Food": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Фитнес 💪"],
-                    "Fitness": ["Общение 👥", "Близость 💕", "Продажи 💰", "Фильмы 🎬", "Аниме 🎌", "Музыка 🎵", "Игры 🎮", "Мемы 😂", "Отношения 💑", "ТикТок 🎵", "Флирт 😘", "Путешествия 🌍", "Учеба 📖", "Еда 🍔"],
-                },
-                "Azerbaijani": {
-                    "Communication": ["Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Intimacy": ["Ünsiyyət 👥", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Selling": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Movies": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Anime": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Music": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Gaming": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Memes": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Relationships": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "TikTok": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Flirting": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Travel": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Öyrənmə 📖", "Qida 🍔", "Fitnes 💪"],
-                    "Study": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Qida 🍔", "Fitnes 💪"],
-                    "Food": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Fitnes 💪"],
-                    "Fitness": ["Ünsiyyət 👥", "Yaxınlıq 💕", "Satışlar 💰", "Filmlər 🎬", "Anime 🎌", "Musiqi 🎵", "Oyunlar 🎮", "Memlər 😂", "Münasibətlər 💑", "TikTok 🎵", "Fliort 😘", "Səyahət 🌍", "Öyrənmə 📖", "Qida 🍔"]
-                }
-
-    }
-
-    captions = {
-        "English": "Choose your new interest ❤️",
-        "Russian": "Выберите новый интерес ❤️",
-        "Azerbejani": "Yeni marağınızı seçin ❤️"
-    }
-
-    if language not in interest_options:
-        return None, None
-
-    options = interest_options[language][current_interest]
-    buttons = []
-    for i in range(0, len(options), 3):
-        buttons.append([InlineKeyboardButton(option, callback_data=f"set_interest_{option.lower().replace(' ', '_')}") for option in options[i:i+3]])
-    buttons.append([InlineKeyboardButton("🔙", callback_data="back"), InlineKeyboardButton("❌", callback_data="close_profile")])
-
-    reply_markup = InlineKeyboardMarkup(buttons)
-    caption = captions[language]
-
+    if language == "English":
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication"),
+             InlineKeyboardButton("Intimacy 💕", callback_data="set_interest_intimacy"),
+             InlineKeyboardButton("Selling 💰", callback_data="set_interest_selling")],
+            [InlineKeyboardButton("Movies 🎬", callback_data="set_interest_movies"),
+             InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime"),
+             InlineKeyboardButton("Music 🎵", callback_data="set_interest_music")],
+            [InlineKeyboardButton("Gaming 🎮", callback_data="set_interest_gaming"),
+             InlineKeyboardButton("Memes 🤣", callback_data="set_interest_memes"),
+             InlineKeyboardButton("Relationships ❤️", callback_data="set_interest_relationships")],
+            [InlineKeyboardButton("TikTok 🕺", callback_data="set_interest_tiktok"),
+             InlineKeyboardButton("Flirting 😘", callback_data="set_interest_flirting"),
+             InlineKeyboardButton("Travel 🌍", callback_data="set_interest_travel")],
+            [InlineKeyboardButton("Study 📚", callback_data="set_interest_study"),
+             InlineKeyboardButton("Food 🍔", callback_data="set_interest_food"),
+             InlineKeyboardButton("Fitness 💪", callback_data="set_interest_fitness")],
+            [InlineKeyboardButton("🔙", callback_data="back"),
+             InlineKeyboardButton("❌", callback_data="close_profile")]
+        ])
+        caption = "Choose your interest ❤️"
+    elif language == "Russian":
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Общение 👥", callback_data="set_interest_communication"),
+             InlineKeyboardButton("Близость 💕", callback_data="set_interest_intimacy"),
+             InlineKeyboardButton("Продажи 💰", callback_data="set_interest_selling")],
+            [InlineKeyboardButton("Фильмы 🎬", callback_data="set_interest_movies"),
+             InlineKeyboardButton("Аниме 🎌", callback_data="set_interest_anime"),
+             InlineKeyboardButton("Музыка 🎵", callback_data="set_interest_music")],
+            [InlineKeyboardButton("Игры 🎮", callback_data="set_interest_gaming"),
+             InlineKeyboardButton("Мемы 🤣", callback_data="set_interest_memes"),
+             InlineKeyboardButton("Отношения ❤️", callback_data="set_interest_relationships")],
+            [InlineKeyboardButton("ТикТок 🕺", callback_data="set_interest_tiktok"),
+             InlineKeyboardButton("Флирт 😘", callback_data="set_interest_flirting"),
+             InlineKeyboardButton("Путешествия 🌍", callback_data="set_interest_travel")],
+            [InlineKeyboardButton("Учеба 📚", callback_data="set_interest_study"),
+             InlineKeyboardButton("Еда 🍔", callback_data="set_interest_food"),
+             InlineKeyboardButton("Фитнес 💪", callback_data="set_interest_fitness")],
+            [InlineKeyboardButton("🔙", callback_data="back"),
+             InlineKeyboardButton("❌", callback_data="close_profile")]
+        ])
+        caption = "Выберите ваш интерес ❤️"
+    elif language == "Azerbejani":
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Ünsiyyət 👥", callback_data="set_interest_communication"),
+             InlineKeyboardButton("Yaxınlıq 💕", callback_data="set_interest_intimacy"),
+             InlineKeyboardButton("Satış 💰", callback_data="set_interest_selling")],
+            [InlineKeyboardButton("Filmlər 🎬", callback_data="set_interest_movies"),
+             InlineKeyboardButton("Anime 🎌", callback_data="set_interest_anime"),
+             InlineKeyboardButton("Musiqi 🎵", callback_data="set_interest_music")],
+            [InlineKeyboardButton("Oyunlar 🎮", callback_data="set_interest_gaming"),
+             InlineKeyboardButton("Meme-lər 🤣", callback_data="set_interest_memes"),
+             InlineKeyboardButton("Münasibətlər ❤️", callback_data="set_interest_relationships")],
+            [InlineKeyboardButton("TikTok 🕺", callback_data="set_interest_tiktok"),
+             InlineKeyboardButton("Flirt 😘", callback_data="set_interest_flirting"),
+             InlineKeyboardButton("Səyahət 🌍", callback_data="set_interest_travel")],
+            [InlineKeyboardButton("Təhsil 📚", callback_data="set_interest_study"),
+             InlineKeyboardButton("Yemək 🍔", callback_data="set_interest_food"),
+             InlineKeyboardButton("Fitness 💪", callback_data="set_interest_fitness")],
+            [InlineKeyboardButton("🔙", callback_data="back"),
+             InlineKeyboardButton("❌", callback_data="close_profile")]
+        ])
+        caption = "Marağınızı seçin ❤️"
+    
     return reply_markup, caption
-
 
 async def get_premium_msg(language):
     if language == "English":
