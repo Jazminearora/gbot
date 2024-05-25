@@ -336,7 +336,8 @@ async def set_interest(client, callback_query):
             caption = "Choose at least 3 interests:\n"
             if interest_dict[user_id]:
                 caption += "Currently chosen interests: " + ", ".join(interest_dict[user_id])
-            await callback_query.message.edit_caption(caption, reply_markup=await get_interest_reply_markup(None, language))
+                reply_markup, _ = await get_interest_reply_markup(_, language)
+            await callback_query.message.edit_caption(caption, reply_markup)
 
     except Exception as e:
         print("Error in set_interest:", e)
