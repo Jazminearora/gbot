@@ -23,9 +23,20 @@ data = {
         "intimacy": [],
         "selling": [],
         "movies": [],
-        "anime": []
+        "anime": [],
+        "music": [],
+        "gaming": [],
+        "memes": [],
+        "relationships": [],
+        "tiktok": [],
+        "flirting": [],
+        "travel": [],
+        "study": [],
+        "food": [],
+        "fitness": []
     }
 }
+
 
 
 #Store data in the collection
