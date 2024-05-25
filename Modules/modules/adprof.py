@@ -29,7 +29,7 @@ async def user_ditales(_, message):
         command = message.text
         user_id = int(command.split()[1])
     except (ValueError, IndexError):
-        await message.reply("Usage: /profile <user_id>")
+        await message.reply("Usage: #id <user_id>\nSupported prefixes: '/' '.' '#'")
         return
     await message.reply("Please choose a option from below", reply_markup= await get_genral_markup(user_id))
 

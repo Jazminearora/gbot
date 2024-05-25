@@ -1,7 +1,8 @@
 from Modules import mongodb as collection, BOT_USERNAME
 from langdb.profile import text_1, text_2, text_3
 from config import key
-from helpers.translator import translate_text, translate_async
+from helpers.translator import translate_async
+from datetime import timedelta
 from database.premiumdb import is_user_premium, calculate_remaining_time, vip_users_details
 from database.chatdb import users_rating_details, users_chat_details
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -210,6 +211,8 @@ async def get_profile(user_id, language, mode):
             "interest": get_interest(user_id, language),
             "total_msg": users_chat_details(user_id, "total_message"),
             "dialogs": vip_users_details(user_id, "total_dialog"),
+            "chat_time": str(timedelta(seconds=vip_users_details(user_id, "chat_time"))),
+            "weekly_chat_time": str(timedelta(seconds=vip_users_details(user_id, "weekly_chat_time"))),
             "offense": users_chat_details(user_id, "profanity_score")
         }
         chat_details= users_rating_details(user_id, "rating")
@@ -222,6 +225,7 @@ async def get_profile(user_id, language, mode):
             message += f"🎂 {await translate_async('Age', language)}: {user_data['age_group']}\n"
             message += f"⚡ {await translate_async('Interest', language)}: {user_data['interest']}\n\n"
             message += f"📊 {await translate_async('Rating', language)}: {rating}\n\n"
+            message += f"🎭 {await translate_async('Get anonymous', language)}: https://t.me/{BOT_USERNAME}?start=a{user_id}\n"
             message += f"💌 {await translate_async('Invite a friend', language)}: https://t.me/{BOT_USERNAME}?start=r{user_id}\n\n"
 
             if premium:
@@ -238,8 +242,9 @@ async def get_profile(user_id, language, mode):
         elif mode == "user_statistics":
             # message = f"📅 {await translate_async('Registration', language)}: {user_data['registration']}\n\n"
             message = f"💬 {await translate_async('Dialogues conducted', language)}: {user_data['dialogs']}\n"
-            message += f"📩 {await translate_async('Messages sent', language)}: {user_data['total_msg']}\n"
-            # message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['time_in_dialogues']}s\n\n"
+            message += f"📩 {await translate_async('Messages sent', language)}: {user_data['total_msg']}\n\n"
+            message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['chat_time']}\n"
+            message += f"🕦 {await translate_async('Weekly time in dialogues', language)}: {user_data['weekly_chat_time']}\n\n"
             message += f"🤬 {await translate_async('Swear words sent', language)}: {user_data['offense']}\n"
 
             reply_markup = InlineKeyboardMarkup(
