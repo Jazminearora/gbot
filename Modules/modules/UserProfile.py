@@ -320,7 +320,10 @@ async def set_interest(client, callback_query):
         if len(interest_dict[user_id]) == 3:
             # Remove old interests from DB
             current_interest = get_interest(user_id, language)
-            remove_str_id(user_id, current_interest)
+            if current_interest:
+                interests = [interest.lower() for interest in current_interest.split()]
+                for interest in interests:
+                    remove_str_id(user_id, interest)
 
             # Store new interests in DB
             for interest in interest_dict[user_id]:
