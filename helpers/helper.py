@@ -70,9 +70,11 @@ def get_interest(user_id, _):
         document = collection.find_one({key: {"$exists": True}})
         if document:
             lang_data = document[key]["database"]
-            for interest in ["communication", "intimacy", "selling", "movies", "anime"]:
+            interests = []
+            for interest in ["communication", "intimacy", "selling", "movies", "anime", "music", "gaming", "memes", "relationships", "tiktok", "flirting", "travel", "study", "food", "fitness"]:
                 if str(user_id) in lang_data.get(interest, []):
-                    return interest.capitalize()
+                    interests.append(interest.capitalize())
+            return " ".join(interests) if interests else None
     except Exception as e:
         print('Exception occurred in get_interest:', e)
     return None
