@@ -317,7 +317,7 @@ async def set_interest(client, callback_query):
             interest_dict[user_id].append(new_interest)
 
         # Check if 3 interests are chosen
-        if len(interest_dict[user_id]) == 3:
+        if len(interest_dict[user_id]) == 3 or interest_dict[user_id] is not None:
             # Remove old interests from DB
             current_interest = get_interest(user_id, language)
             if current_interest:
@@ -328,7 +328,8 @@ async def set_interest(client, callback_query):
             # Store new interests in DB
             for interest in interest_dict[user_id]:
                 store_str_id(user_id, interest)
-
+            interest_dict[user_id].clear()
+            
             # Update the message
             success_message = await translate_async("Interest changed successfully!", language)
             await callback_query.answer(success_message, show_alert=True)
