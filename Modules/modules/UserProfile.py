@@ -339,4 +339,4 @@ async def set_interest(client, callback_query):
             await callback_query.message.edit_caption(caption, reply_markup=await get_interest_reply_markup(None, language))
 
     except Exception as e:
-        print("Error in set_interest:", e)hu
+        print("Error in set_interest:", e)
