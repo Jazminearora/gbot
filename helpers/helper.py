@@ -1,5 +1,5 @@
 from Modules import mongodb as collection, BOT_USERNAME
-from langdb.profile import text_1, text_2, text_3
+from database.referdb import get_point
 from config import key
 from helpers.translator import translate_async
 from datetime import timedelta
@@ -213,25 +213,33 @@ async def get_profile(user_id, language, mode):
             "dialogs": vip_users_details(user_id, "total_dialog"),
             "chat_time": str(timedelta(seconds=vip_users_details(user_id, "chat_time"))),
             "weekly_chat_time": str(timedelta(seconds=vip_users_details(user_id, "weekly_chat_time"))),
-            "offense": users_chat_details(user_id, "profanity_score")
+            "offense": users_chat_details(user_id, "profanity_score"),
+            "total_refers": await get_point(user_id)
         }
         chat_details= users_rating_details(user_id, "rating")
         rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
 
         if mode == "user_profile":
-            message = f"{await translate_async(f"🔎 ID: {user_id}", language)}\n\n🗣 {await translate_async( f"Language:{language}", language)}\n"
-            message += f"🗂 {await translate_async('User Data', language)}:\n"
-            message += f"👤 {await translate_async('Gender', language)}: {user_data['gender']}\n"
-            message += f"🎂 {await translate_async('Age', language)}: {user_data['age_group']}\n"
-            message += f"⚡ {await translate_async('Interest', language)}: {user_data['interest']}\n\n"
+            full_text = f"""
+🔎 ID: {user_id}
+
+🗣 Language: {language}
+
+🗂 User Data:
+👤 Gender: {user_data['gender']}
+🎂 Age: {user_data['age_group']}
+⚡ Interest: {user_data['interest']}
+"""
+            message = await translate_async(full_text, language)
             message += f"📊 {await translate_async('Rating', language)}: {rating}\n\n"
             message += f"🎭 {await translate_async('Get anonymous', language)}: https://t.me/{BOT_USERNAME}?start=a{user_id}\n"
             message += f"💌 {await translate_async('Invite a friend', language)}: https://t.me/{BOT_USERNAME}?start=r{user_id}\n\n"
 
             if premium:
-                message += f"🌍 {await translate_async('Subscription 💎 PREMIUM: True', language)}\n"
-                message += f"🔔 {await translate_async(f'Premium Expiry in: {calculate_remaining_time(time)}', language)}\n"
-
+                message += f"🌍 {await translate_async(f"""
+🌍 Subscription 💎 PREMIUM: True
+🔔 Premium Expiry in: {calculate_remaining_time(time)}
+""", language)}\n"
             reply_markup = InlineKeyboardMarkup(
                 [
                     [InlineKeyboardButton(text=await translate_async('Edit✍️', language), callback_data="edit_profile")],
@@ -241,11 +249,18 @@ async def get_profile(user_id, language, mode):
 
         elif mode == "user_statistics":
             # message = f"📅 {await translate_async('Registration', language)}: {user_data['registration']}\n\n"
-            message = f"💬 {await translate_async('Dialogues conducted', language)}: {user_data['dialogs']}\n"
-            message += f"📩 {await translate_async('Messages sent', language)}: {user_data['total_msg']}\n\n"
-            message += f"⏳ {await translate_async('Time in dialogues', language)}: {user_data['chat_time']}\n"
-            message += f"🕦 {await translate_async('Weekly time in dialogues', language)}: {user_data['weekly_chat_time']}\n\n"
-            message += f"🤬 {await translate_async('Swear words sent', language)}: {user_data['offense']}\n"
+            full_text = f"""
+            💬 Dialogues conducted: {user_data['dialogs']}
+            📩 Messages sent: {user_data['total_msg']}
+
+            ⏳ Time in dialogues: {user_data['chat_time']}
+            🕦 Weekly time in dialogues: {user_data['weekly_chat_time']}
+
+            🤬 Swear words sent: {user_data['offense']}
+
+            💎 Users invited: {user_data['total_refers']}
+            """
+            message = await translate_async(full_text, language)
 
             reply_markup = InlineKeyboardMarkup(
                 [
