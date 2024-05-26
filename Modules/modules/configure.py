@@ -165,7 +165,8 @@ room_dict = {}  # dictionary to store chosen room types for each user
 @cbot.on_callback_query(filters.regex("crm"))
 async def room_callback(client, callback_query):
     user_id = callback_query.from_user.id
-    room_dict[user_id].clear() if room_dict[user_id].clear() else None
+    if user_id in room_dict:
+        room_dict[user_id].clear()    
     lang = find_language(user_id)
     cr_room = vip_users_details(user_id, "room")
 
