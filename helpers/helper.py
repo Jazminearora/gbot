@@ -146,7 +146,7 @@ async def get_profile(user_id, language, mode):
 
 🗣 Language: {language}
 
-🗂 User Data:
+**🗂 User Data:**
 👤 Gender: {user_data['gender']}
 🎂 Age: {user_data['age_group']}
 ⚡ Interest: {user_data['interest']}
@@ -157,7 +157,7 @@ async def get_profile(user_id, language, mode):
             message += f"💌 {await translate_async('Invite a friend', language)}: https://t.me/{BOT_USERNAME}?start=r{user_id}\n\n"
 
             if premium:
-                message += f"🌍 {await translate_async(f"""
+                message += f"{await translate_async(f"""
 🌍 Subscription 💎 PREMIUM: True
 🔔 Premium Expiry in: {calculate_remaining_time(time)}
 """, language)}\n"

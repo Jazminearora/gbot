@@ -165,10 +165,16 @@ async def room_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     cr_room = vip_users_details(user_id, "room")
+
     reply_markup, _ = await get_interest_reply_markup("_", language="English")
     new_inline_keyboard = []
     for row in reply_markup.inline_keyboard[:-1]:
-        new_inline_keyboard.append(row)
+        new_row = []
+        for button in row:
+            if button.callback_data.startswith("set_interest"):
+                button.callback_data = button.callback_data.replace("set_interest", "config")
+            new_row.append(button)
+        new_inline_keyboard.append(new_row)
     new_inline_keyboard.append([
         InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
         InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")
@@ -177,7 +183,7 @@ async def room_callback(client, callback_query):
     await callback_query.message.edit_caption(await translate_async(f"Current Configuration: {cr_room}\n\nPlease select the room for your search configuration:", lang), reply_markup=new_reply_markup)
 
 
-@cbot.on_callback_query(filters.regex("config_communication|config_intimacy|config_selling|config_movies|config_anime|config_any"))
+@cbot.on_callback_query(filters.regex(r"^config_"))
 async def room_configuration_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
