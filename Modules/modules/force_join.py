@@ -1,7 +1,7 @@
 import os
 from Modules import cbot, BOT_USERNAME, LOG_GROUP
 from helpers.forcesub import subscribed, user_registered, is_subscribed
-from pyrogram import filters, filter
+from pyrogram import filters
 from ..modules.subscription import get_chat_ids
 from helpers.translator import translate_async
 from helpers.helper import find_language
@@ -73,7 +73,7 @@ async def get_invite_link(chat_id):
 
 @cbot.on_callback_query(filters.regex("refresh_status"))
 async def refresh_status_callback(client, query: CallbackQuery):
-    if not is_subscribed(filter, client, query.message):
+    if not await is_subscribed("_", client, query.message):
         await query.answer(await translate_async("Your status has been updated. You can now continue using the bot."))
         await query.message.delete()
     else:
