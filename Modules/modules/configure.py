@@ -165,7 +165,7 @@ async def room_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     cr_room = vip_users_details(user_id, "room")
-    reply_markup, _ = get_interest_reply_markup("_", language="English")
+    reply_markup, _ = await get_interest_reply_markup("_", language="English")
     new_inline_keyboard = []
     for row in reply_markup.inline_keyboard[:-1]:
         new_inline_keyboard.append(row)
