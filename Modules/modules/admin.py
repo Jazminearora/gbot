@@ -258,9 +258,10 @@ async def add_vip(client, message):
         user_id = command.split()[1]
         extend_hrs = int(command.split()[2])
         try: 
-            await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
             lang = find_language(user_id)
-            await cbot.send_message(user_id, await translate_async(f"Received premium membership from admin for {extend_hrs} hours.", lang))
+            text =  await translate_async(f"Received premium membership from admin for {extend_hrs} hours.", lang)
+            await cbot.send_message(user_id, text)
+            await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
             # Extend the user's premium hours
             extend_premium_user_hrs(user_id, extend_hrs)
         except Exception as e:
