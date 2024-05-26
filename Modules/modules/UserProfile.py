@@ -293,7 +293,6 @@ async def edit_interest(client, callback_query):
         # Add current chosen interests to the caption
         if user_id in interest_dict:
             chosen_interests = interest_dict[user_id]
-            caption += "\n\nCurrently chosen interests: " + ", ".join(chosen_interests)
 
         # Edit the message with the new interest options
         await callback_query.message.edit_caption(caption, reply_markup=reply_markup)
@@ -317,7 +316,7 @@ async def set_interest(client, callback_query):
             interest_dict[user_id].append(new_interest)
 
         # Check if 3 interests are chosen
-        if len(interest_dict[user_id]) == 3 or interest_dict[user_id] is not None:
+        if len(interest_dict[user_id]) == 3:
             # Remove old interests from DB
             current_interest = get_interest(user_id, language)
             if current_interest:
@@ -341,7 +340,9 @@ async def set_interest(client, callback_query):
             if interest_dict[user_id]:
                 tgt = "Currently chosen interests: " + ", ".join(interest_dict[user_id])
                 caption +=await translate_async(tgt, language)
-                reply_markup, _ = await get_interest_reply_markup("_", language)
+            else:
+                caption += await translate_async("Currently chosen interests: ", language)
+            reply_markup, _ = await get_interest_reply_markup("_", language)
             await callback_query.message.edit_caption(caption, reply_markup= reply_markup)
 
     except Exception as e:
