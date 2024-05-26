@@ -9,7 +9,7 @@ def add_user_id(_, user_id, field):
     except Exception as e:
         print("Error in adding user ID:", e)
 
-def store_str_id(collection, user_id, field, key):
+def store_str_id(user_id, field):
     try:
         # Check if the field exists
         if collection.find_one({key: {"$exists": True}, f"{key}.database.{field}": {"$exists": True}}):
