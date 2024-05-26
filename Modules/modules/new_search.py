@@ -154,7 +154,8 @@ async def configured_search(client, message):
         await message.reply(await translate_async("Searching for a interlocutor based on your configuration...", language), reply_markup=keyboard)
         gender = vip_users_details(message.from_user.id, "gender")
         age_groups = vip_users_details(message.from_user.id, "age_groups")
-        room = vip_users_details(message.from_user.id, "room").split(", ")
+        room = vip_users_details(message.from_user.id, "room").split(",")
+        print(room, "premium")
             # Send the current configuration message
         await message.reply(await translate_async(f"""Searching for a interlocutor based on your configuration...
 
@@ -319,7 +320,8 @@ async def normal_search(client, message: Message):
         # Get normal user's details
         gender = get_gender(user_id, "huls")
         age_groups = get_age_group(user_id, "huls")
-        interest = [x.strip() for x in get_interest(user_id, "huls").lower().split(",")]
+        interest = get_interest(user_id, "huls").lower().split(" ")
+        print("normal interst:", interest)
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
