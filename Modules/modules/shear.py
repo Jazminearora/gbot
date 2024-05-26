@@ -9,7 +9,7 @@ from helpers.translator import translate_async
 async def add_shear_word_handler(_, message: Message):
     """Add a shear word to the file"""
     if len(message.command) < 2:
-        await message.reply_text("Usage: /add_shear <word>")
+        await message.reply_text("Usage: /add_shear word")
         return
     word = message.text.split(None, 1)[1]
     await add_shear_word(word)

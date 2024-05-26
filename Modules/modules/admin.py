@@ -252,8 +252,8 @@ async def back_menu(_, query):
 async def add_vip(client, message):
     try:
         command = message.text
-        if not command.split()[1] or int(command.split()[2]):
-            await message.reply("usage: /add_vip <user id> <extend hrs>")
+        if not command.split()[1] or not int(command.split()[2]):
+            await message.reply("usage: /add_vip user id extend hrs")
             return
         user_id = command.split()[1]
         extend_hrs = int(command.split()[2])
