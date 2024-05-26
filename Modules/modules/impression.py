@@ -478,9 +478,7 @@ async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, langu
     """
     Send scheduled promo codes to users.
     """
-    print("called", )
     while True:
-        print("called2", msg_id, duration)
         try:
             messages_list = get_messages_list()
             if not messages_list:
@@ -514,5 +512,4 @@ async def sheduled_promo_code(msg_id: int, msg_id_str: str, duration: int, langu
         # check if the message is still in the list
         messages_list = get_messages_list()
         if msg_id_str not in [msg[0] for msg in messages_list]:
-            print("breaking")
             break  # break the loop if the message is no longer in the list

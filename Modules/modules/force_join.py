@@ -16,13 +16,10 @@ async def not_joined(client, message: Message):
         try:
             chat = await cbot.get_chat(chat_id)
             invite_link = await get_invite_link(chat_id)
-            print(invite_link)
             if invite_link is not None:
                 buttons.append(
                 [InlineKeyboardButton(text=chat.title, url=invite_link)]
             )
-            else:
-                print("none 1")
         except Exception as e:
             print(f"Error getting invite link for chat {chat_id}: {e}")
 

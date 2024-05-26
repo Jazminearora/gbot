@@ -19,7 +19,6 @@ SELECT_OPTION_PHOTO = "https://iili.io/JgY8Fls.jpg"
 # Handle private messages with the reply markup
 @cbot.on_message(filters.command(["start"]) & filters.private & subscribed & user_registered)
 async def start_command(client, message):
-    print("strt called")
     await home_page(message)
 
 @cbot.on_message(filters.regex("Back|Назад|Geri") & filters.private & subscribed & user_registered) 

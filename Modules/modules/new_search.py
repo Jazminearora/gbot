@@ -81,7 +81,6 @@ async def delete_pair(id_to_delete):
             old_chat_time2 = vip_users_details(user2, "chat_time") if vip_users_details(user2, "chat_time") is not None else 0
             upate_chat_time1 = ((last_message_time1 - start_set_time1).seconds + old_chat_time1)
             upate_chat_time2 = ((last_message_time2 - start_set_time2).seconds + old_chat_time2)
-            print(upate_chat_time1, upate_chat_time2)
             save_premium_user(user1, chat_time = upate_chat_time1)
             save_premium_user(user2, chat_time = upate_chat_time2)
             old_chat_time3 = vip_users_details(user1, "weekly_chat_time") if vip_users_details(user1, "weekly_chat_time") is not None else 0
@@ -90,7 +89,6 @@ async def delete_pair(id_to_delete):
             upate_chat_time4 = ((last_message_time2 - start_set_time2).seconds + old_chat_time4)
             save_premium_user(user1, weekly_chat_time = upate_chat_time3)
             save_premium_user(user2, weekly_chat_time = upate_chat_time4)
-            print(vip_users_details(user2, "chat_time"), vip_users_details(user2, "chat_time"), "final" )
     for i, pair in enumerate(chat_pairs):
         if id_to_delete in pair:
             del chat_pairs[i]
@@ -155,7 +153,6 @@ async def configured_search(client, message):
         gender = vip_users_details(message.from_user.id, "gender")
         age_groups = vip_users_details(message.from_user.id, "age_groups")
         room = vip_users_details(message.from_user.id, "room").split(",")
-        print(room, "premium")
             # Send the current configuration message
         await message.reply(await translate_async(f"""Searching for a interlocutor based on your configuration...
 
@@ -196,7 +193,6 @@ async def normal_search(client, message):
     language = find_language(user_id)
     await advert_user(user_id, language)
     prem_stat, _ = is_user_premium(user_id)
-    print(prem_stat)
     if not prem_stat:
         await message.reply(await translate_async("Purchase premium first!", language))
         return
@@ -222,7 +218,6 @@ async def normal_search(client, message):
         else:
             prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
-        print("chking")
         try:
             await match_users()
             await asyncio.sleep(40)
@@ -272,7 +267,6 @@ async def normal_search(client, message):
             prem_searching_mode.insert(user_index, {"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
         else:
             prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "male", "age_groups": None, "room": None})
-        print("chking")
         try:
             await match_users()
             await asyncio.sleep(40)
@@ -321,7 +315,6 @@ async def normal_search(client, message: Message):
         gender = get_gender(user_id, "huls")
         age_groups = get_age_group(user_id, "huls")
         interest = get_interest(user_id, "huls").lower().split(" ")
-        print("normal interst:", interest)
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
@@ -638,7 +631,6 @@ async def handle_report(client, query):
         # Send each message to the report_chat
         for message in messages_from:  
             try:
-                print(message)
                 await message.forward(REPORT_CHAT)
             except FloodWait as e:
                 await asyncio.sleep(e.value)

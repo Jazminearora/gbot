@@ -25,7 +25,6 @@ async def get_user_name(user_id):
         print(e)
         name2 = await get_refer_program_field(int(user_id), "name")
         if name2:
-            print(name2)
             return name2
         return None
     
@@ -123,7 +122,6 @@ async def register_user(client, message):
                             caption_suffix = f".\n\n Your Total points: {total_points}"
                             translated_caption = await translate_async(caption_prefix, referer_lang) + f" {referred_name}" + translate_text(caption_suffix, referer_lang)
                             is_program, admins_ids = await is_program_id(referer_user_id)
-                            print(admins_ids)
                             if is_program:
                                 for ids in admins_ids:
                                     try:
@@ -261,7 +259,6 @@ async def register_interest_callback(client, callback_query):
         
         # Check if user ID is already registered for interest
         if not get_interest(user_id, language):
-            print(interest)
             # Store user ID in chosen interest's field in the chosen language in MongoDB
             add_user_id(language, str(user_id), interest)
             language = find_language(user_id)

@@ -56,7 +56,6 @@ def save_premium_user(
             if chat_time != 0:
                 update_dict["chat_time"] = chat_time
             if weekly_chat_time != 0:
-                print("weekly:", weekly_chat_time)
                 update_dict["weekly_chat_time"] = weekly_chat_time
             if block_media is not None:
                 update_dict["block_media"] = block_media
@@ -178,7 +177,6 @@ def remove_item_from_field(user_id: int, field: str, item: any):
                         {"_id": str(user_id)},
                         {"$set": {field: field_value}}
                     )
-                    print(f"Item {item} removed from field {field} for user {user_id}.")
                 else:
                     print(f"Item {item} not found in field {field} for user {user_id}.")
             elif isinstance(field_value, str):

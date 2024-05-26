@@ -97,7 +97,6 @@ def get_detailed_user_list(language):
     try:
         detailed_list = {}
         users_list = get_users_list(language)
-        print(users_list)
         if users_list:
             detailed_list["Total Users"] = len(users_list)
             detailed_list["Gender"] = {}

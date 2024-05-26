@@ -64,7 +64,6 @@ async def lens_2(filter, client, update):
     words = mesg.split()
     # Check if the message has exactly two words and starts with "/start" followed by "a" and a number
     if len(words) == 2 and words[0] == "/start" and words[1].startswith("a"):
-        print("true")
         return True
     return False
 

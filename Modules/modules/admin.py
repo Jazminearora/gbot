@@ -91,7 +91,6 @@ async def statistics_handler(_, query):
 
 
 async def format_detailed_user_list(detailed_list):
-    print(detailed_list)
     if detailed_list:
         output = "\n👥 Total Users: {}\n\n".format(detailed_list["Total Users"])
         output += "**👩‍👦 Gender Distribution:**\n"
@@ -175,7 +174,6 @@ def save_to_file(data, filename):
 async def list_users_handler(_, query):
     # Retrieve user data from MongoDB collections
     raw_data = collection.find_one({key: {"$exists": True}})
-    print(raw_data)
     processed_data = process_data(raw_data, key)
     # Write user data to a file
     save_to_file(processed_data, filename="Users_Data.txt")
@@ -254,14 +252,17 @@ async def back_menu(_, query):
 async def add_vip(client, message):
     try:
         command = message.text
+        if not command.split()[1] or int(command.split()[2]):
+            await message.reply("usage: /add_vip <user id> <extend hrs>")
+            return
         user_id = command.split()[1]
         extend_hrs = int(command.split()[2])
-        try:
-            # Extend the user's premium hours
-            extend_premium_user_hrs(user_id, extend_hrs)
+        try: 
             await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
             lang = find_language(user_id)
             await cbot.send_message(user_id, await translate_async(f"Received premium membership from admin for {extend_hrs} hours.", lang))
+            # Extend the user's premium hours
+            extend_premium_user_hrs(user_id, extend_hrs)
         except Exception as e:
             await message.reply_text(f"Failed to extend premium!\n\nException: {e}")
 

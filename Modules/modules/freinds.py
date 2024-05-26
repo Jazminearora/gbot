@@ -20,7 +20,6 @@ async def frens(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     frens_list = vip_users_details(user_id, "frens")
-    print(frens_list)
     if not frens_list:
         tr_txt = await translate_async("You don't have any friends yet! Make some friends during chats!", language)
         await message.reply_text(tr_txt)

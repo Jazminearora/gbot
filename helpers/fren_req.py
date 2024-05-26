@@ -38,7 +38,6 @@ async def process_friend_request(client, message, user_id, friend_id, language):
                 await message.reply_text(await translate_async("User has blocked the bot!", language))
             except RPCError as rc:
                 await message.reply_text(await translate_async("Unable to send friend request! Please try again later.", language))
-                print("rc:", rc)
         except ValueError:
             await message.reply_text(await translate_async("Invalid ID!", language))
         except Exception as e:

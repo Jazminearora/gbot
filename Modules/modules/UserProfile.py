@@ -34,7 +34,6 @@ async def handle_profile_statistics_callback(client, callback_query):
     wait_message = await callback_query.message.edit_text("💭")
     try:
         profile_text, markup = await get_profile(user_id, language, mode)
-        print(markup)
         await asyncio.sleep(0.2)
         try:
             await wait_message.edit_text(profile_text, parse_mode=ParseMode.MARKDOWN, reply_markup=markup)

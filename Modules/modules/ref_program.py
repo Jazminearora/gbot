@@ -60,7 +60,6 @@ async def add_program(_, callback_query):
             admin_list = [(id) for id in admin_chat_ids_input.text.split('\n') if id.strip()]
         except ValueError:
             await callback_query.message.reply_text("Its seems you didn't provided admins id in correct format.")          
-        print(admin_list)
     except TimeoutError:
         await callback_query.message.reply_text("OHOO, Timeout error! Please retry again.")
         return

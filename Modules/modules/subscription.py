@@ -28,7 +28,6 @@ async def add_chat_handler(client, query):
     await query.message.reply("Enter chat ID to add:")
     chat_id = await pyrostep.wait_for(query.from_user.id)
     try:
-        print(chat_id.text)
         chk = await is_member(client, chat_id.text, BOT_ID)
         if chk:
             name = (await cbot.get_chat(chat_id.text)).title

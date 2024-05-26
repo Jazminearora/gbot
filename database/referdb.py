@@ -14,7 +14,6 @@ async def is_served_user(refered_user_id: int) -> bool:
 
 async def save_id(referer_user_id: int, refered_user_id: int):
     try:
-        print("s", refered_user_id)
         referer_key = f"r{referer_user_id}"
         # Check if the referring user already exists in the database
         user = referdb.find_one({"user_id": referer_key})
@@ -24,7 +23,6 @@ async def save_id(referer_user_id: int, refered_user_id: int):
                 user["referred_users"].append(refered_user_id)
                 user["points"] += 1  # Increment points by 1 for each referral
                 referdb.update_one({"user_id": referer_key}, {"$set": {"referred_users": user["referred_users"], "points": user["points"]}})
-                print(user = referdb.find_one({"user_id": referer_key}))
         else:
             # If user does not exist, insert a new document with points initialized to 1
             referdb.insert_one({"user_id": referer_key, "referred_users": [refered_user_id], "points": 1})
@@ -84,7 +82,6 @@ async def create_refer_program(
     """
     if id is None:
         id = randint(111111, 999999) # do not edit this
-    print(id)
 
     refer_program = {
         '_id': id, 
@@ -114,7 +111,6 @@ async def delete_refer_program(program_id: int):
 
 async def get_refer_program_field(program_id: int, field: str) -> any:
     try:
-        print(f"function called: {program_id}")
         # Retrieve the program document from the database
         program = referdb.find_one({"_id": int(program_id)})
         if program and field in program:
