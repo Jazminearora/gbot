@@ -160,9 +160,12 @@ Room: {vip_users_details(callback_query.from_user.id, "room")}
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
 
+room_dict = {}  # dictionary to store chosen room types for each user
+
 @cbot.on_callback_query(filters.regex("crm"))
 async def room_callback(client, callback_query):
     user_id = callback_query.from_user.id
+    room_dict[user_id].clear() if room_dict[user_id].clear() else None
     lang = find_language(user_id)
     cr_room = vip_users_details(user_id, "room")
 
@@ -188,13 +191,43 @@ async def room_configuration_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     room_type = callback_query.data.replace("config_", "")
-    is_premium, _ = is_user_premium(user_id)
-    if is_premium:
-        save_premium_user(user_id, room=room_type)
-        await callback_query.answer(await translate_async(f"Your room configuration has been updated to {room_type}.", lang), show_alert=True)
-    else:
-        await callback_query.answer(await translate_async("You need to be a premium user to update your interest.", lang), show_alert=True)
 
+    # Update the room dictionary
+    if user_id not in room_dict:
+        room_dict[user_id] = []
+    if room_type in room_dict[user_id]:
+        room_dict[user_id].remove(room_type)
+    else:
+        room_dict[user_id].append(room_type)
+
+    # Check if 3 room types are chosen
+    if len(room_dict[user_id]) == 3:
+        # Save the chosen room types
+        save_premium_user(user_id, room=",".join(room_dict[user_id]))
+        await callback_query.answer(await translate_async("Your room configuration has been updated.", lang), show_alert=True)
+        room_dict[user_id].clear()
+    else:
+        # Update the message with the new chosen room types
+        caption = await translate_async("Choose at least 3 room types:\n", lang)
+        if room_dict[user_id]:
+            caption += await translate_async("Currently chosen room types: " +", ".join(room_dict[user_id]), lang)
+        else:
+            caption += await translate_async("Currently chosen room types: ", lang)
+        reply_markup, _ = await get_interest_reply_markup("_", language="English")
+        new_inline_keyboard = []
+        for row in reply_markup.inline_keyboard[:-1]:
+            new_row = []
+            for button in row:
+                if button.callback_data.startswith("set_interest"):
+                    button.callback_data = button.callback_data.replace("set_interest", "config")
+                new_row.append(button)
+            new_inline_keyboard.append(new_row)
+        new_inline_keyboard.append([
+            InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
+            InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")
+        ])
+        new_reply_markup = InlineKeyboardMarkup(new_inline_keyboard)
+        await callback_query.message.edit_caption(caption, reply_markup=new_reply_markup)
 
 
     # reply_markup = InlineKeyboardMarkup([
