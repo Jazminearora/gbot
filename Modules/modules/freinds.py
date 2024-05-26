@@ -65,7 +65,7 @@ async def friend_profile(client, callback_query):
     profile_raw, _ = await get_profile(user_id, language, "user_profile")
 
     # Remove the line containing "?start=r"
-    profile_text = '\n'.join([line for line in profile_raw.split('\n') if "?start=r" not in line])
+    profile_text = '\n'.join([line for line in profile_raw.split('\n') if "?start=" not in line])
 
     keyboard = InlineKeyboardMarkup([
         [

@@ -202,7 +202,7 @@ async def get_lang_change(old_lang):
         caption = "Yeni dilinizi seçin 🌐"
     return caption, reply_markup
 
-async def get_interest_reply_markup(current_interest, language):
+async def get_interest_reply_markup(navigate: bool = None, language= None):
     if language == "English":
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("Communication 👥", callback_data="set_interest_communication"),

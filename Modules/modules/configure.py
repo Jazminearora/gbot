@@ -6,6 +6,7 @@ from helpers.forcesub import subscribed, user_registered
 from database.premiumdb import save_premium_user, is_user_premium, vip_users_details
 from helpers.helper import find_language
 from helpers.translator import translate_async
+from langdb.get_msg import get_interest_reply_markup
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -164,16 +165,16 @@ async def room_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     cr_room = vip_users_details(user_id, "room")
-    reply_markup = InlineKeyboardMarkup([
-    [InlineKeyboardButton(await translate_async("👥 Communication", lang), callback_data="config_communication")],
-    [InlineKeyboardButton(await translate_async("💕 Intimacy", lang), callback_data="config_intimacy")],
-    [InlineKeyboardButton(await translate_async("💰 Selling", lang), callback_data="config_selling")],
-    [InlineKeyboardButton(await translate_async("🎬 Movies", lang), callback_data="config_movies")],
-    [InlineKeyboardButton(await translate_async("🎌 Anime", lang), callback_data="config_anime")],
-    [InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
-     InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")]
+    reply_markup, _ = get_interest_reply_markup("_", language="English")
+    new_inline_keyboard = []
+    for row in reply_markup.inline_keyboard[:-1]:
+        new_inline_keyboard.append(row)
+    new_inline_keyboard.append([
+        InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
+        InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")
     ])
-    await callback_query.message.edit_caption(await translate_async(f"Current Configuration: {cr_room}\n\nPlease select the room for your search configuration:", lang), reply_markup=reply_markup)
+    new_reply_markup = InlineKeyboardMarkup(new_inline_keyboard)
+    await callback_query.message.edit_caption(await translate_async(f"Current Configuration: {cr_room}\n\nPlease select the room for your search configuration:", lang), reply_markup=new_reply_markup)
 
 
 @cbot.on_callback_query(filters.regex("config_communication|config_intimacy|config_selling|config_movies|config_anime|config_any"))
@@ -187,3 +188,15 @@ async def room_configuration_callback(client, callback_query):
         await callback_query.answer(await translate_async(f"Your room configuration has been updated to {room_type}.", lang), show_alert=True)
     else:
         await callback_query.answer(await translate_async("You need to be a premium user to update your interest.", lang), show_alert=True)
+
+
+
+    # reply_markup = InlineKeyboardMarkup([
+    # [InlineKeyboardButton(await translate_async("👥 Communication", lang), callback_data="config_communication")],
+    # [InlineKeyboardButton(await translate_async("💕 Intimacy", lang), callback_data="config_intimacy")],
+    # [InlineKeyboardButton(await translate_async("💰 Selling", lang), callback_data="config_selling")],
+    # [InlineKeyboardButton(await translate_async("🎬 Movies", lang), callback_data="config_movies")],
+    # [InlineKeyboardButton(await translate_async("🎌 Anime", lang), callback_data="config_anime")],
+    # [InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
+    #  InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")]
+    # ])
