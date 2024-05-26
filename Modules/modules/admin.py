@@ -13,29 +13,32 @@ from database.registerdb import remove_user_id
 
 
 buttons = [
-        [
-            InlineKeyboardButton("📥 Newsletter", callback_data='newsletter'),
-            InlineKeyboardButton("✏️ Subscriptions", callback_data='subscriptions')
-        ],
-        [
-            InlineKeyboardButton("👁️‍🗨️ Impressions", callback_data='impressions'),
-            InlineKeyboardButton("📊 Statistics", callback_data='statistics')
-        ],
-        [
-            InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
-        ],
-        [
-            InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
-            InlineKeyboardButton("👑 VIP Users", callback_data='vip_users')
-        ],
-        [
-            InlineKeyboardButton("👥 List of users", callback_data='list_users'),
-            InlineKeyboardButton("♿️ Delete inactive", callback_data='delete_inactive')
-        ],
-        [
-            InlineKeyboardButton("🚫 Close", callback_data='st_close')
-        ]
+    [
+        InlineKeyboardButton("📥 Newsletter", callback_data='newsletter'),
+        InlineKeyboardButton("✏️ Subscriptions", callback_data='subscriptions')
+    ],
+    [
+        InlineKeyboardButton("👁️‍🗨️ Impressions", callback_data='impressions'),
+        InlineKeyboardButton("📊 Statistics", callback_data='statistics')
+    ],
+    [
+        InlineKeyboardButton("🤖Other Commands🤖", callback_data='extra_admin')
+    ],
+    [
+        InlineKeyboardButton("⛓ Referral link", callback_data='referral_admin'),
+        InlineKeyboardButton("👑 VIP Users", callback_data='vip_users')
+    ],
+    [
+        InlineKeyboardButton("👥 List of users", callback_data='list_users'),
+        InlineKeyboardButton("♿️ Delete inactive", callback_data='delete_inactive')
+    ],
+    [
+        InlineKeyboardButton("🔪 Shear Control", callback_data='shear_control')
+    ],
+    [
+        InlineKeyboardButton("🚫 Close", callback_data='st_close')
     ]
+]
 
 home_btn = InlineKeyboardMarkup([
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),

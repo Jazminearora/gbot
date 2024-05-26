@@ -1,26 +1,37 @@
 from pyrogram import filters
-from pyrogram.types import Message
+from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.enums import MessageEntityType
+import pyrostep
 from .. import cbot, ADMIN_IDS, LOG_GROUP
 from helpers.shear import add_shear_word, get_all_shear_words, is_shear
 from helpers.translator import translate_async
     
-@cbot.on_message(filters.command("add_shear") & filters.user(ADMIN_IDS))
-async def add_shear_word_handler(_, message: Message):
-    """Add a shear word to the file"""
-    if len(message.command) < 2:
-        await message.reply_text("Usage: /add_shear word")
-        return
-    word = message.text.split(None, 1)[1]
-    await add_shear_word(word)
-    await message.reply_text(f"Added {word} to the list of shear words")
+pyrostep.listen(cbot)
 
-@cbot.on_message(filters.command("get_shear") & filters.user(ADMIN_IDS))
-async def get_shear_words_handler(_, message: Message):
+markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(text="Add Shear Word ➕", callback_data="add_shear_word")],
+        [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
+        InlineKeyboardButton(text="Close ❌", callback_data="st_close")]])
+
+@cbot.on_callback_query(filters.regex("shear_control") & filters.user(ADMIN_IDS))
+async def get_shear_words_handler(_, callback_query: CallbackQuery):
     """Get all shear words"""
     shear_words = await get_all_shear_words()
-    await message.reply_text(f"Current shear words:\n\n {shear_words}")
+    await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
 
+@cbot.on_callback_query(filters.regex("add_shear_word") & filters.user(ADMIN_IDS))
+async def add_shear_word_handler(_, callback_query: CallbackQuery):
+    """Ask user to input new shear words"""
+    await callback_query.message.edit_text("Enter new shear words, separated by new lines:")
+    user_id = callback_query.from_user.id
+    shear_words_message = await pyrostep.wait_for(user_id)
+    shear_words = shear_words_message.text
+    new_shear_words = [word.strip() for word in shear_words.splitlines()]
+    for word in new_shear_words:
+        await add_shear_word(word)
+    await callback_query.answer(f"Added all words to the list of shear words", show_alert= True)
+    shear_words = await get_all_shear_words()
+    await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
