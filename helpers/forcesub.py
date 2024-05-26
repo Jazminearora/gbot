@@ -45,6 +45,27 @@ subscribed = filters.create(is_subscribed)
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 
+async def get_unjoined_channels(_, client, user_id):
+    promo_status = os.environ.get('PROMO_STATUS')
+    if not promo_status or promo_status == "False":
+        return []
+    if user_id in ADMIN_IDS:
+        return []
+    chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
+    if not chat_ids or chat_ids == [""]:  # if the chat_ids list is empty
+        return []
+    
+    unjoined_channels = []
+    for chat_id in chat_ids:
+        if not await is_member(client, chat_id, user_id):
+            unjoined_channels.append(chat_id)
+    
+    return unjoined_channels
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+
+
 async def is_registered(filter, client, update: Update):
     user_id = update.from_user.id
     is_ok = is_user_registered(user_id)

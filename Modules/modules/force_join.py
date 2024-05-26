@@ -1,6 +1,6 @@
 import os
 from Modules import cbot, BOT_USERNAME, LOG_GROUP
-from helpers.forcesub import subscribed, user_registered, is_subscribed
+from helpers.forcesub import subscribed, user_registered, get_unjoined_channels
 from pyrogram import filters
 from ..modules.subscription import get_chat_ids
 from helpers.translator import translate_async
@@ -11,8 +11,8 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, 
 @cbot.on_message(filters.command("start") & filters.private & ~subscribed & user_registered)
 async def not_joined(client, message: Message):
     buttons = []
-    chat_ids_str = get_chat_ids()
-    chat_ids = [int(chat_id) for chat_id in chat_ids_str.split(",")]
+    chat_ids = await get_unjoined_channels("_", client, message.from_user.id)
+    print(chat_ids)
     for chat_id in chat_ids:
         try:
             chat = await cbot.get_chat(chat_id)
