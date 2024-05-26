@@ -60,11 +60,11 @@ async def get_invite_link(chat_id):
     await cbot.send_message(LOG_GROUP, f"Could not generate invite link for chat ID {chat_id}")
     return None
 
-# @cbot.on_callback_query(filters.regex("refresh_status")& filters.private & subscribed & user_registered)
-# async def refresh_status_callback(client, query: CallbackQuery):
-#     lang = find_language(query.from_user.id)
-#     await query.answer(await translate_async("Your status has been updated. You can now continue using the bot.", lang), show_alert = True)
-#     await query.message.delete()
+@cbot.on_callback_query(filters.regex("refresh_status")& filters.private & subscribed & user_registered)
+async def refresh_status_callback(client, query: CallbackQuery):
+    lang = find_language(query.from_user.id)
+    await query.answer(await translate_async("Your status has been updated. You can now continue using the bot.", lang), show_alert = True)
+    await query.message.delete()
 
 # @cbot.on_callback_query(filters.regex("refresh_status")& filters.private & ~subscribed & user_registered)
 # async def refresh_status_callback(client, query: CallbackQuery):
@@ -72,7 +72,7 @@ async def get_invite_link(chat_id):
 #     await query.answer(await translate_async("Please join all the channels first to continue.", lang), show_alert = True)
 #     await query.message.delete()
 
-@cbot.on_callback_query(filters.regex(r"refresh_status"))
+@cbot.on_callback_query(filters.regex(r"refresh_status") & filters.private & ~subscribed & user_registered)
 async def refresh_status(client, callback_query: CallbackQuery):
     lang = find_language(callback_query.from_user.id)
     text = await translate_async("Please join our all the channels below first to continue.", lang)
