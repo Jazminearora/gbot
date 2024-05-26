@@ -180,7 +180,7 @@ async def room_callback(client, callback_query):
             new_row.append(button)
         new_inline_keyboard.append(new_row)
     new_inline_keyboard.append([
-        InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
+        InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="configu_any"),
         InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")
     ])
     new_reply_markup = InlineKeyboardMarkup(new_inline_keyboard)
@@ -192,7 +192,10 @@ async def room_configuration_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     room_type = callback_query.data.replace("config_", "")
-
+    is_premium, _ = is_user_premium(user_id)
+    if not is_premium:
+        await callback_query.answer(await translate_async("You need to be a premium user to update your room.", lang), show_alert=True)
+        return
     # Update the room dictionary
     if user_id not in room_dict:
         room_dict[user_id] = []
@@ -224,19 +227,34 @@ async def room_configuration_callback(client, callback_query):
                 new_row.append(button)
             new_inline_keyboard.append(new_row)
         new_inline_keyboard.append([
-            InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
+            InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="configu_any"),
             InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")
         ])
         new_reply_markup = InlineKeyboardMarkup(new_inline_keyboard)
         await callback_query.message.edit_caption(caption, reply_markup=new_reply_markup)
 
+@cbot.on_callback_query(filters.regex(r"^configu_"))
+async def room_configuration_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    lang = find_language(user_id)
+    room_type = callback_query.data.replace("config_", "")
+    is_premium, _ = is_user_premium(user_id)
+    if not is_premium:
+        await callback_query.answer(await translate_async("You need to be a premium user to update your room.", lang), show_alert=True)
+        return
+    save_premium_user(user_id, room= room_type)
+    await callback_query.answer(await translate_async("Your room configuration has been updated.", lang), show_alert=True)
+    room_dict[user_id].clear()
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(await translate_async("Gender🚻", lang), callback_data="cgndr"),
+         InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
+         InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
+    ])
+    await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+                                                                    
+--Current Configuration--:
+Gender: \n{vip_users_details(callback_query.from_user.id, "gender")}
+Age Group(s): {await get_age_groups_text(callback_query.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
 
-    # reply_markup = InlineKeyboardMarkup([
-    # [InlineKeyboardButton(await translate_async("👥 Communication", lang), callback_data="config_communication")],
-    # [InlineKeyboardButton(await translate_async("💕 Intimacy", lang), callback_data="config_intimacy")],
-    # [InlineKeyboardButton(await translate_async("💰 Selling", lang), callback_data="config_selling")],
-    # [InlineKeyboardButton(await translate_async("🎬 Movies", lang), callback_data="config_movies")],
-    # [InlineKeyboardButton(await translate_async("🎌 Anime", lang), callback_data="config_anime")],
-    # [InlineKeyboardButton(await translate_async("❌ Any", lang), callback_data="config_any"),
-    #  InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")]
-    # ])
+Please select an option for your search configuration:""", lang), reply_markup=markup)

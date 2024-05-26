@@ -154,7 +154,7 @@ async def configured_search(client, message):
         await message.reply(await translate_async("Searching for a interlocutor based on your configuration...", language), reply_markup=keyboard)
         gender = vip_users_details(message.from_user.id, "gender")
         age_groups = vip_users_details(message.from_user.id, "age_groups")
-        room = vip_users_details(message.from_user.id, "room")
+        room = vip_users_details(message.from_user.id, "room").split(", ")
             # Send the current configuration message
         await message.reply(await translate_async(f"""Searching for a interlocutor based on your configuration...
 
@@ -319,12 +319,11 @@ async def normal_search(client, message: Message):
         # Get normal user's details
         gender = get_gender(user_id, "huls")
         age_groups = get_age_group(user_id, "huls")
-        interest = get_interest(user_id, "huls").lower()
+        interest = [x.strip() for x in get_interest(user_id, "huls").lower().split(",")]
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
         await message.reply(await translate_async("Searching for an interlocutor...", language), reply_markup=keyboard)
         chk = await append_id(user_id, language, gender, age_groups, interest)
-        print("chking")
         if chk:
             await match_users()
             await asyncio.sleep(40)
@@ -383,16 +382,14 @@ async def append_id(user_id, language, gender, age_groups, interest):
 async def match_users():
     count = 0
     while count < 1:
-        print("function called")
         matched = False
         # Match premium users with normal users
         for premium_user in searching_premium_users.copy():
             for normal_user in searching_users.copy():
-                print(f"Processing normal user {normal_user['user_id']}...")
                 if (premium_user["language"] == normal_user["language"] and
                     (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
                     (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and
-                    (premium_user["room"] == normal_user["room"] or premium_user["room"] == "any" or premium_user["room"] is None)):
+                    any(interest in premium_user["room"] for interest in normal_user["room"]) or premium_user["room"] == ["any"] or premium_user["room"] is None):
                     await process_match(premium_user, normal_user)
                     matched = True
             if matched:
