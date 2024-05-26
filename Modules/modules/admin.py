@@ -255,10 +255,11 @@ async def add_vip(client, message):
         if not command.split()[1] or not int(command.split()[2]):
             await message.reply("usage: /add_vip user id extend hrs")
             return
-        user_id = command.split()[1]
+        user_id = int(command.split()[1])
         extend_hrs = int(command.split()[2])
         try: 
             lang = find_language(user_id)
+            print(lang, "kk")
             text =  await translate_async(f"Received premium membership from admin for {extend_hrs} hours.", lang)
             await cbot.send_message(user_id, text)
             await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
