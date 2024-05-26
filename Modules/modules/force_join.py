@@ -1,13 +1,14 @@
 import os
 from Modules import cbot, BOT_USERNAME, LOG_GROUP
-from helpers.forcesub import subscribed
-from config import FORCE_MSG
-from pyrogram import filters
+from helpers.forcesub import subscribed, user_registered, is_subscribed
+from pyrogram import filters, filter
 from ..modules.subscription import get_chat_ids
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from helpers.translator import translate_async
+from helpers.helper import find_language
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
 
 
-@cbot.on_message(filters.command("start") & filters.private & ~subscribed)
+@cbot.on_message(filters.command("start") & filters.private & ~subscribed & user_registered)
 async def not_joined(client, message: Message):
     buttons = []
     chat_ids_str = get_chat_ids()
@@ -23,30 +24,29 @@ async def not_joined(client, message: Message):
         except Exception as e:
             print(f"Error getting invite link for chat {chat_id}: {e}")
 
+    lang = find_language(message.from_user.id)
     try:
         buttons.append(
             [
                 InlineKeyboardButton(
-                    text="Continue",
+                    text=await translate_async("Continue", lang),
                     url=f"https://t.me/{BOT_USERNAME}?start={message.command[1]}"
                 )
             ]
         )
     except IndexError:
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text=await translate_async("Continue", lang),
+                    callback_data="refresh_status"
+                )
+            ]
+        )
         pass
 
-    await message.reply(
-        text=FORCE_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else "@" + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id
-        ),
-        reply_markup=InlineKeyboardMarkup(buttons),
-        quote=True,
-        disable_web_page_preview=True
-    )
+    text = await translate_async("Please join our all the channels below first to continue.", lang)
+    await message.reply(text, reply_markup=InlineKeyboardMarkup(buttons))
 
 async def get_invite_link(chat_id):
     try:
@@ -70,3 +70,11 @@ async def get_invite_link(chat_id):
         await cbot.send_message(LOG_GROUP, "Error getting invite link for chat {chat_id}: {e}")
     await cbot.send_message(LOG_GROUP, f"Could not generate invite link for chat ID {chat_id}")
     return None
+
+@cbot.on_callback_query(filters.regex("refresh_status"))
+async def refresh_status_callback(client, query: CallbackQuery):
+    if not is_subscribed(filter, client, query.message):
+        await query.answer(await translate_async("Your status has been updated. You can now continue using the bot."))
+        await query.message.delete()
+    else:
+        await query.answer("Your account is still banned. Please try again later.")

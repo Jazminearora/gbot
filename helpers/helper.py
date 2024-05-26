@@ -160,12 +160,15 @@ async def get_profile(user_id, language, mode):
 🌍 Subscription 💎 PREMIUM: True
 🔔 Premium Expiry in: {calculate_remaining_time(time)}
 """, language)}\n"
+            else:
+                message += f"{await translate_async('🌍 Subscription 💎 PREMIUM: False', language)}\n"
             reply_markup = InlineKeyboardMarkup(
                 [
                     [InlineKeyboardButton(text=await translate_async('Edit✍️', language), callback_data="edit_profile")],
                     [InlineKeyboardButton(text=await translate_async('Back 🔙', language), callback_data="back_home")]
                 ]
             )
+
 
         elif mode == "user_statistics":
             # message = f"📅 {await translate_async('Registration', language)}: {user_data['registration']}\n\n"

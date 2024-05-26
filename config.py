@@ -43,4 +43,3 @@ Start_img = "https://graph.org/file/d883008fbbafc1609cdc5.jpg"
 approved_users = [5265109324, 6790062374]
 TUTORIAL_LINK = "https://t.me/Equinox_Chats/492033"
 
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "ʜᴇʟʟᴏ {first}\n\n<b>ᴊᴏɪɴ ᴏᴜʀ ᴄʜᴀɴɴᴇʟs ᴀɴᴅ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʀᴇʟᴏᴀᴅ button ᴛᴏ ɢᴇᴛ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛᴇᴅ ꜰɪʟᴇ.</b>")

@@ -136,14 +136,6 @@ def save_file(data, filename):
         print("Error:", e)
 
 
-@cbot.on_callback_query(filters.regex(r'^st_back$'))
-async def back_page(_, query):
-    try:
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text('Please choose an option:', reply_markup=reply_markup)
-    except Exception as e:
-        print("Error in close_profile:", e)
-
 # Function to fetch user data from MongoDB
 def get_user_data(collection):
     document = collection.find_one({})
@@ -259,7 +251,6 @@ async def add_vip(client, message):
         extend_hrs = int(command.split()[2])
         try: 
             lang = find_language(user_id)
-            print(lang, "kk")
             text =  await translate_async(f"Received premium membership from admin for {extend_hrs} hours.", lang)
             await cbot.send_message(user_id, text)
             await message.reply_text(f"Premium hours extended for user {user_id} by {extend_hrs} hours.")
