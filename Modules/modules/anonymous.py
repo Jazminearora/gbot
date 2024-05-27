@@ -64,6 +64,9 @@ async def answer_msg(client, callback_query: CallbackQuery):
     anom_user_id = int(callback_query.data.split("_")[2])
     user_id = callback_query.from_user.id
     language = find_language(user_id)
+    if await is_blocked(user_id, anom_user_id):
+        await callback_query.message.reply(await translate_async("This user has blocked you!", language))
+        return
     await callback_query.message.reply(await translate_async("Enter your answer:", language))
     await callback_query.message.delete()
     answer = await pyrostep.wait_for(user_id)
@@ -74,7 +77,13 @@ async def answer_msg(client, callback_query: CallbackQuery):
         ]
     )
     await client.send_message(anom_user_id, await translate_async("You got a response:", language), reply_markup=markup)
-    await answer.copy(anom_user_id)
+    await answer.copy(anom_user_id)  
+    markup = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(text=await translate_async('Send Again 🔁', language), callback_data=f"answer_msg_{user_id}"),
+            InlineKeyboardButton(text=await translate_async('Block ❌', language), callback_data=f"block_msg_{user_id}")]
+        ]
+    )
     await answer.reply(await translate_async("Answer sent successfully.", language))
 
 @cbot.on_callback_query(filters.regex(r"block_msg_(\d+)"))
