@@ -9,7 +9,7 @@ from helpers.translator import translate_async
 pyrostep.listen(cbot)
 
 markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(text="Add Shear Word ➕", callback_data="add_shear_word")],
+        [InlineKeyboardButton(text="Add Shear Word ➕", callback_data="plus_shear_word")],
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]])
 
@@ -19,7 +19,7 @@ async def get_shear_words_handler(_, callback_query: CallbackQuery):
     shear_words = await get_all_shear_words()
     await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex("add_shear_word") & filters.user(ADMIN_IDS))
+@cbot.on_callback_query(filters.regex("plus_shear_word") & filters.user(ADMIN_IDS))
 async def add_shear_word_handler(_, callback_query: CallbackQuery):
     """Ask user to input new shear words"""
     await callback_query.message.edit_text("Enter new shear words, separated by new lines:")
