@@ -347,5 +347,5 @@
 
 # print(new_reply_markup)
 
-str = 'communication,intimacy,selling'
-print(str.split(","))
+data = "config_Hello world"
+print(data.replace("config_", ""))

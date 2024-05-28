@@ -269,6 +269,31 @@ async def get_interest_reply_markup(navigate: bool = None, language= None):
     
     return reply_markup, caption
 
+async def get_configuration_room(lang):
+    buttons = [
+        [
+            InlineKeyboardButton(text=await translate_async("Free Chat 💬", lang), callback_data="config_Free Chat"),
+            InlineKeyboardButton(text=await translate_async("Flirting 💞", lang), callback_data="config_Flirting"),
+            InlineKeyboardButton(text=await translate_async("Study Room 📚", lang), callback_data="config_Study Room"),
+        ],
+        [
+            InlineKeyboardButton(text=await translate_async("Voice Chat 🎙️", lang), callback_data="config_Voice Chat"),
+            InlineKeyboardButton(text=await translate_async("Movies 🎬", lang), callback_data="config_Movies"),
+            InlineKeyboardButton(text=await translate_async("Games 🎮", lang), callback_data="config_Games"),
+        ],
+        [
+            InlineKeyboardButton(text=await translate_async("Hobby 🎨", lang), callback_data="config_Hobby"),
+            InlineKeyboardButton(text=await translate_async("Sport 🏅", lang), callback_data="config_Sport"),
+            InlineKeyboardButton(text=await translate_async("Music 🎵", lang), callback_data="config_Music"),
+        ],
+        [
+            InlineKeyboardButton(text=await translate_async("General ✅", lang), callback_data="configu_Genral"),
+            InlineKeyboardButton(text=await translate_async("Back 🔙", lang), callback_data="cgoback"),
+        ],
+    ]
+
+    return InlineKeyboardMarkup(buttons)
+
 async def get_premium_msg(language):
     if language == "English":
         caption = "💎 PREMIUM\n⛔ Premium search is available only for VIP users ⛔\n\n🔞 Chat in dirty chat\n🔍 Search by gender (m/f)\n🎥 Share photos and videos\n🔥 Send photos, videos, GIFs, stickers\n📃 Information about the interlocutor (age)\n🚫 No advertising\n\n/referals - get 👑VIP for free"
