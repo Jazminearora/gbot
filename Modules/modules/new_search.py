@@ -152,7 +152,7 @@ async def configured_search(client, message):
         await message.reply(await translate_async("Searching for a interlocutor based on your configuration...", language), reply_markup=keyboard)
         gender = vip_users_details(message.from_user.id, "gender")
         age_groups = vip_users_details(message.from_user.id, "age_groups")
-        room = vip_users_details(message.from_user.id, "room")
+        room = vip_users_details(message.from_user.id, "room").split(",")
             # Send the current configuration message
         await message.reply(await translate_async(f"""Searching for a interlocutor based on your configuration...
 
