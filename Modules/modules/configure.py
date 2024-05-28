@@ -210,6 +210,21 @@ async def room_configuration_callback(client, callback_query):
         save_premium_user(user_id, room=",".join(room_dict[user_id]))
         await callback_query.answer(await translate_async("Your room configuration has been updated.", lang), show_alert=True)
         room_dict[user_id].clear()
+        await callback_query.answer(await translate_async("Your room configuration has been updated.", lang), show_alert=True)
+        room_dict[user_id].clear()
+        markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton(await translate_async("Gender🚻", lang), callback_data="cgndr"),
+            InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
+            InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
+        ])
+        await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+                                                                    
+--Current Configuration--:
+Gender: \n{vip_users_details(callback_query.from_user.id, "gender")}
+Age Group(s): {await get_age_groups_text(callback_query.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
+
+Please select an option for your search configuration:""", lang), reply_markup=markup)
     else:
         # Update the message with the new chosen room types
         caption = await translate_async("Choose at least 3 room types:\n", lang)
