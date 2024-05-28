@@ -183,8 +183,8 @@ async def room_callback(client, callback_query):
     #     InlineKeyboardButton(await translate_async("Genral ✅", lang), callback_data="configu_any"),
     #     InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="cgoback")
     # ])
-    new_reply_markup = InlineKeyboardMarkup(reply_markup)
-    await callback_query.message.edit_caption(await translate_async(f"Current Configuration: {cr_room}\n\nPlease select the room for your search configuration:", lang), reply_markup=new_reply_markup)
+    # new_reply_markup = InlineKeyboardMarkup(reply_markup)
+    await callback_query.message.edit_caption(await translate_async(f"Current Configuration: {cr_room}\n\nPlease select the room for your search configuration:", lang), reply_markup=reply_markup)
 
 
 @cbot.on_callback_query(filters.regex(r"^config_"))
