@@ -397,13 +397,13 @@ async def match_users():
                     lang1 = find_language(user1)
                     gen1 = get_gender(user1, "_")
                     age1 = get_age_group(user1, "_")
-                    room1 = vip_users_details(user1, "room").split(",")
+                    room1 = prem1["room"] 
 
                     user2 = int(prem2["user_id"])
                     lang2 = find_language(user2)
                     gen2 = get_gender(user2, "_")
                     age2 = get_age_group(user2, "_")
-                    room2 = vip_users_details(user2, "room").split(",")
+                    room2 = prem2["room"] 
 
                     # Match premium users with other premium user
                     if (lang1 == lang2 and
