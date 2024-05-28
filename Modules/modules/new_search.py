@@ -383,12 +383,39 @@ async def match_users():
             for normal_user in searching_users.copy():
                 if (premium_user["language"] == normal_user["language"] and
                     (premium_user["gender"] == normal_user["gender"] or premium_user["gender"] == "any gender" or premium_user["gender"] is None) and
-                    (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True) and
-                    any(interest in premium_user["room"] for interest in normal_user["room"]) or premium_user["room"] == ["any"] or premium_user["room"] is None):
+                    (premium_user["age_groups"] is None or normal_user["age_groups"] in premium_user["age_groups"] if premium_user["age_groups"] is not None else True)): # and
+                    # any(interest in premium_user["room"] for interest in normal_user["room"]) or premium_user["room"] == ["any"] or premium_user["room"] is None):
                     await process_match(premium_user, normal_user)
                     matched = True
             if matched:
                 break
+        if not matched:
+            for i , prem1 in enumerate(searching_premium_users.copy()):
+                for j, prem2 in enumerate(searching_premium_users[i+1:].copy(), i+1):
+                    # Getting users details
+                    user1 = int(prem1["user_id"])
+                    lang1 = find_language(user1)
+                    gen1 = get_gender(user1, "_")
+                    age1 = get_age_group(user1, "_")
+                    room1 = vip_users_details(user1, "room").split(",")
+
+                    user2 = int(prem2["user_id"])
+                    lang2 = find_language(user2)
+                    gen2 = get_gender(user2, "_")
+                    age2 = get_age_group(user2, "_")
+                    room2 = vip_users_details(user2, "room").split(",")
+
+                    # Match premium users with other premium user
+                    if (lang1 == lang2 and
+                        (prem1["gender"] == gen2 or prem1["gender"] == "any gender" or prem1["gender"] is None) and
+                        (prem2["gender"] == gen1 or prem2["gender"] == "any gender" or prem2["gender"] is None) and
+                        (prem1["age_groups"] is None or age1 in prem2["age_groups"] if prem1["age_groups"] is not None else True) and
+                        (prem2["age_groups"] is None or age2 in prem1["age_groups"] if prem2["age_groups"] is not None else True) and
+                        any(interest in room1 for interest in room2) or room1 == ["any"] or room1 is None or room2 == ["any"] or room2 is None):
+                        await process_match(prem1, prem2)
+                        matched = True
+                if matched:
+                    break
         if not matched:
             # Match normal users with other normal users
             for i, user1 in enumerate(searching_users.copy()):
@@ -399,7 +426,6 @@ async def match_users():
                         break
                 if matched:
                     break
-
         if not matched:
             count += 1
 

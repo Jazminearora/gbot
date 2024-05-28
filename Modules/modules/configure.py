@@ -49,39 +49,37 @@ async def gender_callback(client, callback_query):
                                                                     
 Please select your gender:""", lang), reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex("cmle"))
-async def male_callback(client, callback_query):
-    user_id = callback_query.from_user.id
-    is_premium, _ = is_user_premium(user_id)
-    lang = find_language(user_id)
-    if is_premium:
-        save_premium_user(user_id, gender="male")
-        await callback_query.answer(await translate_async("Your gender has been updated to male.", lang), show_alert=True)
-    else:
-        await callback_query.answer(await translate_async("You need to be a premium user to update your gender.", lang), show_alert=True)
-
-@cbot.on_callback_query(filters.regex("cfem"))
-async def female_callback(client, callback_query):
+@cbot.on_callback_query(filters.regex(r"cmle|cfem|cany_gndr"))
+async def gender_callback(client, callback_query):
     user_id = callback_query.from_user.id
     lang = find_language(user_id)
     is_premium, _ = is_user_premium(user_id)
+    gender = None
+    if callback_query.data == "cmle":
+        gender = "male"
+    elif callback_query.data == "cfem":
+        gender = "female"
+    elif callback_query.data == "cany_gndr":
+        gender = "any gender"
+    
     if is_premium:
-        save_premium_user(user_id, gender="female")
-        await callback_query.answer(await translate_async("Your gender has been updated to female.", lang), show_alert=True)
+        save_premium_user(user_id, gender=gender)
+        await callback_query.answer(await translate_async(f"Your gender has been updated to {gender}.", lang), show_alert=True)
+        markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton(await translate_async("Gender🚻", lang), callback_data="cgndr"),
+            InlineKeyboardButton(await translate_async("Age🕰️", lang), callback_data="cage"),
+            InlineKeyboardButton(await translate_async("Room💡", lang), callback_data="crm")]
+        ])
+        await callback_query.message.edit_caption(await translate_async(f"""🔍 Search Configuration 🔍
+                                                                    
+--Current Configuration--:
+Gender: \n{vip_users_details(callback_query.from_user.id, "gender")}
+Age Group(s): {await get_age_groups_text(callback_query.from_user.id, lang)}  
+Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
+
+Please select an option for your search configuration:""", lang), reply_markup=markup)
     else:
         await callback_query.answer(await translate_async("You need to be a premium user to update your gender.", lang), show_alert=True)
-
-@cbot.on_callback_query(filters.regex("cany_gndr"))
-async def any_gender_callback(client, callback_query):
-    user_id = callback_query.from_user.id
-    is_premium, _ = is_user_premium(user_id)
-    lang = find_language(user_id)
-    if is_premium:
-        save_premium_user(user_id, gender="any gender")
-        await callback_query.answer(await translate_async("Your gender has been updated to any gender.", lang), show_alert=True)
-    else:
-        await callback_query.answer(await translate_async("You need to be a premium user to update your gender.", lang), show_alert=True)
-
 @cbot.on_callback_query(filters.regex("cgoback"))
 async def cback_callback(client, callback_query):
     lang = find_language(callback_query.from_user.id)
@@ -98,6 +96,7 @@ Age Group(s): {await get_age_groups_text(callback_query.from_user.id, lang)}
 Room: {vip_users_details(callback_query.from_user.id, "room")}                                                                     
 
 Please select an option for your search configuration:""", lang), reply_markup=markup)
+
 
 
 @cbot.on_callback_query(filters.regex("cage"))
