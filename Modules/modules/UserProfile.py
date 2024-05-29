@@ -261,6 +261,7 @@ async def set_age_group(client, callback_query):
         except Exception as e:
             print("Exception:", e) 
             return
+        print("current age_group = ", current_age_group, "new age_group", age, age_group)
         try:
             success_message = await translate_async("Age group changed successfully!", language)
             # If language change is successful, inform the user
