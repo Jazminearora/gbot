@@ -217,7 +217,6 @@ async def normal_search(client, message):
             prem_searching_mode.insert(user_index, {"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         else:
             prem_searching_mode.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
-        searching_premium_users.append({"user_id": user_id, "language": language, "gender": "female", "age_groups": None, "room": None})
         try:
             await match_users()
             await asyncio.sleep(40)
@@ -392,7 +391,7 @@ async def match_users():
         if not matched:
             for i , prem1 in enumerate(searching_premium_users.copy()):
                 for j, prem2 in enumerate(searching_premium_users[i+1:].copy(), i+1):
-                    print(f"premium match = ij= {i, j} prem1 = {int(prem1["user_id"])} prem2 = {int(prem2["user_id"])}")
+                    # print(f"premium match = ij= {i, j} prem1 = {int(prem1["user_id"])} prem2 = {int(prem2["user_id"])}")
                     # Getting users details
                     user1 = int(prem1["user_id"])
                     lang1 = find_language(user1)
