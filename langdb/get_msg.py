@@ -7,7 +7,7 @@ async def get_age_markup(language):
     # Add button for -15
     age_buttons.append(InlineKeyboardButton("-15", callback_data=f"register_age_{language}_-15"))
     # Create buttons for ages 15 to 34
-    for age in range(15, 34):
+    for age in range(16, 34):
         age_buttons.append(InlineKeyboardButton(str(age), callback_data=f"register_age_{language}_{age}"))
     
     # Add button for 35+
