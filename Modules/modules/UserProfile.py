@@ -226,7 +226,7 @@ async def change_age_group(client, callback_query: CallbackQuery):
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         lang = find_language(user_id)
-        markup = await get_age_markup("english")
+        markup = await get_age_markup("english", back_btn= True)
         # Modify the callback data in the InlineKeyboardMarkup object
         for row in markup.inline_keyboard:
             for button in row:
