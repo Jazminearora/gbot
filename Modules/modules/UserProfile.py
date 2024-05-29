@@ -9,10 +9,11 @@ import re
 # helper functions
 from Modules.modules.advertisement import advert_user
 from helpers.forcesub import subscribed, user_registered
-from helpers.helper import get_profile, find_language, get_interest, get_age_group, get_gender
-from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change
+from helpers.helper import get_profile, find_language, get_interest, get_age_group, get_gender, convert_age_group
+from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change, get_age_markup
 from helpers.translator import translate_async
 from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
+from database.premiumdb import save_premium_user
 
 
 # Define a regex pattern to match the button text
@@ -225,13 +226,11 @@ async def change_age_group(client, callback_query: CallbackQuery):
         # Get the user ID and old language
         user_id = callback_query.from_user.id
         lang = find_language(user_id)
-        markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton(await translate_async("Below 18 🧒", lang), callback_data="set_age_below-18")],
-            [InlineKeyboardButton(await translate_async("18-24 👨‍🎓", lang), callback_data="set_age_18-24")],
-            [InlineKeyboardButton(await translate_async("25-34 🧑‍💼", lang), callback_data="set_age_25-34")],
-            [InlineKeyboardButton(await translate_async("Above 35 👴", lang), callback_data="set_age_above-35")],
-            [InlineKeyboardButton(await translate_async("Back 🔙", lang), callback_data="back"), InlineKeyboardButton(await translate_async("Close ❌", lang), callback_data="close_profile")]
-        ])
+        markup = await get_age_markup("english")
+        # Modify the callback data in the InlineKeyboardMarkup object
+        for row in markup.inline_keyboard:
+            for button in row:
+                button.callback_data = button.callback_data.replace("register_age_english", "set_age")
         txt = await translate_async("Choose your age group:", lang)
         await callback_query.edit_message_text(txt, reply_markup= markup)
     except Exception as e:
@@ -242,7 +241,11 @@ async def set_age_group(client, callback_query):
     try:
         user_id = callback_query.from_user.id
         language = find_language(user_id)
-        new_age_group = callback_query.data.split("_")[2].replace("-", "_")
+        age = callback_query.data.split("_")[2]
+        if age == "-15" or age == "35+":
+            age_group = age
+        else:
+            age_group = convert_age_group(int(age))
         muks = await callback_query.message.edit_caption("🔍")
         current_age_group = get_age_group(user_id, language).lower()
         try:
@@ -253,7 +256,8 @@ async def set_age_group(client, callback_query):
             return  
         trumk = await muks.edit_caption("🤖")
         try:
-            store_str_id(user_id, new_age_group)
+            save_premium_user(user_id, age)
+            store_str_id(user_id, age_group)
         except Exception as e:
             print("Exception:", e) 
             return
