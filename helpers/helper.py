@@ -44,11 +44,11 @@ def convert_age_group(age):
     if age < 15:
         return "-15"
     elif 15 <= age <= 17:
-        return "15-17"
+        return "15_17"
     elif 18 <= age <= 24:
-        return "18-24"
+        return "18_24"
     elif 25 <= age <= 34:
-        return "25-34"
+        return "25_34"
     elif age >= 35:
         return "35+"
     else:
