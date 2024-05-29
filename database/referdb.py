@@ -1,17 +1,6 @@
 from Modules import referdb, logging
 from random import randint
 
-async def is_served_user(refered_user_id: int) -> bool:
-    try:
-        # Check if any user has referred the given user_id
-        for document in referdb.find():
-            if refered_user_id in document["referred_users"]:
-                return True
-        return False
-    except Exception as e:
-        print("Error:", e)
-        return False
-
 async def save_id(referer_user_id: int, refered_user_id: int):
     try:
         referer_key = f"r{referer_user_id}"
@@ -28,6 +17,27 @@ async def save_id(referer_user_id: int, refered_user_id: int):
             referdb.insert_one({"user_id": referer_key, "referred_users": [refered_user_id], "points": 1})
     except Exception as e:
         print("Error:", e)
+
+
+##================================================================================================##
+##================================================================================================##
+
+
+async def is_served_user(refered_user_id: int) -> bool:
+    try:
+        # Check if any user has referred the given user_id
+        for document in referdb.find():
+            if refered_user_id in document["referred_users"]:
+                return True
+        return False
+    except Exception as e:
+        print("Error:", e)
+        return False
+
+
+##================================================================================================##
+##================================================================================================##
+
 
 async def get_point(user_id: int) -> int:
     try:
@@ -59,7 +69,12 @@ async def get_top_referers() -> list:
     except Exception as e:
         print("Error:", e)
         return []
-    
+
+
+##================================================================================================##
+##================================================================================================##
+
+
 async def create_refer_program(
     id: int = None, 
     admin_ids: list = None, 

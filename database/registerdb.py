@@ -22,6 +22,11 @@ def store_str_id(user_id, field):
     except Exception as e:
         logging.error(f"Error in storing user ID: {e}")
 
+
+##================================================================================================##
+##================================================================================================##
+
+
 def remove_user_id(_, user_id, field):
     try:
         collection.update_one({key: {"$exists": True}}, {"$pull": {f"{key}.database.{field}": user_id}})

@@ -34,6 +34,10 @@ def save_user(user_id: int, total_message: int = 0, profanity_score: int = 0, ra
         print("Error:", e)
 
 
+##================================================================================================##
+##================================================================================================##
+
+
 def users_rating_details(user_id: int, field: str):
     try:
         user = chatdb.find_one({"_id": str(user_id)})
@@ -56,7 +60,12 @@ def users_chat_details(user_id: int, field: str):
     except Exception as e:
         print("Error:", e)
         return None
-    
+
+
+##================================================================================================##
+##================================================================================================##
+
+
 def reset_ratings(user_id: int):
     try:
         result = chatdb.update_one({"_id": str(user_id)}, {"$set": {"rating": {}}})

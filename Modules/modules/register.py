@@ -227,7 +227,7 @@ async def register_age_callback(client, callback_query):
         # Extract language and age group from callback data
         data_parts = callback_query.data.split("_")
         language = data_parts[2]
-        age_group = data_parts[3].replace("-", "_")
+        age_group = data_parts[3]
         
         # Get user ID
         user_id = str(callback_query.from_user.id)

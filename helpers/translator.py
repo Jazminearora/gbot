@@ -24,6 +24,10 @@ def translate_text(text, target_language):
         return None
 
 
+##================================================================================================##
+##================================================================================================##
+
+
 async def translate_async(text, target_language):
     try:
         if target_language == 'English':

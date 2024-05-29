@@ -3,6 +3,7 @@ import time
 from pymongo.errors import PyMongoError
 from datetime import datetime, timedelta
 
+# Function to store genral things and search configuration of vip users.
 def save_premium_user(
     user_id: int,
     premium_status: bool = None,
@@ -94,6 +95,10 @@ def save_premium_user(
         print("Error:", e)
 
 
+##================================================================================================##
+##================================================================================================##
+
+
 def is_user_premium(user_id: int):
     try:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
@@ -133,6 +138,11 @@ def vip_users_details(user_id: int, field: str):
         print("Error:", e)
         return None
 
+
+##================================================================================================##
+##================================================================================================##
+
+
 def extend_premium_user_hrs(user_id: int, extend_hrs: int):
     try:
         # Check if the user is already premium
@@ -163,6 +173,11 @@ def calculate_remaining_time(expiry_time):
     remaining_time = timedelta(days=time_difference.days, seconds=time_difference.seconds)
     return remaining_time
 
+
+##================================================================================================##
+##================================================================================================##
+
+
 def remove_item_from_field(user_id: int, field: str, item: any):
     try:
         # Retrieve the user document from the premium database
@@ -191,6 +206,11 @@ def remove_item_from_field(user_id: int, field: str, item: any):
         print("Error:", e)
 
 
+
+##================================================================================================##
+##================================================================================================##
+
+
 def get_premium_users():
     try:
         premium_users = premiumdb.find({})
@@ -206,6 +226,10 @@ def get_premium_users():
     except Exception as e:
         print("Error:", e)
         return [], 0
+
+
+##================================================================================================##
+##================================================================================================##
 
 
 def get_user_position(users_list, user_id):
@@ -236,6 +260,11 @@ def get_top_chat_users(user_id: int = None) -> tuple:
         return {"error": str(e)}
 
 
+##================================================================================================##
+##================================================================================================##
+
+
+# Reset weekly chat time
 def reset_chatime():
     try:
         result = premiumdb.update_many({}, {"$set": {"weekly_chat_time": 0}})

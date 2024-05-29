@@ -15,31 +15,6 @@ def find_language(user_id):
                 return language
     return None
 
-def get_total_users(field):
-    try:
-        total_users = 0
-        document = collection.find_one({key: {"$exists": True}})
-        if document and field in document[key]["database"]:
-            lang_data = document[key]["database"][field]
-            total_users += len(lang_data)  
-        return total_users
-    except Exception as e:
-        print(f'Error in getting total users for {field}:', e)
-        return None
-
-def get_users_list(language):
-    try:
-        users_list = []
-        document = collection.find_one({key: {"$exists": True}})
-        if document and language in document[key]["database"]:
-            lang_data = document[key]["database"][language]
-            users_list = [user_id for user_id in lang_data]
-        return users_list
-    except Exception as e:
-        print(f'Error in getting users list for {language}:', e)
-        return None
-    
-    
 def get_gender(user_id, language):
     try:
         document = collection.find_one({key: {'$exists': True}})
@@ -79,19 +54,34 @@ def get_interest(user_id, _):
         print('Exception occurred in get_interest:', e)
     return None
 
-    
-def is_user_registered(user_id):
-    language = find_language(user_id)
-    if language:
-        gender = get_gender(user_id, language)
-        age_group = get_age_group(user_id, language)
-        interest = get_interest(user_id, language)
-        if gender and age_group and interest:
-            return True
-        else:
-            return False
-    else:    
-        return False
+
+##================================================================================================##
+##================================================================================================##
+
+
+def get_total_users(field):
+    try:
+        total_users = 0
+        document = collection.find_one({key: {"$exists": True}})
+        if document and field in document[key]["database"]:
+            lang_data = document[key]["database"][field]
+            total_users += len(lang_data)  
+        return total_users
+    except Exception as e:
+        print(f'Error in getting total users for {field}:', e)
+        return None
+
+def get_users_list(language):
+    try:
+        users_list = []
+        document = collection.find_one({key: {"$exists": True}})
+        if document and language in document[key]["database"]:
+            lang_data = document[key]["database"][language]
+            users_list = [user_id for user_id in lang_data]
+        return users_list
+    except Exception as e:
+        print(f'Error in getting users list for {language}:', e)
+        return None
 
 def get_detailed_user_list(language):
     try:
@@ -121,6 +111,27 @@ def get_detailed_user_list(language):
         print(f'Error in getting detailed user list for {language}:', e)
         return None
     
+##================================================================================================##
+##================================================================================================##
+
+
+def is_user_registered(user_id):
+    language = find_language(user_id)
+    if language:
+        gender = get_gender(user_id, language)
+        age_group = get_age_group(user_id, language)
+        interest = get_interest(user_id, language)
+        if gender and age_group and interest:
+            return True
+        else:
+            return False
+    else:    
+        return False
+    
+    
+##================================================================================================##
+##================================================================================================##
+
 
 async def get_profile(user_id, language, mode):
     try:

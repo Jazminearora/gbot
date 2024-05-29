@@ -15,7 +15,6 @@ async def process_friend_request(client, message, user_id, friend_id, language):
             if id == friend_id:
                 await message.reply_text(await translate_async("This user is already your friend.", language))
                 return
-    
     try:
         await client.get_users(friend_id)
     except UserIdInvalid:

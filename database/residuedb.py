@@ -39,6 +39,9 @@ async def unblock_user(user_id: int):
         residuedb.update_one({"_id": "BlockedUsers"}, {"$set": {"users": blocked_users["users"]}})
 
 
+##================================================================================================##
+##================================================================================================##
+
 
 # Function to check if a user is blocked
 async def is_blocked(user_id: int):
@@ -65,8 +68,12 @@ async def is_blckd(user_id: int):
         # Add user to the cache
         blocked_users_cache.add(user_id)
         return True
-
     return False
+
+
+##================================================================================================##
+##================================================================================================##
+
 
 async def BLfilter(filter, client, update):
     user_id = int(update.from_user.id)

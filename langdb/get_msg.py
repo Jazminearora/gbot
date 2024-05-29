@@ -2,8 +2,23 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyb
 from helpers.helper import get_total_users
 from helpers.translator import translate_async
 
+async def get_age_markup(language):
+    age_buttons = []
+    # Create buttons for ages 8 to 21
+    for age in range(8, 21):
+        age_buttons.append(InlineKeyboardButton(str(age), callback_data=f"register_age_{language}_{age}"))
+    
+    # Add button for 22+
+    age_buttons.append(InlineKeyboardButton("22+", callback_data=f"register_age_{language}_22+"))
+
+    # Split buttons into rows of 5
+    rows = [age_buttons[i:i+5] for i in range(0, len(age_buttons), 5)]
+    
+    return InlineKeyboardMarkup(rows)
+
 # Registration message for register.py file
 async def get_registration_text(language, step):
+    age_markup = await get_age_markup(language)
     if language == "English":
         if step == "gender":
             return "Choose your gender:", InlineKeyboardMarkup([
@@ -21,11 +36,7 @@ async def get_registration_text(language, step):
  🧑🏻 online: {get_total_users("male")}
 
 Choose your gender """
-            return caption , InlineKeyboardMarkup([
-                [InlineKeyboardButton("Below 18", callback_data=f"register_age_{language}_below-18")],
-                [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
-                [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
-                [InlineKeyboardButton("Above 35", callback_data=f"register_age_{language}_above-35")]])
+            return caption , age_markup
         elif step == "interest":
             return "Choose your interest:", InlineKeyboardMarkup([
                 [InlineKeyboardButton("👁‍🗨 Communication", callback_data=f"register_interest_{language}_communication")],
@@ -52,11 +63,7 @@ Choose your gender """
                 [InlineKeyboardButton("Мужчина👦", callback_data=f"register_gender_{language}_male")],
                 [InlineKeyboardButton("Женщина👧", callback_data=f"register_gender_{language}_female")]])
         elif step == "age":
-            return "Выберите свою возрастную группу:", InlineKeyboardMarkup([
-                [InlineKeyboardButton("Младше 18", callback_data=f"register_age_{language}_below-18")],
-                [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
-                [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
-                [InlineKeyboardButton("Старше 35", callback_data=f"register_age_{language}_above-35")]])
+            return "Выберите свою возрастную группу:", age_markup
         elif step == "interest":
             return "Выберите свой интерес:", InlineKeyboardMarkup([
                 [InlineKeyboardButton("👁‍🗨 Коммуникация", callback_data=f"register_interest_{language}_communication")],
@@ -84,11 +91,7 @@ Choose your gender """
  🧑🏻 onlayn: {get_total_users("male")}
 
 Cinsinizi seçin """
-            return caption , InlineKeyboardMarkup([
-                [InlineKeyboardButton("18 yaşdan kiçik", callback_data=f"register_age_{language}_below-18")],
-                [InlineKeyboardButton("18-24", callback_data=f"register_age_{language}_18-24")],
-                [InlineKeyboardButton("25-34", callback_data=f"register_age_{language}_25-34")],
-                [InlineKeyboardButton("35 yaşdan yuxarı", callback_data=f"register_age_{language}_above-35")]])
+            return caption , age_markup
         elif step == "interest":
             return "Maragınızı seçin:", InlineKeyboardMarkup([
                 [InlineKeyboardButton("👁‍🗨 Kommunikasiya", callback_data=f"register_interest_{language}_communication")],
@@ -101,7 +104,10 @@ Cinsinizi seçin """
     else:
         return None, None
 
-    
+
+##================================================================================================##
+##================================================================================================##
+
 
 # Function to get reply markup with buttons in the user's selected language used in keyboard.py
 async def get_reply_markup(language):
