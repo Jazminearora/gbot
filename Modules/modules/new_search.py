@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime
 import time
 import re
+import pyrostep
 from collections import deque
 from pyrogram import filters
 from pyrogram.errors import FloodWait
@@ -29,6 +30,7 @@ from database.chatdb import save_user
 from database.residuedb import add_bluser
 
 
+pyrostep.listen(cbot)
 
 # List to store users searching for an interlocutor
 searching_users = []
@@ -505,7 +507,7 @@ async def send_match_messages(user1, user2):
         cap1 = await interlocutor_normal_message(lang1, verify_status2)
     await cbot.send_message(user1["user_id"], cap1, reply_markup=keyboard)
     if is_vip2:
-        caption = await interlocutor_vip_message(lang2, name1, get_gender(user1["user_id"], "_"), vip_users_details(use1["user_id"], "age"), verify_status1)
+        caption = await interlocutor_vip_message(lang2, name1, get_gender(user1["user_id"], "_"), vip_users_details(user1["user_id"], "age"), verify_status1)
     else:
         caption = await interlocutor_normal_message(lang2, verify_status1)
     await cbot.send_message(user2["user_id"], caption, reply_markup=keyboard)
@@ -626,13 +628,12 @@ async def handle_rating(_, query):
     if rating_emoji == "⛔":
         # Ask for a report
         buttons = [
-            [
-                InlineKeyboardButton(await translate_async("Yes, report this user", language), callback_data=f"report_{other_user_id}"),
-                InlineKeyboardButton(await translate_async("No, nevermind", language), callback_data=f"skip_handle")
+
+                InlineKeyboardButton(await translate_async("No, it's okay!", language), callback_data=f"skip_handle")
             ]
-        ]
         markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(await translate_async("Do you want to report this user?", language), reply_markup=markup)
+        await query.message.edit_text(await translate_async("Please enter a message for reporting.", language), reply_markup=markup)
+        await pyrostep.register_next_step(user_id, handle_report, kwargs= {"other_user_id" : other_user_id})
     else:
         buttons = [
         [
@@ -644,11 +645,8 @@ async def handle_rating(_, query):
         await query.message.edit_text(await translate_async("Thank you for your feedback!", language), reply_markup = markup)
 
 # Handle the report response
-@cbot.on_callback_query(filters.regex(r"report_.*") & subscribed & user_registered)
-async def handle_report(client, query):
-    user_id = query.from_user.id
+async def handle_report(user_id, message: Message, other_user_id):
     language = find_language(user_id)
-    other_user_id = int(query.data.split("_")[1])
     global messages
     # Retrieve the messages for the other user
     messages_from = messages.get(other_user_id, [])
@@ -661,7 +659,7 @@ async def handle_report(client, query):
             except FloodWait as e:
                 await asyncio.sleep(e.value)
                 await message.forward(REPORT_CHAT)
-    await client.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n\nAbove is his last 10 messages.")
+    await cbot.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n\nAbove is his last 10 messages.")
     buttons = [
         [
             InlineKeyboardButton(await translate_async("Close❌", language), callback_data=f"skip_handle"),
@@ -670,7 +668,7 @@ async def handle_report(client, query):
     ]
     markup = InlineKeyboardMarkup(buttons)
     # Send a confirmation message to the user
-    await query.message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language), reply_markup = markup)
+    await message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language), reply_markup = markup)
 
 
 
