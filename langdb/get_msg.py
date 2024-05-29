@@ -5,11 +5,11 @@ from helpers.translator import translate_async
 async def get_age_markup(language):
     age_buttons = []
     # Create buttons for ages 8 to 21
-    for age in range(8, 21):
+    for age in range(15, 34):
         age_buttons.append(InlineKeyboardButton(str(age), callback_data=f"register_age_{language}_{age}"))
     
     # Add button for 22+
-    age_buttons.append(InlineKeyboardButton("22+", callback_data=f"register_age_{language}_22+"))
+    age_buttons.append(InlineKeyboardButton("22+", callback_data=f"register_age_{language}_35+"))
 
     # Split buttons into rows of 5
     rows = [age_buttons[i:i+5] for i in range(0, len(age_buttons), 5)]

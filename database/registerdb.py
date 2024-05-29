@@ -2,12 +2,26 @@ from config import key
 from Modules import mongodb as collection
 import logging
 
+from helpers.helper import convert_age_group
+from database.premiumdb import save_premium_user
+
 
 def add_user_id(_, user_id, field):
     try:
         collection.update_one({key: {"$exists": True}}, {"$push": {f"{key}.database.{field}": user_id}})
     except Exception as e:
         print("Error in adding user ID:", e)
+
+def store_age(user_id, age):
+    try:
+        if age == "-15" or age == "35+":
+            age_group = age
+        else:
+            age_group = convert_age_group(int(age))
+        add_user_id("_", user_id, age_group)
+        save_premium_user(user_id, age)
+    except Exception as e:
+        print("Error in adding Age:", e)
 
 def store_str_id(user_id, field):
     try:

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 # Function to store genral things and search configuration of vip users.
 def save_premium_user(
     user_id: int,
+    age: str|int = None,
     premium_status: bool = None,
     purchase_time: str = None,
     expiry_time: str = None,
@@ -28,6 +29,8 @@ def save_premium_user(
             update_dict = {}
             if premium_status is not None:
                 update_dict["premium_status"] = premium_status
+            if age is not None:
+                update_dict["age"] = age
             if purchase_time is not None:
                 update_dict["premium_purchase_time"] = purchase_time
             if expiry_time is not None:
@@ -77,6 +80,7 @@ def save_premium_user(
             doc = {
                 "_id": str(user_id),
                 "premium_status": new_status,
+                "age": age,
                 "premium_purchase_time": purchase_time,
                 "premium_expiry_time": expiry_time,
                 "gender": gender,

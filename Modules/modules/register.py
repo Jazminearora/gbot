@@ -7,7 +7,7 @@ from Modules import cbot, BOT_USERNAME, LOG_GROUP
 from helpers.helper import find_language, get_gender, get_age_group, get_interest, is_user_registered
 from langdb.get_msg import get_registration_text, get_reply_markup
 from helpers.translator import translate_text, translate_async
-from database.registerdb import add_user_id
+from database.registerdb import add_user_id, store_age
 from database.referdb import save_id, is_served_user, get_point, get_refer_program_field, is_program_id, create_refer_program
 from database.premiumdb import extend_premium_user_hrs, save_premium_user
 from helpers.forcesub import subscribed, user_registered
@@ -227,7 +227,7 @@ async def register_age_callback(client, callback_query):
         # Extract language and age group from callback data
         data_parts = callback_query.data.split("_")
         language = data_parts[2]
-        age_group = data_parts[3]
+        age_group = data_parts[3] # It is individual age not age group.
         
         # Get user ID
         user_id = str(callback_query.from_user.id)
@@ -235,7 +235,7 @@ async def register_age_callback(client, callback_query):
         # Check if user ID is already registered for age group
         if not get_age_group(user_id, language):
             # Store user ID in chosen age group's field in the chosen language in MongoDB
-            add_user_id(language, user_id, age_group)
+            store_age(user_id, age_group)
             
             # Ask user to choose interest
             caption, reply_markup = await get_registration_text(language, "interest")

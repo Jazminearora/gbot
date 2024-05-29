@@ -33,13 +33,28 @@ def get_age_group(user_id, language):
         document = collection.find_one({key: {"$exists": True}})
         if document:
             lang_data = document[key]["database"]
-            for age_group in ["below_18", "18_24", "25_34", "above_35"]:
+            for age_group in ["-15", "15_17", "18_24", "25_34", "35+"]:
                 if str(user_id) in lang_data.get(age_group, []):
                     return age_group.replace("_", "-").capitalize()
     except Exception as e:
         print('Exception occurred in get_age_group:', e)
     return None
 
+def convert_age_group(age):
+    if age < 15:
+        return "-15"
+    elif 15 <= age <= 17:
+        return "15-17"
+    elif 18 <= age <= 24:
+        return "18-24"
+    elif 25 <= age <= 34:
+        return "25-34"
+    elif age >= 35:
+        return "35+"
+    else:
+        print(age)
+        return None
+    
 def get_interest(user_id, _):
     try:
         document = collection.find_one({key: {"$exists": True}})
@@ -139,6 +154,7 @@ async def get_profile(user_id, language, mode):
         user_data = {
             "gender": get_gender(user_id, language),
             "age_group": get_age_group(user_id, language),
+            "age": vip_users_details(user_id, "age"),
             "interest": get_interest(user_id, language),
             "total_msg": users_chat_details(user_id, "total_message"),
             "dialogs": vip_users_details(user_id, "total_dialog"),
@@ -158,7 +174,8 @@ async def get_profile(user_id, language, mode):
 
 **🗂 User Data:**
 👤 Gender: {user_data['gender']}
-🎂 Age: {user_data['age_group']}
+🎊 Age: {user_data['age']}
+🎂 Age Group: {user_data['age_group']}
 ⚡ Interest: {user_data['interest']}
 """
             message = await translate_async(full_text, language)

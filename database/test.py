@@ -347,10 +347,12 @@
 
 # print(new_reply_markup)
 
-room1 = ['Movies', 'Flirting', 'Free Chat']
-room2 = ['Movies', 'sk', 'Free uu']
-# print(data.split(","))
-if any(interest in room1 for interest in room2) or room1 == ["any"] or room1 is None or room2 == ["any"] or room2 is None:
-    print ("uu")
-else:
-    print("uff")
+# room1 = ['Movies', 'Flirting', 'Free Chat']
+# room2 = ['Movies', 'sk', 'Free uu']
+# # print(data.split(","))
+# if any(interest in room1 for interest in room2) or room1 == ["any"] or room1 is None or room2 == ["any"] or room2 is None:
+#     print ("uu")
+# else:
+#     print("uff")
+
+print("18_24".capitalize)

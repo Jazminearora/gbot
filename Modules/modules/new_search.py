@@ -47,7 +47,7 @@ normal_searching_mode = []
 # Dictionary to store last message timestamps for each user
 message_timestamps = {}
 
-# Initialize a dictionary to store the messages for each user
+#dictionary to store the messages for each user
 messages = {}
 
 #dictionary to store start time
@@ -392,6 +392,7 @@ async def match_users():
         if not matched:
             for i , prem1 in enumerate(searching_premium_users.copy()):
                 for j, prem2 in enumerate(searching_premium_users[i+1:].copy(), i+1):
+                    print(f"premium match = ij= {i, j} prem1 = {int(prem1["user_id"])} prem2 = {int(prem2["user_id"])}")
                     # Getting users details
                     user1 = int(prem1["user_id"])
                     lang1 = find_language(user1)
