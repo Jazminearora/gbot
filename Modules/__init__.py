@@ -38,7 +38,7 @@ client = MongoClient(MONGO_URI)
 db = client["cboSot-primer"]
 referdb = db["referdb"]
 premiumdb = db["premiumb"]
-mongodb = db["tgtbot"]
+mongodb = db["tgtobot"]
 chatdb = db["chatdsd"]
 residuedb = db["residuedb"]
 
