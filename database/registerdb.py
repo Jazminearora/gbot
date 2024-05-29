@@ -20,6 +20,7 @@ def store_age(user_id, age):
             age_group = convert_age_group(int(age))
         add_user_id("_", user_id, age_group)
         save_premium_user(user_id, age)
+        print("saving age" ,{age_group}, {age})
     except Exception as e:
         print("Error in adding Age:", e)
 

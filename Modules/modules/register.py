@@ -237,6 +237,7 @@ async def register_age_callback(client, callback_query):
             # Store user ID in chosen age group's field in the chosen language in MongoDB
             store_age(user_id, age_group)
             
+            
             # Ask user to choose interest
             caption, reply_markup = await get_registration_text(language, "interest")
             await callback_query.message.edit_text(caption, reply_markup=reply_markup)
