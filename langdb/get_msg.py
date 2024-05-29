@@ -2,7 +2,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyb
 from helpers.helper import get_total_users
 from helpers.translator import translate_async
 
-async def get_age_markup(language):
+async def get_age_markup(language, back_btn = None):
     age_buttons = []
     # Add button for -15
     age_buttons.append(InlineKeyboardButton("-15", callback_data=f"register_age_{language}_-15"))
@@ -12,7 +12,9 @@ async def get_age_markup(language):
     
     # Add button for 35+
     age_buttons.append(InlineKeyboardButton("35+", callback_data=f"register_age_{language}_35+"))
-
+    if back_btn:
+            age_buttons.append([InlineKeyboardButton("🔙", callback_data="back"),
+             InlineKeyboardButton("❌", callback_data="close_profile")])
     # Split buttons into rows of 5
     rows = [age_buttons[i:i+5] for i in range(0, len(age_buttons), 5)]
     
