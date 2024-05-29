@@ -347,7 +347,7 @@ async def interlocutor_vip_message(language, name, gender, age_group, verify_sta
     
     details_and_chatting = await translate_async(f"""
 🔹 Gender: {gender}
-🔹 Age group: {age_group}
+🔹 Age: {age_group}
 ✅ Verified: {verify_status}
 
 💬 You can start chatting now.""", language)

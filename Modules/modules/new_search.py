@@ -500,12 +500,12 @@ async def send_match_messages(user1, user2):
         one_time_keyboard=True
     )
     if is_vip1:
-        cap1 = await interlocutor_vip_message(lang1, name2, user2["gender"], user2["age_groups"], verify_status2)
+        cap1 = await interlocutor_vip_message(lang1, name2, get_gender(user2["user_id"], "_"),vip_users_details(user2["user_id"], "age"), verify_status2)
     else:
         cap1 = await interlocutor_normal_message(lang1, verify_status2)
     await cbot.send_message(user1["user_id"], cap1, reply_markup=keyboard)
     if is_vip2:
-        caption = await interlocutor_vip_message(lang2, name1, user1["gender"], user1["age_groups"], verify_status1)
+        caption = await interlocutor_vip_message(lang2, name1, get_gender(user1["user_id"], "_"), vip_users_details(use1["user_id"], "age"), verify_status1)
     else:
         caption = await interlocutor_normal_message(lang2, verify_status1)
     await cbot.send_message(user2["user_id"], caption, reply_markup=keyboard)
