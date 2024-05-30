@@ -26,7 +26,7 @@ async def premium_option(client, message):
     caption, buttons = await get_premium_msg(user_lang)
     await message.reply_text(caption, reply_markup=buttons)
 
-@cbot.on_callback_query(filter.regex("premium_callback"))
+@cbot.on_callback_query(filters.regex("premium_callback"))
 async def premium_bsck(client, query):
     user_id = query.message.from_user.id
     user_lang = find_language(user_id)
