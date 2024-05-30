@@ -37,13 +37,13 @@ async def translate_async(text: str, target_language):
     else:
         tr_lang = target_language
     cached_translation = get_cached_translation(text, tr_lang)
-    set_cache_translation(text, tr_lang, translation.text)
     if cached_translation:
         return cached_translation
 
     try:
         t = Translator()
         translation = await t.translate(text, targetlang=tr_lang)
+        set_cache_translation(text, tr_lang, translation.text)
         return translation.text
     except Exception as e:
         if isinstance(e, Exception):  # catch all exceptions
