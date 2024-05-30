@@ -12,7 +12,7 @@ datetime
 AaioAPI
 aiohttp
 apscheduler
-translate
+translators
 telegraph
 aiofiles
 proxy_randomizer
