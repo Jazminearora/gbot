@@ -6,7 +6,6 @@ from Modules import LOG_GROUP, cbot
 
 rp = RegisteredProviders()
 rp.parse_providers()
-_ = ts.preaccelerate_and_speedtest()  # Caching sessions in advance, which can help improve access speed.
 
 
 def translate_text(text, target_language):
