@@ -649,7 +649,7 @@ async def handle_rating(_, query):
 async def handle_report(userid, message: Message, other_user_id, old_msg: Message):
     try:
         try:
-            old_msg.delete()
+            await old_msg.delete()
         except:
             return
         report_msg = message.text
@@ -658,6 +658,7 @@ async def handle_report(userid, message: Message, other_user_id, old_msg: Messag
         global messages
         # Retrieve the messages for the other user
         messages_from = messages.get(other_user_id, [])
+        print(messages_from ,"uu")
 
         if messages_from:
             # Send each message to the report_chat
