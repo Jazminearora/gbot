@@ -50,7 +50,7 @@ async def shear_action_handler(_, callback_query: CallbackQuery):
     current = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "ban"
     await callback_query.message.edit_text(f"Curent status: {current} \n\nChoose an action for shear words:", reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex(r"shear_(ban|warn|time-ban)") & filters.user(ADMIN_IDS))
+@cbot.on_callback_query(filters.regex(r"shear_(ban|warn|time-ban|off)") & filters.user(ADMIN_IDS))
 async def set_shear_action_handler(_, callback_query: CallbackQuery):
     """Set SHEAR_ACTION"""
     action = callback_query.data.split("_")[1]
@@ -67,6 +67,9 @@ async def check_shear_url(user_id, message, lang):
     """
     Check if the message contains shear words or URLs and take appropriate action.
     """
+    current = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "ban"
+    if current == "off":
+        return False
     if await is_shear(message.text) if message.text else await is_shear(message.caption):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: Inappropriate language or insults are not tolerated here. Let's maintain a respectful conversation. Thank you! 🚫", lang))
         sz = await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
