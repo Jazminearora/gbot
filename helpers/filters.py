@@ -7,12 +7,16 @@ from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, ChatA
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.filters import Update
 from helpers.helper import is_user_registered
+from database.premiumdb import is_user_premium
 
 async def is_subscribed(filter, client, update):
     promo_status = os.environ.get('PROMO_STATUS')
     if not promo_status or promo_status == "False":
         return True
     user_id = update.from_user.id
+    status, _ = is_user_premium(user_id)
+    if status:
+        return True
     if user_id in ADMIN_IDS:
         return True
     chat_ids = os.getenv("SUBSCRIPTION", "").split(",")
