@@ -7,23 +7,20 @@ from Modules import LOG_GROUP, cbot
 rp = RegisteredProviders()
 rp.parse_providers()
 
+MAX_CACHE_LENGTH = 250  # adjust this value to your needs
 
-def translate_text(text, target_language):
-    try:
-        if target_language == 'English':
-            tr_lang = "en"
-        elif target_language == "Russian":
-            tr_lang = "ru"
-        elif target_language == "Azerbejani":
-            tr_lang = "az"
-        else:
-            tr_lang = target_language
-        t = SyncTranslator()
-        translation = t.translate(text, targetlang=tr_lang)
-        return translation.text
-    except Exception as e:
-        print(f'Error occurred during translation: {e}')
-        return None
+cache = {}
+
+def get_cached_translation(text, target_language):
+    key = f"{text}:{target_language}"
+    if key in cache:
+        return cache[key]
+    return None
+
+def set_cache_translation(text, target_language, translation):
+    if len(text) <= MAX_CACHE_LENGTH:
+        key = f"{text}:{target_language}"
+        cache[key] = translation
 
 
 ##================================================================================================##
@@ -39,6 +36,10 @@ async def translate_async(text: str, target_language):
         tr_lang = "az"
     else:
         tr_lang = target_language
+    cached_translation = get_cached_translation(text, tr_lang)
+    set_cache_translation(text, tr_lang, translation.text)
+    if cached_translation:
+        return cached_translation
 
     try:
         t = Translator()
@@ -64,3 +65,26 @@ async def translate_async(text: str, target_language):
                     except Exception as e:
                         await cbot.send_message(LOG_GROUP, f'Error occurred during translation: {e}')
                         return text
+
+
+##================================================================================================##
+##================================================================================================##
+
+
+def translate_text(text, target_language):
+    try:
+        if target_language == 'English':
+            tr_lang = "en"
+        elif target_language == "Russian":
+            tr_lang = "ru"
+        elif target_language == "Azerbejani":
+            tr_lang = "az"
+        else:
+            tr_lang = target_language
+        t = SyncTranslator()
+        translation = t.translate(text, targetlang=tr_lang)
+        return translation.text
+    except Exception as e:
+        print(f'Error occurred during translation: {e}')
+        return None
+    

@@ -9,7 +9,7 @@ from langdb.get_msg import get_registration_text, get_reply_markup
 from helpers.translator import translate_text, translate_async
 from database.registerdb import add_user_id, store_age
 from database.referdb import save_id, is_served_user, get_point, get_refer_program_field, is_program_id, create_refer_program
-from database.premiumdb import extend_premium_user_hrs, save_premium_user
+from database.premiumdb import extend_premium_user_hrs
 from helpers.forcesub import subscribed, user_registered
 from config import EXTEND_HRS_REFER
 
@@ -265,7 +265,7 @@ async def register_interest_callback(client, callback_query):
             language = find_language(user_id)
             # Registration completed
             await callback_query.message.edit_text(await translate_async("Registration completed! Thank you for registering.", language))
-            save_premium_user(user_id, premium_status= False)
+            extend_premium_user_hrs(user_id, 1)
             reply_markup = await get_reply_markup(language)
             await callback_query.message.reply_text("Please select a option.", reply_markup=reply_markup)
         else:
