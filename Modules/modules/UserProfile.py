@@ -19,7 +19,7 @@ from database.premiumdb import save_premium_user
 # Define a regex pattern to match the button text
 profile_pattern = re.compile(r"^👤 (Profile|Профиль|Profil) 👤$")
 
-@cbot.on_message(filters.regex(profile_pattern) & filters.private & subscribed & user_registered)
+@cbot.on_message((filters.regex(profile_pattern)|filters.command("profile")) & filters.private & subscribed & user_registered)
 async def handle_profile_response(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)

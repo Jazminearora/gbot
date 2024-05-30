@@ -106,7 +106,7 @@ def add_pair(new_pair):
 
 button_pattern = re.compile(r"^(🔍 (Search for an interlocutor|Найти собеседника|Məqalə axtar) 🔎)$")
 
-@cbot.on_message(filters.private & filters.regex(button_pattern) & subscribed & user_registered)
+@cbot.on_message(filters.private & (filters.regex(button_pattern)|filters.command("search")) & subscribed & user_registered)
 async def search_interlocutor(client, message):
     user_language = find_language(message.from_user.id)  # Retrieve user's language
     await advert_user(message.from_user.id, user_language)
@@ -339,7 +339,7 @@ async def normal_search(client, message: Message):
         await message.reply(f"Error: {e}")
 
 # Handle stop search button
-@cbot.on_message(filters.private & filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın") & subscribed & user_registered)
+@cbot.on_message(filters.private & (filters.regex("Stop Searching|Прекратить поиск|Axtarışı dayandırın")| filters.command("stop")) & subscribed & user_registered)
 async def stop_search(_, message):
     user_id = message.from_user.id
     language = find_language(user_id)
@@ -536,8 +536,16 @@ async def get_rating_markup(user_id):
 
 #code for next search
 @cbot.on_callback_query(filters.regex("next_search"))
-async def next_search(_, query):
+async def next_search_query(_, query):
     user_id = query.from_user.id
+    await next_search(user_id, query.message)
+
+@cbot.on_message(filters.command("next"))
+async def next_search_query(_, message):
+    user_id = message.from_user.id
+    await next_search(user_id, message)
+
+async def next_search(user_id, message: Message):
     lang = find_language(user_id)
     # Check if user_id exists in premium searching mode list
     for user in prem_searching_mode:
@@ -560,7 +568,7 @@ async def next_search(_, query):
                 break
         else:
             # If user_id not found in either list, inform user to start a chat first
-            await query.message.reply("Please start a chat first to use this feature.")
+            await message.reply("Please start a chat first to use this feature.")
             return
 
     # If user_id found, proceed with next search
@@ -568,17 +576,17 @@ async def next_search(_, query):
        searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room}) 
     elif mode == "normal":
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
-    await query.message.edit_text(await translate_async("Started searching for a interlocutor... ", lang))
+    await message.edit_text(await translate_async("Started searching for a interlocutor... ", lang))
     await match_users()
     await asyncio.sleep(40)
     for premium_user in searching_premium_users.copy():
         if premium_user["user_id"] == user_id:
             await remove_user_from_searching_lists(user_id)
-            await query.message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
+            await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
     for normal_user in searching_users.copy():
         if normal_user["user_id"] == user_id:
             await remove_user_from_searching_lists(user_id)
-            await query.message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
+            await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
 
 @cbot.on_message(filters.private & filters.regex("Add as Friend") & subscribed & user_registered)
 async def add_as_friend(client, message: Message):
