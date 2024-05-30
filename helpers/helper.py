@@ -185,11 +185,11 @@ async def get_profile(user_id, language, mode):
 
             if premium:
                 message += f"{await translate_async(f"""
-🌍 Subscription 💎 PREMIUM: True
+🌍 Subscription 💎 PREMIUM: Active🟢
 🔔 Premium Expiry in: {calculate_remaining_time(time)}
 """, language)}\n"
             else:
-                message += f"{await translate_async('🌍 Subscription 💎 PREMIUM: False', language)}\n"
+                message += f"{await translate_async('🌍 Subscription 💎 PREMIUM: Inactive🔴', language)}\n"
             reply_markup = InlineKeyboardMarkup(
                 [
                     [InlineKeyboardButton(text=await translate_async('Edit✍️', language), callback_data="edit_profile")],

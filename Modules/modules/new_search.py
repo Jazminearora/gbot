@@ -629,7 +629,9 @@ async def handle_rating(_, query):
         # Ask for a report
         buttons = [
 
-                InlineKeyboardButton(await translate_async("No, it's okay!", language), callback_data=f"skip_handle")
+               [ 
+                   InlineKeyboardButton(await translate_async("No, it's okay!", language), callback_data=f"skip_handle")
+               ]
             ]
         markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(await translate_async("Please enter a message for reporting.", language), reply_markup=markup)
