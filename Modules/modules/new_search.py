@@ -651,12 +651,12 @@ async def handle_report(client, query):
     user_id = query.from_user.id
     language = find_language(user_id)
     other_user_id = int(query.data.split("_")[1])
-    await query.message.edit_text(await translate_async("Please enter a message to report.", language))
+    await query.message.edit_text(await translate_async("Please enter a message to report:", language))
     try:
         report_msg_obj = await pyrostep.wait_for(user_id, timeout= 90)
         report_msg = report_msg_obj.text
     except TimeoutError:
-        await query.message.reply(await translate_async("No report message received, Reporting cancelled !!"))
+        await query.message.reply(await translate_async("No report message received, Reporting cancelled !!", language))
     global messages
     # Retrieve the messages for the other user
     messages_from = messages.get(other_user_id, [])
@@ -669,7 +669,7 @@ async def handle_report(client, query):
             except FloodWait as e:
                 await asyncio.sleep(e.value)
                 await message.forward(REPORT_CHAT)
-    await client.send_message(REPORT_CHAT, f"#Report\n\n**Reported to**: {other_user_id}\n**Reported by**: {user_id}\n**Report Message: {report_msg}\n\nAbove is his/her last 10 messages.")
+    await client.send_message(REPORT_CHAT, f"#Report\n\n**Reported to**: {other_user_id}\n**Reported by**: {user_id}\n**Report Message**: {report_msg}\n\nAbove is his/her last 10 messages.")
     buttons = [
         [
             InlineKeyboardButton(await translate_async("Close❌", language), callback_data=f"skip_handle"),

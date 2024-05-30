@@ -1,3 +1,4 @@
+import os
 from pyrogram import filters
 from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.enums import MessageEntityType
@@ -9,7 +10,8 @@ from helpers.translator import translate_async
 pyrostep.listen(cbot)
 
 markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton(text="Add Shear Word ➕", callback_data="plus_shear_word")],
+        [InlineKeyboardButton(text="Add Shear ➕", callback_data="plus_shear_word"),
+         InlineKeyboardButton(text= "Shear Action ⚙️", callback_data= "shear_action")],
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]])
 
@@ -32,6 +34,35 @@ async def add_shear_word_handler(_, callback_query: CallbackQuery):
     await callback_query.answer(f"Added all words to the list of shear words", show_alert= True)
     shear_words = await get_all_shear_words()
     await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+
+
+@cbot.on_callback_query(filters.regex("shear_action") & filters.user(ADMIN_IDS))
+async def shear_action_handler(_, callback_query: CallbackQuery):
+    """Shear action callback"""
+    actions = [
+        {"text": "Ban ⚫️", "callback_data": "shear_ban"},
+        {"text": "Warn ⚠️", "callback_data": "shear_warn"},
+        {"text": "Time Ban ⏰", "callback_data": "shear_time_ban"},
+        {"text": "Close ❌", "callback_data": "st_close"},
+        {"text": "Back 🔙", "callback_data": "st_back"}
+    ]
+    markup = InlineKeyboardMarkup([[
+        InlineKeyboardButton(action["text"], callback_data=action["callback_data"])
+        for action in actions
+    ]])
+    await callback_query.message.edit_text("Choose an action for shear words:", reply_markup=markup)
+
+@cbot.on_callback_query(filters.regex(r"shear_(ban|warn|time_ban)") & filters.user(ADMIN_IDS))
+async def set_shear_action_handler(_, callback_query: CallbackQuery):
+    """Set SHEAR_ACTION"""
+    action = callback_query.data.split("_")[1]
+    print(action)
+    os.environ["SHEAR_ACTION"] = action
+    await callback_query.answer(f"Shear action set to {action}", show_alert=True)
+    await callback_query.message.edit_text(f"Shear action set to {action}", reply_markup=markup)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
