@@ -6,7 +6,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, Peer
 
 from helpers.helper import find_language, get_profile
 from Modules.modules.register import get_user_name
-from database.residuedb import add_bluser, is_blocked as is_blckd
+from database.residuedb import add_bluser, is_blocked as is_blckd, unblock_user
 from database.premiumdb import vip_users_details, save_premium_user
 from .. import cbot, ADMIN_IDS, BOT_NAME
 
@@ -65,7 +65,8 @@ async def block_user_completely(_, query):
             await add_bluser(user_id)
             await query.message.edit_text("User Blocked Completely", reply_markup= markup)
         else:
-            await query.message.edit_text("User is Already Blocked Completely.", reply_markup= markup)
+            await unblock_user(int(user_id))
+            await query.message.edit_text("User unblocked", reply_markup= markup)
     except MessageNotModified:
         pass
     except Exception as e:
@@ -80,7 +81,8 @@ async def block_user_media(_, query):
             save_premium_user(user_id, block_media= True)
             await query.message.edit_text("User Media Blocked.", reply_markup= markup)
         else:
-            await query.message.edit_text("User is Already Media Blocked.", reply_markup= markup)
+            save_premium_user(user_id, block_media= False)
+            await query.message.edit_text("User Media unblocked.", reply_markup= markup)
     except MessageNotModified:
         pass
     except Exception as e:
