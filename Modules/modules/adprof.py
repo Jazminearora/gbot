@@ -39,7 +39,7 @@ async def get_user_detells(_, message):
     try:
         command = message.text
         print(command)
-        user_id_str = str(command.split()[1]).replace("id" "")
+        user_id_str = str(command.split()[1]).replace("id", "")
         user_id = int(user_id_str)
     except (ValueError, IndexError):
         await message.reply("No id got")

@@ -19,7 +19,7 @@ aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
 
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
-@cbot.on_message((filters.regex(button_pattern)|filters.command("/vip")) & filters.private & subscribed & user_registered)
+@cbot.on_message((filters.regex(button_pattern)|filters.command("vip")) & filters.private & subscribed & user_registered)
 async def premium_option(client, message):
     user_id = message.from_user.id
     user_lang = find_language(user_id)
