@@ -44,11 +44,11 @@ async def shear_action_handler(_, callback_query: CallbackQuery):
     """Shear action callback"""
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Ban ⚫️", callback_data="shear_ban"), InlineKeyboardButton("Warn ⚠️", callback_data="shear_warn")],
-        [InlineKeyboardButton("Time Ban ⏰", callback_data="shear_time-ban")],
+        [InlineKeyboardButton("Time Ban ⏰", callback_data="shear_time-ban"), InlineKeyboardButton("OFF 📴", callback_data="shear_off")],
         [InlineKeyboardButton("Close ❌", callback_data="st_close"), InlineKeyboardButton("Back 🔙", callback_data="st_back")]
     ])
-    current = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "Ban"
-    await callback_query.message.edit_text(f"Curent status: Choose an action for shear words:", reply_markup=markup)
+    current = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "ban"
+    await callback_query.message.edit_text(f"Curent status: {current} \n\nChoose an action for shear words:", reply_markup=markup)
 
 @cbot.on_callback_query(filters.regex(r"shear_(ban|warn|time-ban)") & filters.user(ADMIN_IDS))
 async def set_shear_action_handler(_, callback_query: CallbackQuery):

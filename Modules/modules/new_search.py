@@ -1,3 +1,4 @@
+import os
 import asyncio
 from datetime import datetime
 import time
@@ -27,7 +28,7 @@ from Modules.modules.shear import check_shear_url
 # Database
 from database.premiumdb import save_premium_user, vip_users_details, is_user_premium
 from database.chatdb import save_user
-from database.residuedb import add_bluser
+from database.residuedb import add_bluser, unblock_user
 
 
 pyrostep.listen(cbot)
@@ -764,14 +765,28 @@ async def check_profanity(user1, user2, message: Message):
     if profanity_scores[user1] >= 3:
         lang1 = find_language(user1)
         lang2 = find_language(user2)
-        await message.reply(await translate_async("🚫 You have been blocked from using this bot due to repeated violations of our guidelines.", lang1), reply_markup=ReplyKeyboardRemove())
-        await add_bluser(user1)
-        await delete_pair(user1)
-        markup = await get_reply_markup(lang2)
-        await cbot.send_message(user2, await translate_async("Chat has been Ended by the other user.", lang2), reply_markup= markup)
-        await reset_profanity_scores(user1)
-        await reset_profanity_scores(user2)
-        return
+        shear_action = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "ban"
+        if shear_action == "ban":
+            await message.reply(await translate_async("🚫 You have been blocked from using this bot due to repeated violations of our guidelines.", lang1), reply_markup=ReplyKeyboardRemove())
+            await add_bluser(user1)
+            await delete_pair(user1)
+            markup = await get_reply_markup(lang2)
+            await cbot.send_message(user2, await translate_async("Chat has been Ended by the other user.", lang2), reply_markup= markup)
+            await reset_profanity_scores(user1)
+            await reset_profanity_scores(user2)
+            return
+        elif shear_action == "time-ban":
+            await message.reply(await translate_async(f"🚫 You have been blocked for 2 hours from using this bot due to repeated violations of our guidelines.", lang1), reply_markup=ReplyKeyboardRemove())
+            await add_bluser(user1)
+            await delete_pair(user1)
+            markup = await get_reply_markup(lang2)
+            await cbot.send_message(user2, await translate_async("Chat has been Ended by the other user.", lang2), reply_markup= markup)
+            await reset_profanity_scores(user1)
+            await reset_profanity_scores(user2)
+            await asyncio.sleep(3600)
+            await unblock_user(int(user1))
+            await message.reply(await translate_async(f"🔓 You have been unblocked and can now use this bot again. Please ensure that you follow our guidelines to avoid future blocks. Happy to assist you!", lang1))
+            return
 
  # function to remove the user id after the chat ends.
 async def reset_profanity_scores(user_id):
