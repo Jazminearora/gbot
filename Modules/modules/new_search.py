@@ -648,6 +648,7 @@ async def handle_rating(_, query):
 
 # Handle the report response
 async def handle_report(userid, message: Message, other_user_id):
+    report_msg = message.text
     user_id = message.from_user.id
     language = find_language(user_id)
     global messages
@@ -664,7 +665,7 @@ async def handle_report(userid, message: Message, other_user_id):
                 await message.forward(REPORT_CHAT)
             except:
                 pass
-    await cbot.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n\nAbove is his last 10 messages.")
+    await cbot.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n**Report Message**: {report_msg}\n\nAbove is his last 10 messages.")
     buttons = [
         [
             InlineKeyboardButton(await translate_async("Close❌", language), callback_data=f"skip_handle"),
