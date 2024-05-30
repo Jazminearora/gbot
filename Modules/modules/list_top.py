@@ -6,7 +6,7 @@ from datetime import timedelta
 from Modules import cbot
 from Modules.modules.advertisement import advert_user
 from Modules.modules.register import get_user_name
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from helpers.helper import find_language
 from helpers.translator import translate_async
 from database.referdb import get_top_referers

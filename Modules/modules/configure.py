@@ -2,7 +2,7 @@ import re
 from Modules import cbot
 from pyrogram import filters
 from Modules import cbot
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from database.premiumdb import save_premium_user, is_user_premium, vip_users_details
 from helpers.helper import find_language
 from helpers.translator import translate_async

@@ -8,7 +8,7 @@ import re
 
 # helper functions
 from Modules.modules.advertisement import advert_user
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from helpers.helper import get_profile, find_language, get_interest, get_age_group, get_gender, convert_age_group
 from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang_change, get_age_markup
 from helpers.translator import translate_async

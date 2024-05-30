@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import pyrostep
 
 from Modules import cbot, BOT_ID
-from helpers.forcesub import is_member
+from helpers.filters import is_member
 
 pyrostep.listen(cbot)
 os.environ['PROMO_STATUS'] = "True" # by default true

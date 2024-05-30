@@ -10,7 +10,7 @@ from helpers.translator import translate_text, translate_async
 from database.registerdb import add_user_id, store_age
 from database.referdb import save_id, is_served_user, get_point, get_refer_program_field, is_program_id, create_refer_program
 from database.premiumdb import extend_premium_user_hrs
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from config import EXTEND_HRS_REFER
 
 async def get_user_name(user_id):

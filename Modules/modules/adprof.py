@@ -5,6 +5,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, Peer
 
 
 from helpers.helper import find_language, get_profile
+from helpers.filters import id_filter
 from Modules.modules.register import get_user_name
 from database.residuedb import add_bluser, is_blocked as is_blckd, unblock_user
 from database.premiumdb import vip_users_details, save_premium_user
@@ -33,7 +34,18 @@ async def user_ditales(_, message):
         return
     await message.reply("Please choose a option from below", reply_markup= await get_genral_markup(user_id))
 
-
+@cbot.on_message(filters.user(ADMIN_IDS) & id_filter)
+async def get_user_detells(_, message):
+    try:
+        command = message.text
+        print(command)
+        user_id_str = str(command.split()[1]).replace("id" "")
+        user_id = int(user_id_str)
+    except (ValueError, IndexError):
+        await message.reply("No id got")
+        return
+    await message.reply("Please choose a option from below", reply_markup= await get_genral_markup(user_id))
+    
 @cbot.on_callback_query(filters.regex("info_(.+)"))
 async def get_user_info(_, query: CallbackQuery):
     try:

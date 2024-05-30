@@ -10,7 +10,7 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, Message, CallbackQuery
 
 # Helpers
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from helpers.helper import find_language, get_age_group, get_gender, get_interest
 from helpers.translator import translate_async
 from helpers.fren_req import process_friend_request

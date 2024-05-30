@@ -7,7 +7,7 @@ import re
 
 # Helper functions
 from Modules.modules.advertisement import advert_user
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from helpers.helper import find_language
 from langdb.get_msg import get_reply_markup 
 from helpers.translator import translate_async

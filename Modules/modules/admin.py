@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 import asyncio
 import datetime, time
 from config import  ADMINS as ADMIN_IDS
-from Modules import cbot, mongodb as collection
+from Modules import cbot, mongodb as collection, BOT_USERNAME
 from config import key
 from Modules.modules.broadcast import get_failed_users
 from helpers.helper import get_total_users, find_language, get_detailed_user_list
@@ -124,7 +124,8 @@ async def vip_users_handler(_, query):
         for user_id in premium_user_ids:
             _, time = is_user_premium(str(user_id))
             vip_time_left = calculate_remaining_time(time)  
-            vip_user_list.append(f"{user_id} - {vip_time_left}")
+            user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{user_id}'>{user_id}</a>"
+            vip_user_list.append(f"{user_link} - {vip_time_left}")
         
         # Split the message into chunks if it's too long
         max_chars_per_message = 4096

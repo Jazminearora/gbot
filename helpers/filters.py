@@ -92,3 +92,19 @@ async def lens_2(filter, client, update):
     return False
 
 anoms_filter = filters.create(lens_2)
+
+
+##================================================================================================##
+##================================================================================================##
+
+
+async def vip_id_get(filter, client, update):
+    mesg = update.text    
+    # Split the message into words
+    words = mesg.split()
+    # Check if the message has exactly two words and starts with "/start" followed by "a" and a number
+    if len(words) == 2 and words[0] == "/start" and words[1].startswith("id"):
+        return True
+    return False
+
+id_filter = filters.create(vip_id_get)

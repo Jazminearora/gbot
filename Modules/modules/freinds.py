@@ -7,7 +7,7 @@ from.. import cbot
 from database.premiumdb import save_premium_user, vip_users_details, remove_item_from_field
 from helpers.helper import get_profile
 from helpers.helper import find_language
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from helpers.translator import translate_async
 from Modules.modules.register import get_user_name
 

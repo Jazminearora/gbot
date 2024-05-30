@@ -6,7 +6,7 @@ import urllib.parse
 from AaioAPI import AsyncAaioAPI
 
 from helpers.helper import find_language
-from helpers.forcesub import subscribed, user_registered
+from helpers.filters import subscribed, user_registered
 from helpers.translator import translate_async
 from langdb.get_msg import get_premium_msg
 from database.referdb import get_point

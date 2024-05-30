@@ -4,7 +4,7 @@ from pyrogram.errors import RPCError
 import pyrostep
 
 from .. import cbot
-from helpers.forcesub import subscribed, user_registered, anoms_filter
+from helpers.filters import subscribed, user_registered, anoms_filter
 from helpers.translator import translate_async
 from helpers.helper import find_language
 from database.premiumdb import save_premium_user, vip_users_details

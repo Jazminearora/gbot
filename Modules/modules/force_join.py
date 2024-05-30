@@ -1,6 +1,6 @@
 import os
 from Modules import cbot, BOT_USERNAME, LOG_GROUP
-from helpers.forcesub import subscribed, user_registered, get_unjoined_channels
+from helpers.filters import subscribed, user_registered, get_unjoined_channels
 from pyrogram import filters
 from ..modules.subscription import get_chat_ids
 from helpers.translator import translate_async
