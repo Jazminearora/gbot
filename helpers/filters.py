@@ -88,8 +88,11 @@ user_registered = filters.create(is_registered)
 
 async def lens_2(filter, client, update):
     mesg = update.text    
-    # Split the message into words
-    words = mesg.split()
+    try:   
+        # Split the message into words
+        words = mesg.split() 
+    except:
+        return False
     # Check if the message has exactly two words and starts with "/start" followed by "a" and a number
     if len(words) == 2 and words[0] == "/start" and words[1].startswith("a"):
         return True
@@ -103,9 +106,12 @@ anoms_filter = filters.create(lens_2)
 
 
 async def vip_id_get(filter, client, update):
-    mesg = update.text    
-    # Split the message into words
-    words = mesg.split()
+    mesg = update.text 
+    try:   
+        # Split the message into words
+        words = mesg.split() 
+    except:
+        return False
     # Check if the message has exactly two words and starts with "/start" followed by "a" and a number
     if len(words) == 2 and words[0] == "/start" and words[1].startswith("id"):
         return True

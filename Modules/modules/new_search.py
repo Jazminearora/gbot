@@ -729,7 +729,8 @@ async def forward_message(client, message: Message):
                     if message.text:
                         await cbot.copy_message(user2, message.chat.id, message.id)
                     else:
-                        await cbot.send_message(user1, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang1))
+                        markup = InlineKeyboardMarkup([[InlineKeyboardButton(await translate_async("Premium", lang1), callback_data="premium_callback")]])
+                        await cbot.send_message(user1, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang1), reply_markup= markup)
                 store_message(user1, message)
             elif message.from_user.id == user2:
                 save_user(user2, total_message= 1)
@@ -752,7 +753,8 @@ async def forward_message(client, message: Message):
                     if message.text:
                         await cbot.copy_message(user1, message.chat.id, message.id)
                     else:
-                        await cbot.send_message(user2, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang2))
+                        markup = InlineKeyboardMarkup([[InlineKeyboardButton(await translate_async("Premium", lang1), callback_data="premium_callback")]])
+                        await cbot.send_message(user2, await translate_async("🔐 Access to sending photos, videos, stickers, and documents is exclusively for premium users. Upgrade to premium NOW for full access to all features! 💼💫", lang2), reply_markup= markup)
                 store_message(user2, message)           
             break
 

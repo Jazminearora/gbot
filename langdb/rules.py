@@ -1,6 +1,7 @@
 from Modules import BOT_USERNAME
 
 async def get_rules(language):
+    print(language)
     if language == "English":
         text= f"""
  Anonymous chat is a platform for communicating with people of different backgrounds and beliefs.  We want you to find a new and interesting person to talk to with every search.
@@ -28,6 +29,7 @@ async def get_rules(language):
 
  If you break the rules you will be blocked
 """
+        return text
     elif language == "Russian":
         text= f"""
 Анонимный чат — это платформа для общения с людьми разного происхождения и убеждений.  Мы хотим, чтобы при каждом поиске вы находили нового и интересного человека для общения.
@@ -55,6 +57,7 @@ async def get_rules(language):
 
  Если вы нарушите правила, вас заблокируют
 """
+        return text
     elif language == "Azerbejani":
         text= f"""
 Anonim söhbət müxtəlif mənşəli və inanclı insanlarla ünsiyyət üçün platformadır.  İstəyirik ki, hər axtarışda danışa biləcəyiniz yeni və maraqlı insan tapın.
@@ -82,5 +85,4 @@ Anonim söhbət müxtəlif mənşəli və inanclı insanlarla ünsiyyət üçün
 
  Qaydaları pozsanız, bloklanacaqsınız
 """
-
-    return text
+        return text

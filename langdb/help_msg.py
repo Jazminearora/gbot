@@ -1,4 +1,5 @@
 async def get_help_msg(language):
+    print(language)
     if language == "English":
         text= """
 An anonymous chat bot that will find interlocutors for anonymous communication based on interests and gender.

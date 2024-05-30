@@ -26,6 +26,13 @@ async def premium_option(client, message):
     caption, buttons = await get_premium_msg(user_lang)
     await message.reply_text(caption, reply_markup=buttons)
 
+@cbot.on_callback_query(filter.regex("premium_callback"))
+async def premium_bsck(client, query):
+    user_id = query.message.from_user.id
+    user_lang = find_language(user_id)
+    caption, buttons = await get_premium_msg(user_lang)
+    await query.message.reply_text(caption, reply_markup=buttons)
+
 async def get_text(total_points, referral_link, language):
     msg = "Invite users using your link and receive 👑VIP status for 1 hour for each!\n\nInvited:"
     msg2 = "Your personal link:\n👉"
