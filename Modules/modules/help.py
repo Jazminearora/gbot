@@ -14,7 +14,7 @@ async def rules(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     if language:
-        await message.reply(get_rules(language))
+        await message.reply(await get_rules(language))
 
 
 # handle command /help
@@ -23,4 +23,4 @@ async def help(client, message):
     user_id = message.from_user.id
     language = find_language(user_id)
     if language:
-        await message.reply(get_help_msg(language))
+        await message.reply(await get_help_msg(language))
