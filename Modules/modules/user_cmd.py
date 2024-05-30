@@ -10,6 +10,7 @@ from Modules import cbot
 # handle command /rules
 @cbot.on_message(filters.command(["rules"]) & filters.private & subscribed)
 async def rules(client, message):
+    print("vd ho")
     user_id = message.from_user.id
     language = find_language(user_id)
     if language:

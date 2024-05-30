@@ -875,7 +875,8 @@ async def accept_chat_callback(client, callback_query: CallbackQuery):
 
 @cbot.on_callback_query(filters.regex(r"decline_chat_(\d+)"))
 async def decline_chat_callback(client, callback_query):
-    tr_txt = await translate_async("Chat request declined.", callback_query.from_user.language)
+    lang = find_language(callback_query.from_user.id)
+    tr_txt = await translate_async("Chat request declined.", lang)
     await callback_query.message.edit_text(tr_txt)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
