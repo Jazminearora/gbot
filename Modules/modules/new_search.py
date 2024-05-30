@@ -628,14 +628,14 @@ async def handle_rating(_, query):
     if rating_emoji == "⛔":
         # Ask for a report
         buttons = [
-
-               [ 
-                   InlineKeyboardButton(await translate_async("No, it's okay!", language), callback_data=f"skip_handle")
-               ]
+            [
+                InlineKeyboardButton(await translate_async("No, it's okay!", language), callback_data=f"skip_handle"),
+                InlineKeyboardButton(await translate_async("Report", language), callback_data=f"report_{other_user_id}")
             ]
+        ]
         markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(await translate_async("Please enter a message for reporting.", language), reply_markup=markup)
-        await pyrostep.register_next_step(user_id, handle_report, kwargs= {"other_user_id" : other_user_id})
+        await pyrostep.register_next_step(user_id, handle_report, kwargs={"other_user_id": other_user_id})
     else:
         buttons = [
         [
@@ -647,7 +647,8 @@ async def handle_rating(_, query):
         await query.message.edit_text(await translate_async("Thank you for your feedback!", language), reply_markup = markup)
 
 # Handle the report response
-async def handle_report(user_id, message: Message, other_user_id):
+async def handle_report(userid, message: Message, other_user_id):
+    user_id = message.from_user.id
     language = find_language(user_id)
     global messages
     # Retrieve the messages for the other user
@@ -661,6 +662,8 @@ async def handle_report(user_id, message: Message, other_user_id):
             except FloodWait as e:
                 await asyncio.sleep(e.value)
                 await message.forward(REPORT_CHAT)
+            except:
+                pass
     await cbot.send_message(REPORT_CHAT, f"A new report againt user- {other_user_id}\nReport initiated by: {user_id}\n\nAbove is his last 10 messages.")
     buttons = [
         [
@@ -669,8 +672,10 @@ async def handle_report(user_id, message: Message, other_user_id):
         ]
     ]
     markup = InlineKeyboardMarkup(buttons)
+    txt =  await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language)
     # Send a confirmation message to the user
-    await message.edit_text(await translate_async("Thank you for your report. We have sent all messages from this user to the report chat for review.", language), reply_markup = markup)
+    await message.reply_text(txt, reply_markup = markup)
+    await message.delete()
 
 
 
