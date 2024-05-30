@@ -42,27 +42,22 @@ async def add_shear_word_handler(_, callback_query: CallbackQuery):
 @cbot.on_callback_query(filters.regex("shear_action") & filters.user(ADMIN_IDS))
 async def shear_action_handler(_, callback_query: CallbackQuery):
     """Shear action callback"""
-    actions = [
-        {"text": "Ban ⚫️", "callback_data": "shear_ban"},
-        {"text": "Warn ⚠️", "callback_data": "shear_warn"},
-        {"text": "Time Ban ⏰", "callback_data": "shear_time_ban"},
-        {"text": "Close ❌", "callback_data": "st_close"},
-        {"text": "Back 🔙", "callback_data": "st_back"}
-    ]
-    markup = InlineKeyboardMarkup([[
-        InlineKeyboardButton(action["text"], callback_data=action["callback_data"])
-        for action in actions
-    ]])
-    await callback_query.message.edit_text("Choose an action for shear words:", reply_markup=markup)
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Ban ⚫️", callback_data="shear_ban"), InlineKeyboardButton("Warn ⚠️", callback_data="shear_warn")],
+        [InlineKeyboardButton("Time Ban ⏰", callback_data="shear_time-ban")],
+        [InlineKeyboardButton("Close ❌", callback_data="st_close"), InlineKeyboardButton("Back 🔙", callback_data="st_back")]
+    ])
+    current = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "Ban"
+    await callback_query.message.edit_text(f"Curent status: Choose an action for shear words:", reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex(r"shear_(ban|warn|time_ban)") & filters.user(ADMIN_IDS))
+@cbot.on_callback_query(filters.regex(r"shear_(ban|warn|time-ban)") & filters.user(ADMIN_IDS))
 async def set_shear_action_handler(_, callback_query: CallbackQuery):
     """Set SHEAR_ACTION"""
     action = callback_query.data.split("_")[1]
-    print(action)
     os.environ["SHEAR_ACTION"] = action
     await callback_query.answer(f"Shear action set to {action}", show_alert=True)
-    await callback_query.message.edit_text(f"Shear action set to {action}", reply_markup=markup)
+    shear_words = await get_all_shear_words()
+    await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
