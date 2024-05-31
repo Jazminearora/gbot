@@ -148,7 +148,7 @@ async def configured_search(client, message):
         # Check if user is already searching
         if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
-            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
+            await message.reply(await translate_async("You are already searching. Stop searching first by using below button!", language), reply_markup = keyboard)
             return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
@@ -209,7 +209,7 @@ async def normal_search(client, message):
         # Check if user is already searching
         if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
-            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
+            await message.reply(await translate_async("You are already searching. Stop searching first by using below button!", language), reply_markup = keyboard)
             return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
@@ -258,7 +258,7 @@ async def normal_search(client, message):
         # Check if user is already searching
         if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
-            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
+            await message.reply(await translate_async("You are already searching. Stop searching first by using below button!", language), reply_markup = keyboard)
             return
         language = find_language(user_id)
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
@@ -311,7 +311,7 @@ async def normal_search(client, message: Message):
         # Check if user is already searching
         if is_user_searching(user_id):
             keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
-            await message.reply("You are already searching. Stop searching first by using below button!", reply_markup = keyboard)
+            await message.reply(await translate_async("You are already searching. Stop searching first by using below button!", language), reply_markup = keyboard)
             return
         # Get normal user's details
         gender = get_gender(user_id, "huls")
@@ -547,6 +547,18 @@ async def next_search_query(_, message):
 
 async def next_search(user_id, message: Message):
     lang = find_language(user_id)
+    if is_chatting(user_id, message, language):
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", language))]], resize_keyboard=True, one_time_keyboard=True)
+        tr_txt = await translate_async("You are already in a chat. End the chat first by using below button!", language)
+        await message.reply(tr_txt, reply_markup= keyboard)
+        return
+
+    if is_user_searching(user_id):
+        keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("Stop Searching", language))]], resize_keyboard=True, one_time_keyboard=True)
+        tr_txt = await translate_async("You are already searching. Stop searching first by using below button!", language)
+        await message.reply(tr_txt,  reply_markup= keyboard)
+        return
+    
     # Check if user_id exists in premium searching mode list
     for user in prem_searching_mode:
         if user["user_id"] == user_id:
@@ -576,7 +588,7 @@ async def next_search(user_id, message: Message):
        searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room}) 
     elif mode == "normal":
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
-    await message.edit_text(await translate_async("Started searching for a interlocutor... ", lang))
+    await message.reply(await translate_async("Started searching for a interlocutor... ", lang))
     await match_users()
     await asyncio.sleep(40)
     for premium_user in searching_premium_users.copy():
