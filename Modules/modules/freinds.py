@@ -44,7 +44,7 @@ async def accept_friend(client, query):
             return
     await query.message.edit_text(await translate_async("You have accepted the friend request!", language))
     detail = await client.get_users(friend_id)
-    await cbot.send_message(user_id, f"{detail.mention} {await translate_async("has accepted your friend request!", language)}")
+    await cbot.send_message(user_id, f"{detail.first_name + detail.last_name if detail.last_name else ""} {await translate_async("has accepted your friend request!", language)}")
     save_premium_user(user_id, frens=friend_id)
     save_premium_user(friend_id, frens=user_id)
 

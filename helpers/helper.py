@@ -116,9 +116,10 @@ def get_detailed_user_list(language):
                     detailed_list["Gender"][gender] = detailed_list["Gender"].get(gender, 0) + 1
                 if age_group:
                     detailed_list["Age Group"][age_group] = detailed_list["Age Group"].get(age_group, 0) + 1
-                if interest:
-                    detailed_list["Interest"][interest] = detailed_list["Interest"].get(interest, 0) + 1
-            
+            interests= ["communication", "intimacy", "selling", "movies", "anime", "music", "gaming", "memes", "relationships", "tiktok", "flirting", "travel", "study", "food", "fitness"]
+            for interest_type in interests:
+                total_users = get_total_users(interest_type)
+                detailed_list["Interest"][interest_type] = total_users
             return detailed_list
         else:
             return None
@@ -161,6 +162,7 @@ async def get_profile(user_id, language, mode):
             "chat_time": str(timedelta(seconds=vip_users_details(user_id, "chat_time"))),
             "weekly_chat_time": str(timedelta(seconds=vip_users_details(user_id, "weekly_chat_time"))),
             "offense": users_chat_details(user_id, "profanity_score"),
+            "verified" : "verified ✅" if vip_users_details(user_id, "verified") else "Unverified ❌",
             "total_refers": await get_point(user_id)
         }
         chat_details= users_rating_details(user_id, "rating")
@@ -177,6 +179,7 @@ async def get_profile(user_id, language, mode):
 🎊 Age: {user_data['age']}
 🎂 Age Group: {user_data['age_group']}
 ⚡ Interest: {user_data['interest']}
+🔰 Status: {user_data['verified']}
 """
             message = await translate_async(full_text, language)
             message += f"\n📊 {await translate_async('Rating', language)}: {rating}\n\n"

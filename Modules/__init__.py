@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pyrogram import Client
 from pyrogram.errors import ChatForbidden, ChatRestricted
 import apscheduler.schedulers.asyncio as aps
-from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS, LOG_GROUP
+from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS, LOG_GROUP, REPORT_CHAT
 
 # Tg bot __init_.py
 
@@ -47,7 +47,7 @@ scheduler = aps.AsyncIOScheduler()
 
 ADMIN_IDS = ADMIN_IDS
 LOG_GROUP = LOG_GROUP
-REPORT_CHAT = LOG_GROUP
+REPORT_CHAT = REPORT_CHAT
 
 async def cbot_bot():
     global BOT_ID, BOT_NAME, BOT_USERNAME
