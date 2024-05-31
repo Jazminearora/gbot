@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 import re
 from uuid import uuid1
 import urllib.parse
@@ -27,11 +27,11 @@ async def premium_option(client, message):
     await message.reply_text(caption, reply_markup=buttons)
 
 @cbot.on_callback_query(filters.regex("premium_callback"))
-async def premium_bsck(client, query):
+async def premium_bsck(client, query: CallbackQuery):
     user_id = query.from_user.id
     user_lang = find_language(user_id)
     caption, buttons = await get_premium_msg(user_lang)
-    await query.message.reply_text(caption, reply_markup=buttons)
+    await query.message.edit_text(caption, reply_markup=buttons)
 
 async def get_text(total_points, referral_link, language):
     msg = "Invite users using your link and receive 👑VIP status for 1 hour for each!\n\nInvited:"
