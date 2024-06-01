@@ -6,9 +6,9 @@ from pymongo import MongoClient
 from os import listdir, path
 from dotenv import load_dotenv
 from pyrogram import Client
-from pyrogram.errors import ChatForbidden, ChatRestricted
+from pyrogram.errors import ChatForbidden, ChatRestricted, PeerIdInvalid
 import apscheduler.schedulers.asyncio as aps
-from config import API_ID, API_HASH, BOT_TOKEN, BOT_USERNAME, MONGO_URI,  ADMINS as ADMIN_IDS, LOG_GROUP, REPORT_CHAT
+from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI,  ADMINS as ADMIN_IDS, LOG_GROUP, REPORT_CHAT
 
 # Tg bot __init_.py
 
@@ -53,8 +53,10 @@ async def cbot_bot():
     global BOT_ID, BOT_NAME, BOT_USERNAME
     await cbot.start()
     try:
-        await cbot.send_message(LOG_GROUP, text= "Bot started successfully!")
+        await cbot.send_message(int(x), text= "Bot started successfully!")
     except (ChatRestricted, ChatForbidden):
+        logger.warn("Please add to your log group, and give me administrator powers!")
+    except PeerIdInvalid:
         logger.warn("Please add to your log group, and give me administrator powers!")
     getme = await cbot.get_me()
     BOT_ID = getme.id

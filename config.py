@@ -3,8 +3,6 @@ import os
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-BOT_USERNAME = os.environ.get("BOT_USERNAME")
-OWNER_ID = int(os.environ.get("OWNER_ID"))
 LOG_GROUP = os.environ.get("LOG_GROUP")
 REPORT_CHAT = os.environ.get("REPORT_CHAT")
 MONGO_URI = os.environ.get("MONGO_URI")
