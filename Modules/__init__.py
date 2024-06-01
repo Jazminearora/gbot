@@ -53,7 +53,7 @@ async def cbot_bot():
     global BOT_ID, BOT_NAME, BOT_USERNAME
     await cbot.start()
     try:
-        await cbot.send_message(int(x), text= "Bot started successfully!")
+        await cbot.send_message(int(LOG_GROUP), text= "Bot started successfully!")
     except (ChatRestricted, ChatForbidden):
         logger.warn("Please add to your log group, and give me administrator powers!")
     except PeerIdInvalid:
