@@ -11,9 +11,9 @@ from helpers.filters import subscribed, user_registered
 from helpers.helper import find_language
 from langdb.get_msg import get_reply_markup 
 from helpers.translator import translate_async
+from config import BOT_IMG
 
 
-SELECT_OPTION_PHOTO = "https://iili.io/JgY8Fls.jpg"
 
 
 # Handle private messages with the reply markup
@@ -33,7 +33,7 @@ async def home_page(message):
         await advert_user(user_id, language)
         reply_markup = await get_reply_markup(language)
         text = await translate_async("Please select an option:", language)
-        await message.reply_photo(SELECT_OPTION_PHOTO, caption = text, reply_markup=reply_markup)
+        await message.reply_photo(BOT_IMG, caption = text, reply_markup=reply_markup)
     except Exception as e:
         print (e)
         await message.reply_text("An Exception occured!")

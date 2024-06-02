@@ -31,19 +31,11 @@
       "description": "Your MongoDB URI",
       "required": true
     },
-    "FORCE_SUB1": {
-      "description": "Url of your 1st force subscribe channel/group link",
+    "REPORT_CHAT": {
+      "description": "Report chat id",
       "required": true
     },
-    "FORCE_SUB2": {
-      "description": "Url of your 2nd force subscribe channel/group link",
-      "required": true
-    },
-    "OWNER_ID": {
-      "description": "Your Telegram User ID (Owner)",
-      "required": true
-    },
-    "LOGGER_ID": {
+    "LOG_GROUP": {
       "description": "Your Logger Chat ID",
       "required": true
     }

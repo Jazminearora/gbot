@@ -1,5 +1,5 @@
 from pyrogram.errors import UserBlocked, UserIdInvalid, RPCError
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, User
 
 from database.premiumdb import vip_users_details
 from Modules import cbot
@@ -28,8 +28,8 @@ async def process_friend_request(client, message, user_id, friend_id, language):
         try:
             friend_id = friend_id
             try:
-                detail = await client.get_users(user_id)
-                await cbot.send_message(friend_id, f"{await translate_async("Friend request from", language)} {detail.mention}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
+                detail: User = await client.get_users(user_id)
+                await cbot.send_message(friend_id, f"{await translate_async("Friend request from", language)} {detail.first_name + detail.last_name if detail.last_name else ""}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
                      [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
                 ]))                
                 await message.reply_text(await translate_async("Friend request sent successfully!", language))

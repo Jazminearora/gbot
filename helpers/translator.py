@@ -63,7 +63,7 @@ async def translate_async(text: str, target_language):
                         translation = await t.translate(text, targetlang=tr_lang)
                         return translation.text
                     except Exception as e:
-                        await cbot.send_message(LOG_GROUP, f'Error occurred during translation: {e}')
+                        await cbot.send_message(int(LOG_GROUP), f'Error occurred during translation: {e}')
                         return text
 
 

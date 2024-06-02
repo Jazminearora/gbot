@@ -546,7 +546,7 @@ async def next_search_query(_, message):
     await next_search(user_id, message)
 
 async def next_search(user_id, message: Message):
-    lang = find_language(user_id)
+    language = find_language(user_id)
     if is_chatting(user_id, message, language):
         keyboard = ReplyKeyboardMarkup([[KeyboardButton(await translate_async("End chat", language))]], resize_keyboard=True, one_time_keyboard=True)
         tr_txt = await translate_async("You are already in a chat. End the chat first by using below button!", language)
@@ -588,7 +588,7 @@ async def next_search(user_id, message: Message):
        searching_premium_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room}) 
     elif mode == "normal":
         searching_users.append({"user_id": user_id, "language": language, "gender": gender, "age_groups": age_groups, "room": room})
-    await message.reply(await translate_async("Started searching for a interlocutor... ", lang))
+    await message.reply(await translate_async("Started searching for a interlocutor... ", language))
     await match_users()
     await asyncio.sleep(40)
     for premium_user in searching_premium_users.copy():

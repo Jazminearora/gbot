@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 import re
 from uuid import uuid1
 import urllib.parse
@@ -27,11 +27,11 @@ async def premium_option(client, message):
     await message.reply_text(caption, reply_markup=buttons)
 
 @cbot.on_callback_query(filters.regex("premium_callback"))
-async def premium_bsck(client, query):
+async def premium_bsck(client, query: CallbackQuery):
     user_id = query.from_user.id
     user_lang = find_language(user_id)
     caption, buttons = await get_premium_msg(user_lang)
-    await query.message.reply_text(caption, reply_markup=buttons)
+    await query.message.edit_text(caption, reply_markup=buttons)
 
 async def get_text(total_points, referral_link, language):
     msg = "Invite users using your link and receive 👑VIP status for 1 hour for each!\n\nInvited:"
@@ -147,6 +147,6 @@ async def check_payment_callback(_, callback_query):
         else:
             await callback_query.answer(await translate_async("Payment is still pending.", langauge), show_alert=True)
     except Exception as e:
-        await cbot.send_message(LOG_GROUP, f"⚠️ERROR!!⚠️\n\nAn error occured while checking the payment info!\nException:{e}\n\nUser ID:{user_id}\nOrder ID:{order_id}")
+        await cbot.send_message(int(LOG_GROUP), f"⚠️ERROR!!⚠️\n\nAn error occured while checking the payment info!\nException:{e}\n\nUser ID:{user_id}\nOrder ID:{order_id}")
         await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
  

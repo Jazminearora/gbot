@@ -264,7 +264,7 @@ async def register_interest_callback(client, callback_query):
             add_user_id(language, str(user_id), interest)
             language = find_language(user_id)
             # Registration completed
-            await callback_query.message.edit_text(await translate_async("Registration completed! Thank you for registering.", language))
+            await callback_query.message.edit_text(await translate_async("Registration completed! 🎉 Thank you for registering.\n\nAs a welcome bonus, 1-hour premium has been activated. Go and enjoy! 😎✨", language))
             extend_premium_user_hrs(user_id, 1)
             reply_markup = await get_reply_markup(language)
             await callback_query.message.reply_text("Please select a option.", reply_markup=reply_markup)
