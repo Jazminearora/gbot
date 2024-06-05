@@ -513,17 +513,20 @@ async def send_match_messages(user1, user2):
         caption = await interlocutor_normal_message(lang2, verify_status1)
     await cbot.send_message(user2["user_id"], caption, reply_markup=keyboard)
 
-async def get_rating_markup(user_id):
+async def get_rating_markup(user_id, other_user_id):
     lang = find_language(user_id) 
     # Buttons for rating emojis
     buttons = [
         [
             InlineKeyboardButton(await translate_async("👍 Good", lang), callback_data=f"emoji_👍_{user_id}"),
-            InlineKeyboardButton(await translate_async("🤡 Dumb", lang), callback_data=f"emoji_🤡_{user_id}"),
-            InlineKeyboardButton(await translate_async("👎 Bad", lang), callback_data=f"emoji_👎_{user_id}")
+            InlineKeyboardButton(await translate_async("🤡 Dumb", lang), callback_data=f"emoji_🤡_{user_id}")
         ],
         [
+            InlineKeyboardButton(await translate_async("👎 Bad", lang), callback_data=f"emoji_👎_{user_id}"),
             InlineKeyboardButton(await translate_async("⛔ Fraudster/Scam/Advertising", lang), callback_data=f"emoji_⛔_{user_id}")
+        ],
+        [
+            InlineKeyboardButton(await translate_async("Report this user! 🆘", lang), callback_data=f"report_{other_user_id}")
         ],
         [
             InlineKeyboardButton(await translate_async("Skip for now!", lang), callback_data=f"skip_handle"),
@@ -580,7 +583,7 @@ async def next_search(user_id, message: Message):
                 break
         else:
             # If user_id not found in either list, inform user to start a chat first
-            await message.reply("Please start a chat first to use this feature.")
+            await message.reply(await translate_async("Please start a chat first to use this feature.", language))
             return
 
     # If user_id found, proceed with next search
@@ -633,8 +636,8 @@ async def end_chat(_, message: Message):
             await message.reply(await translate_async("Chat Ended.", language), reply_markup=reply_markup)
     # Find the chat pair and delete it
     await delete_pair(user_id)
-    await message.reply(await translate_async("Can you leave a review about your interlocutor?", language), reply_markup= await get_rating_markup(other_user_id))
-    await cbot.send_message(other_user_id, await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(user_id))
+    await message.reply(await translate_async("Can you leave a review about your interlocutor?", language), reply_markup= await get_rating_markup(other_user_id, user_id))
+    await cbot.send_message(other_user_id, await translate_async("How would you rate this chat?", language), reply_markup= await get_rating_markup(user_id, other_user_id))
 
 
 # Handle the rating response

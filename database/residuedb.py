@@ -1,5 +1,6 @@
 from Modules import residuedb, ADMIN_IDS
 from pyrogram import filters
+
 # Cache to store blocked users
 blocked_users_cache = set()
 
@@ -86,3 +87,28 @@ async def BLfilter(filter, client, update):
         return False
     
 BLuser = filters.create(BLfilter)
+
+
+##================================================================================================##
+##================================================================================================##
+
+
+async def store_roulette_history(user_id: int, time_string: str):
+    # Update the premium history in the database
+    residuedb.update_one(
+        {"_id": "premium_history", "history.user_id": user_id},
+        {"$push": {"history.$.time_strings": {"$each": [time_string], "$slice": -6}}},
+        upsert=True
+    )
+
+async def get_roulhist(user_id: int):
+    # Query the premium history collection
+    result = residuedb.find_one({"_id": "premium_history", "history.user_id": user_id})
+
+    # Extract the last 6 time strings from the history array
+    if result:
+        history = next((h for h in result["history"] if h["user_id"] == user_id), None)
+        if history:
+            last_6_purchases = history["time_strings"][-6:]
+            return last_6_purchases
+    return []
