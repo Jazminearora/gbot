@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 from pyrogram import Client
 from pyrogram.errors import ChatForbidden, ChatRestricted, PeerIdInvalid
 import apscheduler.schedulers.asyncio as aps
+from AaioAPI import AsyncAaioAPI
 from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI,  ADMINS as ADMIN_IDS, LOG_GROUP, REPORT_CHAT
+from config import MERCHANT_ID, MERCHANT_KEY, API_KEY
 
 # Tg bot __init_.py
 
@@ -44,6 +46,8 @@ residuedb = db["residuedb"]
 
 # Create a async scheduler
 scheduler = aps.AsyncIOScheduler()
+
+aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
 
 ADMIN_IDS = ADMIN_IDS
 LOG_GROUP = LOG_GROUP

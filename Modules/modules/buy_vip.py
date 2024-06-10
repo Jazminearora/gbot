@@ -3,7 +3,6 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 import re
 from uuid import uuid1
 import urllib.parse
-from AaioAPI import AsyncAaioAPI
 
 from helpers.helper import find_language
 from helpers.filters import subscribed, user_registered
@@ -12,10 +11,7 @@ from langdb.get_msg import get_premium_msg
 from database.referdb import get_point
 from database.premiumdb import extend_premium_user_hrs
 
-from Modules import cbot , BOT_USERNAME, LOG_GROUP
-from config import MERCHANT_ID, MERCHANT_KEY, API_KEY
-
-aaio = AsyncAaioAPI(API_KEY, MERCHANT_KEY, MERCHANT_ID)
+from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")

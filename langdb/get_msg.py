@@ -337,6 +337,44 @@ async def get_premium_msg(language):
         buttons = InlineKeyboardMarkup([])
     return caption, buttons
 
+
+async def gift_premium_msg(user_id, language):
+    if language == "English":
+        caption = ("🎁 **Gift Premium to Your Friend!** 🎁\n\n"
+                   "💎 **Unlock exclusive features for them!** 💎\n"
+                   "Make your friend feel special with a premium subscription! 🎉")
+        buttons = InlineKeyboardMarkup([
+            [InlineKeyboardButton("For a day - $1.08", callback_data=f"frgift_{user_id}_1_day")],
+            [InlineKeyboardButton("For three days - $2.15", callback_data=f"frgift_{user_id}_3_days")],
+            [InlineKeyboardButton("For a week - $8.61", callback_data=f"frgift_{user_id}_1_week")],
+            [InlineKeyboardButton("For a month - $12.98", callback_data=f"frgift_{user_id}_1_month")]
+        ])
+    elif language == "Russian":
+        caption = ("🎁 **Подарите другу премиум!** 🎁\n\n"
+                   "💎 **Откройте для них эксклюзивные функции!** 💎\n"
+                   "Сделайте другу приятно с премиум подпиской! 🎉")
+        buttons = InlineKeyboardMarkup([
+            [InlineKeyboardButton("На день - 81₽", callback_data=f"frgift_{user_id}_1_day")],
+            [InlineKeyboardButton("На три дня - 162₽", callback_data=f"frgift_{user_id}_3_days")],
+            [InlineKeyboardButton("На неделю - 648₽", callback_data=f"frgift_{user_id}_1_week")],
+            [InlineKeyboardButton("На месяц - 974₽", callback_data=f"frgift_{user_id}_1_month")]
+        ])
+    elif language == "Azerbejani":
+        caption = ("🎁 **Dostunuza premium hədiyyə edin!** 🎁\n\n"
+                   "💎 **Onlar üçün eksklüziv funksiyaları açın!** 💎\n"
+                   "Dostunuza xüsusi bir hiss yaşadın, premium ilə! 🎉")
+        buttons = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Bir gün üçün - 1,08 $", callback_data=f"frgift_{user_id}_1_day")],
+            [InlineKeyboardButton("Üç gün üçün - 2,15 $", callback_data=f"frgift_{user_id}_3_days")],
+            [InlineKeyboardButton("Bir həftə üçün - 8,61 $", callback_data=f"frgift_{user_id}_1_week")],
+            [InlineKeyboardButton("Bir ay üçün - 12,98 $", callback_data=f"frgift_{user_id}_1_month")]
+        ])
+    else:
+        caption = "Invalid language specified."
+        buttons = InlineKeyboardMarkup([])
+    return caption, buttons
+
+
 async def interlocutor_vip_message(language, name, gender, age_group, verify_status):
     # Cool emojis and formatting
     interlocutor_found = await translate_async("""

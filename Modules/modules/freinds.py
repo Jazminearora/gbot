@@ -85,7 +85,7 @@ async def friend_profile(client, callback_query):
             InlineKeyboardButton(await translate_async(" 💔 Unfriend", language), callback_data=f"unfriend_{user_id}"),
         ],
         [
-            InlineKeyboardButton(await translate_async("🪬 Gift premium", language), callback_data="gift_fren"),
+            InlineKeyboardButton(await translate_async("🪬 Gift premium", language), callback_data=f"gift_fren_{user_id}"),
         ],
         [
             InlineKeyboardButton(await translate_async("🔙 Back", language), callback_data="back_frens"),
@@ -127,7 +127,7 @@ async def unfriend_callback(_, callback_query):
     language = find_language(user_id)
     friend_id = int(callback_query.data.split("_")[1])
     frens_list = vip_users_details(user_id, "frens")
-    if frens_list is None or all(friend["friend_id"]!= user_id for friend in frens_list):
+    if frens_list is None or all(friend["friend_id"]!= friend_id for friend in frens_list):
         await callback_query.answer(await translate_async("This user is not your friend.", language), show_alert=True)
         return
     confirm_text = await translate_async("Are you sure, you want to unfriend him?", language)
