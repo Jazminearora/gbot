@@ -12,8 +12,8 @@ async def process_friend_request(client, message, user_id, friend_id, language):
     frens_list = vip_users_details(user_id, "frens")
 
     if frens_list is not None:
-        for id in frens_list:
-            if id == friend_id:
+        for friend_id in frens_list:
+            if friend_id["friend_id"] == friend_id:
                 await message.reply_text(await translate_async("This user is already your friend.", language))
                 return
     try:

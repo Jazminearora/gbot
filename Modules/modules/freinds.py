@@ -68,7 +68,7 @@ async def decline_friend(client, query):
 async def friend_profile(client, callback_query):
     user_id = int(callback_query.data.split("_")[1])
     language = find_language(callback_query.from_user.id)
-    frens_list = vip_users_details(user_id, "frens")
+    frens_list = vip_users_details(callback_query.from_user.id, "frens")
     for friend in frens_list:
         print(friend['friend_id'], user_id)
         if friend['friend_id'] == int(user_id):

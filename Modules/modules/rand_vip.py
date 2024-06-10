@@ -13,7 +13,7 @@ from Modules import cbot , LOG_GROUP, ADMIN_IDS
 from Modules.modules.buy_vip import aaio
 
 
-@cbot.on_message((filters.command("roulette") & filters.private  & subscribed & user_registered))
+@cbot.on_message(filters.command("roulette") & filters.private)
 async def roulette_control(client, message):
     print("roulette")
     user_id = message.from_user.id
