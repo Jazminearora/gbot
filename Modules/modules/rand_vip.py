@@ -15,27 +15,32 @@ from Modules.modules.buy_vip import aaio
 
 @cbot.on_message(filters.command("roulette") & filters.private)
 async def roulette_control(client, message):
-    print("roulette")
-    user_id = message.from_user.id
-    user_lang = find_language(user_id)
-    caption = await translate_async("In roulette you may get a subscription 💎 PREMIUM for a period of 6 hours to 5 months 🤯\n", user_lang)
-    
-    # Get the last 6 purchases from the database
-    last_6_purchases = await get_roulhist(user_id)
-    
-    if last_6_purchases:
-        history_caption = await translate_async("History of the last 6 spins:\n", user_lang)
-        for i, purchase in enumerate(last_6_purchases, start=1):
-            history_caption += f"{i}. {purchase}\n"
-        caption += history_caption
-    else:
-        caption += await translate_async("You haven't purchased any roulette yet.\n", user_lang)
-    
-    caption += await translate_async("Try your luck quickly! 🎰", user_lang)
-    
-    button_text = await translate_async("Pay for roulette", user_lang)
-    markup = InlineKeyboardMarkup([[InlineKeyboardButton(button_text, callback_data="roulette_pay")]])
-    await message.reply_text(caption, reply_markup=markup)
+    try:
+        print("roulette")
+        user_id = message.from_user.id
+        user_lang = find_language(user_id)
+        caption = await translate_async("In roulette you may get a subscription 💎 PREMIUM for a period of 6 hours to 5 months 🤯\n", user_lang)
+        
+        # Get the last 6 purchases from the database
+        last_6_purchases = await get_roulhist(user_id)
+        
+        if last_6_purchases:
+            history_caption = await translate_async("History of the last 6 spins:\n", user_lang)
+            for i, purchase in enumerate(last_6_purchases, start=1):
+                history_caption += f"{i}. {purchase}\n"
+            caption += history_caption
+        else:
+            caption += await translate_async("You haven't purchased any roulette yet.\n", user_lang)
+        
+        caption += await translate_async("Try your luck quickly! 🎰", user_lang)
+        
+        button_text = await translate_async("Pay for roulette", user_lang)
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton(button_text, callback_data="roulette_pay")]])
+        await message.reply_text(caption, reply_markup=markup)
+    #handle except block
+    except Exception as e:
+        # log error
+        await client.send_message(LOG_GROUP, f"Error in roulette_control: {e}")
 
 @cbot.on_callback_query(filters.regex("roulette_pay"))
 async def roulette_pay_callback(client, callback_query: CallbackQuery):
