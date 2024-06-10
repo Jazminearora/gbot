@@ -66,6 +66,7 @@ async def roulette_pay_callback(client, callback_query: CallbackQuery):
 
 @cbot.on_callback_query(filters.regex(r'check_roulette_payement_(.+)'))
 async def check_roulette_payment_callback(_, callback_query):
+    print("Check payment callback called")
     try:
         user_id = callback_query.from_user.id
         langauge = find_language(user_id)
