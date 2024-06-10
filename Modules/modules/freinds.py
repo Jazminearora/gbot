@@ -70,7 +70,8 @@ async def friend_profile(client, callback_query):
     language = find_language(callback_query.from_user.id)
     frens_list = vip_users_details(user_id, "frens")
     for friend in frens_list:
-        if friend['friend_id'] == user_id:
+        print(friend['friend_id'], user_id)
+        if friend['friend_id'] == int(user_id):
             nickname = friend["nickname"]
             break
     profile_raw, _ = await get_profile(user_id, language, "user_profile", name= nickname)
