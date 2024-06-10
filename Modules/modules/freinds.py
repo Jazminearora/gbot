@@ -68,6 +68,7 @@ async def decline_friend(client, query):
 @cbot.on_callback_query(filters.regex(r"fren_(\d+)"))
 async def friend_profile(client, callback_query):
     user_id = callback_query.data.split("_")[1]
+    print(user_id)
     language = find_language(callback_query.from_user.id)
     frens_list = vip_users_details(callback_query.from_user.id, "frens")
     for friend in frens_list:
