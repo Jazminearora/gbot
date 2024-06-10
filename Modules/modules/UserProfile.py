@@ -14,6 +14,7 @@ from langdb.get_msg import get_interest_reply_markup, get_reply_markup, get_lang
 from helpers.translator import translate_async
 from database.registerdb import add_user_id, store_str_id, remove_str_id , remove_user_id
 from database.premiumdb import save_premium_user
+from config import PROFILE_IMG
 
 
 # Define a regex pattern to match the button text
@@ -25,10 +26,10 @@ async def handle_profile_response(client, message: Message):
     language = find_language(user_id)
     await advert_user(user_id, language)
     text, reply_markup = await get_profile(user_id, language, "general")
-    await message.reply_text(text, reply_markup=reply_markup)
+    await message.reply_photo(PROFILE_IMG, caption = text, reply_markup=reply_markup)
 
 @cbot.on_callback_query(filters.regex(r'^user_profile|user_statistics'))
-async def handle_profile_statistics_callback(client, callback_query):
+async def handle_profile_statistics_callback(client, callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
     language = find_language(user_id)
     mode = callback_query.data

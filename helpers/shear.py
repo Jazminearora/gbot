@@ -19,11 +19,11 @@ async def add_shear_word(word: str, lang):
 
 async def is_shear(message: str, lang) -> bool:
     """Check if a given message contains any shear words"""
-    if lang == 'az':
+    if lang == 'az' or 'Azerbejani':
         SHEAR_WORDS_FILE = SHEAR_AZ_FILE
-    elif lang == 'ru':
+    elif lang == 'ru' or 'Russian':
         SHEAR_WORDS_FILE = SHEAR_RU_FILE
-    elif lang == 'en':
+    elif lang == 'en' or 'English':
         SHEAR_WORDS_FILE = SHEAR_EN_FILE
     else:
         raise ValueError("Invalid language")

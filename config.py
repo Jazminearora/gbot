@@ -11,7 +11,10 @@ MERCHANT_ID = os.environ.get("MERCHANT_ID")
 MERCHANT_KEY = os.environ.get("MERCHANT_KEY")
 SUBSCRIPTION = []
 PROMO_STATUS = "True"
-
+BOT_IMG = "https://iili.io/JgY8Fls.jpg"
+PROFILE_IMG = "https://iili.io/JgY8Fls.jpg"
+key = "Sultruck"
+EXTEND_HRS_REFER = os.environ.get("EXTEND_HRS_REFER")
 
 try:
     ADMINS = [int(admin_id) for admin_id in os.environ.get("ADMINS", "").split(",") if admin_id.strip()]
@@ -19,17 +22,12 @@ try:
 except ValueError:
     raise ValueError("Your Admins list does not contain valid integers.")
 
-BOT_IMG = "https://iili.io/JgY8Fls.jpg"
-key = "Anombot"
-DEV_USER = []
-SUDO_USERS = os.environ.get("SUDO_USERS")
-EXTEND_HRS_REFER = os.environ.get("EXTEND_HRS_REFER")
 if EXTEND_HRS_REFER is not None:
     try:
         EXTEND_HRS_REFER = int(EXTEND_HRS_REFER, 2)
     except ValueError:
-        print("Your EXTEND_HRS_REFER does not contain valid integers. Continuing with default value 2!")
         EXTEND_HRS_REFER = 2
+        raise ValueError("Your EXTEND_HRS_REFER does not contain valid integers. Continuing with default value 2!")
 else:
     EXTEND_HRS_REFER = 2
 
