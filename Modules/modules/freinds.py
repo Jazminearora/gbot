@@ -67,14 +67,14 @@ async def decline_friend(client, query):
 
 @cbot.on_callback_query(filters.regex(r"fren_(\d+)"))
 async def friend_profile(client, callback_query):
-    user_id = int(callback_query.data.split("_")[1])
+    user_id = callback_query.data.split("_")[1]
     language = find_language(callback_query.from_user.id)
     frens_list = vip_users_details(callback_query.from_user.id, "frens")
     for friend in frens_list:
         if friend['friend_id'] == int(user_id):
             nickname = friend["nickname"]
             break
-    profile_raw, _ = await get_profile(user_id, language, "user_profile", name= nickname)
+    profile_raw, _ = await get_profile(int(user_id), language, "user_profile", name= nickname)
 
     # Remove the line containing "?start=r"
     profile_text = '\n'.join([line for line in profile_raw.split('\n') if "?start=" not in line])
