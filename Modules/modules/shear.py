@@ -18,22 +18,40 @@ markup = InlineKeyboardMarkup([
 @cbot.on_callback_query(filters.regex("shear_control") & filters.user(ADMIN_IDS))
 async def get_shear_words_handler(_, callback_query: CallbackQuery):
     """Get all shear words"""
-    shear_words = await get_all_shear_words()
-    await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
+    shear_words1 = await get_all_shear_words("en")
+    shear_words2 = await get_all_shear_words("az")
+    shear_words3 = await get_all_shear_words("ru")
+    await callback_query.message.edit_text(f"Current shear words:\n\n**English**\n{shear_words1}\n\n**Azerbejani**\n{shear_words2}\n\n**Russian**\n{shear_words3}", reply_markup=markup)
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
 @cbot.on_callback_query(filters.regex("plus_shear_word") & filters.user(ADMIN_IDS))
 async def add_shear_word_handler(_, callback_query: CallbackQuery):
     """Ask user to input new shear words"""
+    lang_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton(text="Azerbaijani (az)", callback_data="lang_shear_az"),
+         InlineKeyboardButton(text="Russian (ru)", callback_data="lang_shear_ru"),
+         InlineKeyboardButton(text="English (en)", callback_data="lang_shear_en")]
+    ])
+    await callback_query.message.edit_text("Choose the language for the new shear words:", reply_markup=lang_markup)
+
+@cbot.on_callback_query(filters.regex(r"lang_shear_(az|ru|en)") & filters.user(ADMIN_IDS))
+async def choose_lang_handler(_, callback_query: CallbackQuery):
+    """Ask user to input new shear words"""
+    lang = callback_query.data.split("_")[2]
     await callback_query.message.edit_text("Enter new shear words, separated by new lines:")
     user_id = callback_query.from_user.id
     shear_words_message = await pyrostep.wait_for(user_id)
     shear_words = shear_words_message.text
     new_shear_words = [word.strip() for word in shear_words.splitlines()]
     for word in new_shear_words:
-        await add_shear_word(word)
-    await callback_query.answer(f"Added all words to the list of shear words", show_alert= True)
-    shear_words = await get_all_shear_words()
-    await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
+        await add_shear_word(word, lang)
+    await callback_query.answer(f"Added all words to the list of shear words in {lang}", show_alert=True)
+    shear_words1 = await get_all_shear_words("en")
+    shear_words2 = await get_all_shear_words("az")
+    shear_words3 = await get_all_shear_words("ru")
+    await callback_query.message.edit_text(f"Current shear words:\n\n**English**\n{shear_words1}\n\n**Azerbejani**\n{shear_words2}\n\n**Russian**\n{shear_words3}", reply_markup=markup)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
@@ -56,8 +74,10 @@ async def set_shear_action_handler(_, callback_query: CallbackQuery):
     action = callback_query.data.split("_")[1]
     os.environ["SHEAR_ACTION"] = action
     await callback_query.answer(f"Shear action set to {action}", show_alert=True)
-    shear_words = await get_all_shear_words()
-    await callback_query.message.edit_text(f"Current shear words:\n\n{shear_words}", reply_markup=markup)
+    shear_words1 = await get_all_shear_words("en")
+    shear_words2 = await get_all_shear_words("az")
+    shear_words3 = await get_all_shear_words("ru")
+    await callback_query.message.edit_text(f"Current shear words:\n\n**English**\n{shear_words1}\n\n**Azerbejani**\n{shear_words2}\n\n**Russian**\n{shear_words3}", reply_markup=markup)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
@@ -70,7 +90,7 @@ async def check_shear_url(user_id, message, lang):
     current = os.getenv("SHEAR_ACTION") if os.getenv("SHEAR_ACTION")  else "ban"
     if current == "off":
         return False
-    if await is_shear(message.text) if message.text else await is_shear(message.caption):
+    if await is_shear(message.text, lang) if message.text else await is_shear(message.caption, lang):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: Inappropriate language or insults are not tolerated here. Let's maintain a respectful conversation. Thank you! 🚫", lang))
         sz = await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
         await cbot.send_message(LOG_GROUP, f"""
