@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 import re
 import pyrostep
 
@@ -70,7 +70,6 @@ async def friend_profile(client, callback_query):
     language = find_language(callback_query.from_user.id)
     frens_list = vip_users_details(callback_query.from_user.id, "frens")
     for friend in frens_list:
-        print(friend['friend_id'], user_id)
         if friend['friend_id'] == int(user_id):
             nickname = friend["nickname"]
             break

@@ -13,7 +13,7 @@ from database.premiumdb import extend_premium_user_hrs, vip_users_details
 from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 
 
-@cbot.on_callback_query(filters.regex(r"gift_fren_(\d+)"))
+@cbot.on_callback_query(filters.regex(r"^gift_fren_(\d+)$"))
 async def premium_bsck(client, query: CallbackQuery):
     user_id = query.from_user.id
     friend_id = int(query.data.split("_")[2])

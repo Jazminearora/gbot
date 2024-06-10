@@ -13,7 +13,7 @@ from Modules import cbot , LOG_GROUP, ADMIN_IDS
 from Modules.modules.buy_vip import aaio
 
 
-@cbot.on_message(filters.command("roulette") & filters.private)
+@cbot.on_message(filters.command("roulette") & filters.private  & user_registered)
 async def roulette_control(client, message):
     try:
         print("roulette")
@@ -64,7 +64,7 @@ async def roulette_pay_callback(client, callback_query: CallbackQuery):
     ])
     await callback_query.message.edit_text(await translate_async("🎰 **Service:** Subscription Roulette\n💲 **Cost:** Only $3", user_lang), reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex(r'check_roulette_payement_(.+)'))
+@cbot.on_callback_query(filters.regex(r'^check_roulette_payement_.+$'))
 async def check_roulette_payment_callback(_, callback_query):
     print("Check payment callback called")
     try:
