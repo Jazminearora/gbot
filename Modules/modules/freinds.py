@@ -26,27 +26,35 @@ async def frens(_, message):
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton(f"{await get_user_name(friend_id)}", callback_data=f"fren_{friend_id}")]
-            for friend_id in frens_list
-        ])
+                    [InlineKeyboardButton(friend["name"], callback_data=f"fren_{friend['friend_id']}")]
+                    for friend in frens_list
+                ])
         await message.reply_text(tr_txt, reply_markup=keyboard)
 
 
 @cbot.on_callback_query(filters.regex("accept_friend_"))
 async def accept_friend(client, query):
     user_id = int(query.data.split("_")[2])
+    nickname1= str(query.data.split("_")[3])
     language = find_language(user_id)
     friend_id = query.from_user.id
     frens_list = vip_users_details(user_id, "frens")
     if frens_list is not None and isinstance(frens_list, list):
-        if friend_id in frens_list:
-            query.message.reply_text(await translate_async("This user is already your friend.", language))
-            return
+        for friend_id in frens_list:
+            if friend_id["friend_id"] == friend_id:
+                await query.message.reply_text(await translate_async("This user is already your friend.", language))
+                return
+    await query.message.reply_text(await translate_async("Enter a nickname for your friend:", language))
+    try: 
+        ask = await pyrostep.wait_for(friend_id, timeout = 40)
+        nickname2 = ask.text
+    except TimeoutError:
+        await query.message.reply_text(await translate_async("No nickname received!!", language))
+        return 
     await query.message.edit_text(await translate_async("You have accepted the friend request!", language))
-    detail = await client.get_users(friend_id)
-    await cbot.send_message(user_id, f"{detail.first_name + detail.last_name if detail.last_name else ""} {await translate_async("has accepted your friend request!", language)}")
-    save_premium_user(user_id, frens=friend_id)
-    save_premium_user(friend_id, frens=user_id)
+    await cbot.send_message(user_id, f"{nickname1} {await translate_async("has accepted your friend request!", language)}")
+    save_premium_user(user_id, frens={"friend_id": friend_id, "nickname": nickname1})
+    save_premium_user(friend_id, frens={"friend_id": user_id, "nickname": nickname2})
 
 @cbot.on_callback_query(filters.regex("decline_friend"))
 async def decline_friend(client, query):
@@ -61,7 +69,11 @@ async def decline_friend(client, query):
 async def friend_profile(client, callback_query):
     user_id = int(callback_query.data.split("_")[1])
     language = find_language(callback_query.from_user.id)
-    profile_raw, _ = await get_profile(user_id, language, "user_profile")
+    frens_list = vip_users_details(user_id, "frens")
+    for friend in frens_list:
+        if friend["friend_id"] == user_id:
+            name = friend["name"]
+    profile_raw, _ = await get_profile(user_id, language, "user_profile", name= name)
 
     # Remove the line containing "?start=r"
     profile_text = '\n'.join([line for line in profile_raw.split('\n') if "?start=" not in line])
@@ -70,6 +82,9 @@ async def friend_profile(client, callback_query):
         [
             InlineKeyboardButton(await translate_async("📞 Request chat", language), callback_data=f"request_chat_{user_id}"),
             InlineKeyboardButton(await translate_async(" 💔 Unfriend", language), callback_data=f"unfriend_{user_id}"),
+        ],
+        [
+            InlineKeyboardButton(await translate_async("🪬 Gift premium", language), callback_data="gift_fren"),
         ],
         [
             InlineKeyboardButton(await translate_async("🔙 Back", language), callback_data="back_frens"),
@@ -95,9 +110,9 @@ async def back_frens(_, callback_query):
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton(f"{await get_user_name(friend_id)}", callback_data=f"fren_{friend_id}")]
-            for friend_id in frens_list
-        ])
+                    [InlineKeyboardButton(friend["name"], callback_data=f"fren_{friend['friend_id']}")]
+                    for friend in frens_list
+                ])
         await callback_query.message.edit_text(tr_txt, reply_markup=keyboard)
 
 

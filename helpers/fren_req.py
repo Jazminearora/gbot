@@ -1,11 +1,12 @@
 from pyrogram.errors import UserBlocked, UserIdInvalid, RPCError
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, User
+import pyrostep
 
 from database.premiumdb import vip_users_details
 from Modules import cbot
 from helpers.translator import translate_async
 
-
+pyrostep.listen(cbot)
 
 async def process_friend_request(client, message, user_id, friend_id, language):
     frens_list = vip_users_details(user_id, "frens")
@@ -26,11 +27,17 @@ async def process_friend_request(client, message, user_id, friend_id, language):
     
     if friend_id != str(message.from_user.id):
         try:
-            friend_id = friend_id
+            try:
+                await message.reply_text(await translate_async("Enter a nickname for your friend:", language))
+                ask = await pyrostep.wait_for(message.from_user.id, timeout = 45)
+                nickname = ask.text
+            except TimeoutError:
+                await message.reply_text(await translate_async("No nickname received!!", language))
+                return
             try:
                 detail: User = await client.get_users(user_id)
-                await cbot.send_message(friend_id, f"{await translate_async("Friend request from", language)} {detail.first_name + detail.last_name if detail.last_name else ""}!\n\n {await translate_async("Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
-                     [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
+                await cbot.send_message(friend_id, f"{await translate_async("Friend request from  your interlocutor.\n\n Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
+                     [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}_{nickname}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
                 ]))                
                 await message.reply_text(await translate_async("Friend request sent successfully!", language))
             except UserBlocked:

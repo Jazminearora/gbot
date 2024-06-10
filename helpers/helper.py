@@ -149,7 +149,7 @@ def is_user_registered(user_id):
 ##================================================================================================##
 
 
-async def get_profile(user_id, language, mode):
+async def get_profile(user_id, language, mode, name = None):
     try:
         premium, time = is_user_premium(str(user_id))
         user_data = {
@@ -165,12 +165,16 @@ async def get_profile(user_id, language, mode):
             "verified" : "verified ✅" if vip_users_details(user_id, "verified") else "Unverified ❌",
             "total_refers": await get_point(user_id)
         }
+        if name: 
+            id_txt= f"Name: {name}" 
+        else: 
+            id_txt = f"ID: {user_id}"
         chat_details= users_rating_details(user_id, "rating")
         rating = str(chat_details).replace("{", "").replace("}", "").replace("'", "").replace(",", "")
 
         if mode == "user_profile":
-            full_text = f"""
-🔎 ID: {user_id}
+            full_text = f"""           
+🔎 {id_txt}
 
 🗣 Language: {language}
 

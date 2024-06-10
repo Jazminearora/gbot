@@ -12,6 +12,8 @@ os.environ['PROMO_STATUS'] = "True" # by default true
 @cbot.on_callback_query(filters.regex(r'^subscriptions$'))
 async def subscriptions_handler(_, query):
     chat_ids = get_chat_ids()
+    # split chat ids with (',') and make list so that we can add monospace markdown for each chat later
+    chat_ids_list = [f" ``{chat_id}`` " for chat_id in chat_ids.split(',')]
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("➕Add Chat", callback_data="add_chat"),
         InlineKeyboardButton("➖Delete Chat", callback_data="delete_chat")],
@@ -19,7 +21,7 @@ async def subscriptions_handler(_, query):
         [InlineKeyboardButton(text="Back 🔙", callback_data="st_back"),
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
-    text = f"Current Chat IDs: {chat_ids}\nStatus: {os.environ.get('PROMO_STATUS', 'False')}"
+    text = f"Current Chat IDs: {chat_ids_list}\nStatus: {os.environ.get('PROMO_STATUS', 'False')}"
     await query.message.edit_text(text=text, reply_markup=markup)
 
 
@@ -62,7 +64,8 @@ async def set_status_handler(_, query):
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
     chat_ids = get_chat_ids()
-    text = f"Current Chat IDs: {chat_ids}\nStatus: {promo_status}"
+    chat_ids_list = [f" ``{chat_id}`` " for chat_id in chat_ids.split(',')]
+    text = f"Current Chat IDs: {chat_ids_list}\nStatus: {promo_status}"
     await edit_message(query, text, markup)
 
 async def edit_message(query, text, markup):
