@@ -9,7 +9,6 @@ from helpers.helper import get_profile
 from helpers.helper import find_language
 from helpers.filters import subscribed, user_registered
 from helpers.translator import translate_async
-from Modules.modules.register import get_user_name
 
 pyrostep.listen(cbot)
 
@@ -46,15 +45,15 @@ async def accept_friend(client, query):
                 return
     await query.message.reply_text(await translate_async("Enter a nickname for your friend:", language))
     try: 
-        ask = await pyrostep.wait_for(friend_id, timeout = 40)
-        nickname2 = ask.text
+        uu = await pyrostep.wait_for(friend_id, timeout = 40)
+        nickname2 = uu.text
     except TimeoutError:
         await query.message.reply_text(await translate_async("No nickname received!!", language))
         return 
     await query.message.edit_text(await translate_async("You have accepted the friend request!", language))
     await cbot.send_message(user_id, f"{nickname1} {await translate_async("has accepted your friend request!", language)}")
-    save_premium_user(user_id, frens={"friend_id": friend_id, "nickname": nickname1})
-    save_premium_user(friend_id, frens={"friend_id": user_id, "nickname": nickname2})
+    save_premium_user(user_id, frens={'friend_id': friend_id, "nickname": nickname1})
+    save_premium_user(friend_id, frens={'friend_id': user_id, "nickname": nickname2})
 
 @cbot.on_callback_query(filters.regex("decline_friend"))
 async def decline_friend(client, query):
@@ -71,9 +70,10 @@ async def friend_profile(client, callback_query):
     language = find_language(callback_query.from_user.id)
     frens_list = vip_users_details(user_id, "frens")
     for friend in frens_list:
-        if friend["friend_id"] == user_id:
-            name = friend["nickname"]
-    profile_raw, _ = await get_profile(user_id, language, "user_profile", name= name)
+        if friend['friend_id'] == user_id:
+            nickname = friend["nickname"]
+            break
+    profile_raw, _ = await get_profile(user_id, language, "user_profile", name= nickname)
 
     # Remove the line containing "?start=r"
     profile_text = '\n'.join([line for line in profile_raw.split('\n') if "?start=" not in line])

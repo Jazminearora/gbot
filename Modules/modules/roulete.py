@@ -15,6 +15,7 @@ from Modules.modules.buy_vip import aaio
 
 @cbot.on_message(filters.command("roulette") & filters.private & subscribed & user_registered)
 async def roulette(client, message):
+    print("roulette")
     user_id = message.from_user.id
     user_lang = find_language(user_id)
     caption = await translate_async("In roulette you may get a subscription 💎 PREMIUM for a period of 6 hours to 5 months 🤯\n", user_lang)
