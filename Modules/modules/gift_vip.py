@@ -13,13 +13,13 @@ from database.premiumdb import extend_premium_user_hrs, vip_users_details
 from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 
 
-@cbot.on_callback_query(filters.regex("^gift_fren_"))
-async def premium_bsck(client, query: CallbackQuery):
-    user_id = query.from_user.id
-    friend_id = int(query.data.split("_")[2])
-    user_lang = find_language(user_id)
-    caption, buttons = await gift_premium_msg(friend_id, user_lang)
-    await query.message.reply(caption, reply_markup=buttons)
+# @cbot.on_callback_query(filters.regex("^gift_fren_"))
+# async def premium_bsck(client, query: CallbackQuery):
+#     user_id = query.from_user.id
+#     friend_id = int(query.data.split("_")[2])
+#     user_lang = find_language(user_id)
+#     caption, buttons = await gift_premium_msg(friend_id, user_lang)
+#     await query.message.reply(caption, reply_markup=buttons)
 
 
 @cbot.on_callback_query(filters.regex(r"frgift_"))

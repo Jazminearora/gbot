@@ -74,7 +74,7 @@ async def check_roulette_payment_callback(_, callback_query):
         # Check the payment status using the order ID
         payment_info = await aaio.get_payment_info(order_id)
         # If the payment is successful, generate a random premium duration and extend the user's premium subscription
-        if (payment_info and payment_info.is_success()) or user_id in ADMIN_IDS:
+        if payment_info and payment_info.is_success():
             durations = [6, 12, 24, 48, 72, 96, 120, 144, 168, 336, 504, 720, 1440, 2160, 2880, 3600 ]  # in hours
             duration_hours = random.choice(durations)
             extend_premium_user_hrs(user_id, duration_hours)

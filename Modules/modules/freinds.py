@@ -7,6 +7,7 @@ from.. import cbot
 from database.premiumdb import save_premium_user, vip_users_details, remove_item_from_field
 from helpers.helper import get_profile
 from helpers.helper import find_language
+from langdb.get_msg import gift_premium_msg
 from helpers.filters import subscribed, user_registered
 from helpers.translator import translate_async
 
@@ -169,3 +170,11 @@ async def unfriend_cancel(client, query):
 """
 The code for send chat request, accept chat request and start a dialoge is defined in new_search.py file from line 760 to 830
 """
+
+@cbot.on_callback_query(filters.regex("^gift_fren_"))
+async def premium_bsck(client, query: CallbackQuery):
+    user_id = query.from_user.id
+    friend_id = int(query.data.split("_")[2])
+    user_lang = find_language(user_id)
+    caption, buttons = await gift_premium_msg(friend_id, user_lang)
+    await query.message.reply(caption, reply_markup=buttons)
