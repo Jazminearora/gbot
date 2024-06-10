@@ -26,7 +26,7 @@ async def frens(_, message):
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
-                    [InlineKeyboardButton(friend["name"], callback_data=f"fren_{friend['friend_id']}")]
+                    [InlineKeyboardButton(friend["nickname"], callback_data=f"fren_{friend['friend_id']}")]
                     for friend in frens_list
                 ])
         await message.reply_text(tr_txt, reply_markup=keyboard)
@@ -72,7 +72,7 @@ async def friend_profile(client, callback_query):
     frens_list = vip_users_details(user_id, "frens")
     for friend in frens_list:
         if friend["friend_id"] == user_id:
-            name = friend["name"]
+            name = friend["nickname"]
     profile_raw, _ = await get_profile(user_id, language, "user_profile", name= name)
 
     # Remove the line containing "?start=r"
@@ -110,7 +110,7 @@ async def back_frens(_, callback_query):
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
-                    [InlineKeyboardButton(friend["name"], callback_data=f"fren_{friend['friend_id']}")]
+                    [InlineKeyboardButton(friend["nickname"], callback_data=f"fren_{friend['friend_id']}")]
                     for friend in frens_list
                 ])
         await callback_query.message.edit_text(tr_txt, reply_markup=keyboard)
@@ -150,11 +150,11 @@ async def unfriend_confirm(client, query):
     frens_list1 = vip_users_details(user_id, "frens")
     for friend in frens_list1:
         if friend["friend_id"] == friend_id:
-            name1 = friend["name"]
+            name1 = friend["nickname"]
     frens_list2 = vip_users_details(friend_id, "frens")
     for friend in frens_list2:
         if friend["friend_id"] == user_id:
-            name2 = friend["name"]
+            name2 = friend["nickname"]
     await query.message.edit_text(f"{await translate_async(f"You have unfriended", language)} {name1}!")
     remove_item_from_field(user_id, "frens", {"friend_id": friend_id, "nickname": name1})
     remove_item_from_field(friend_id, "frens", {"friend_id": user_id, "nickname": name2})
