@@ -19,7 +19,7 @@ from helpers.fren_req import process_friend_request
 from langdb.get_msg import get_reply_markup, interlocutor_normal_message, interlocutor_vip_message
 
 # Modules
-from Modules import cbot, scheduler, ADMIN_IDS, REPORT_CHAT
+from Modules import cbot, scheduler, ADMIN_IDS, REPORT_CHAT, BOT_USERNAME
 from Modules.modules.register import get_user_name
 from Modules.modules.advertisement import advert_user
 from Modules.modules.configure import get_age_groups_text
@@ -677,7 +677,7 @@ async def handle_report(client, query):
     other_user_id = int(query.data.split("_")[1])
     await query.message.edit_text(await translate_async("Please enter a message to report:", language))
     try:
-        report_msg_obj = await pyrostep.wait_for(user_id, timeout= 90)
+        report_msg_obj = await pyrostep.wait_for(user_id, timeout= 600)
         report_msg = report_msg_obj.text
     except TimeoutError:
         await query.message.reply(await translate_async("No report message received, Reporting cancelled !!", language))
@@ -693,7 +693,10 @@ async def handle_report(client, query):
             except FloodWait as e:
                 await asyncio.sleep(e.value)
                 await message.forward(REPORT_CHAT)
-    await client.send_message(REPORT_CHAT, f"#Report\n\n**Reported to**: {other_user_id}\n**Reported by**: {user_id}\n**Report Message**: {report_msg}\n\nAbove is his/her last 10 messages.")
+    other_user_id = int(query.data.split("_")[1])
+    other_user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{other_user_id}'>{other_user_id}</a>"
+    user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{user_id}'>{user_id}</a>"
+    await client.send_message(REPORT_CHAT, f"#Report\n\n**Reported to**: {other_user_link}\n**Reported by**: {user_link}\n**Report Message**: {report_msg}\n\nAbove is his/her last 10 messages.")
     buttons = [
         [
             InlineKeyboardButton(await translate_async("Close❌", language), callback_data=f"skip_handle"),

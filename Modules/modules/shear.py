@@ -3,7 +3,7 @@ from pyrogram import filters
 from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.enums import MessageEntityType
 import pyrostep
-from .. import cbot, ADMIN_IDS, LOG_GROUP
+from .. import cbot, ADMIN_IDS, LOG_GROUP, BOT_USERNAME
 from helpers.shear import add_shear_word, get_all_shear_words, is_shear
 from helpers.translator import translate_async
     
@@ -93,10 +93,11 @@ async def check_shear_url(user_id, message, lang):
     if await is_shear(message.text, lang) if message.text else await is_shear(message.caption, lang):
         await cbot.send_message(user_id, await translate_async("⚠️ Warning: Inappropriate language or insults are not tolerated here. Let's maintain a respectful conversation. Thank you! 🚫", lang))
         sz = await cbot.forward_messages(LOG_GROUP, message.chat.id, message.id)
+        user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{user_id}'>{user_id}</a>"
         await cbot.send_message(LOG_GROUP, f"""
     🚨 **Reported Message** 🚨
 
-    **User ID:** {user_id}
+    **User ID:** {user_link}
 
     **Admin Note:**
     This message has been reported for containing inappropriate language or insults. Please review and take appropriate action. Thank you! 🛑

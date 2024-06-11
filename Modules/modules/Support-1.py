@@ -18,12 +18,15 @@ async def support_handler(client: Client, message: Message):
     try:
         incoming = await pyrostep.wait_for(user_id, timeout= 600)
         message = incoming.text
+        if not message:
+            await incoming.reply(await translate_async("Please send a text message only.", lang), quote=True)
+            return
     except TimeoutError:
         await message.reply(await translate_async("Timeout! Please use command again.", lang))
     #keyboard for answer and ignore buttons
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton(await translate_async("Answer 🧩", lang), callback_data=f"answer_support_{user_id}"),
-         InlineKeyboardButton(await translate_async("Ignore 😏", lang), callback_data="ignore_support")]
+        [InlineKeyboardButton("Answer 🧩", callback_data=f"answer_support_{user_id}"),
+         InlineKeyboardButton("Ignore 😏", callback_data="ignore_support")]
     ])  
     user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{user_id}'>{user_id}</a>"
     await client.send_message(int(LOG_GROUP), text= f"""
@@ -43,17 +46,30 @@ async def answer_support(client: Client, callback_query: CallbackQuery):
         await callback_query.answer("You are not authorized to answer support queries.", show_alert=True)
         return
     user_id = callback_query.data.split("_")[2]
-    user_lang = find_language(user_id)
     #ask to enter the message to answer
     await callback_query.message.reply("Enter your answer:")
     try:
         incoming = await pyrostep.wait_for(callback_query.from_user.id, timeout= 600)
         answer = incoming.text
+        if not answer:
+            await callback_query.message.reply("Please enter a valid answer text only.")
+            return
     except TimeoutError:
         await callback_query.message.reply("Timeout! Please use button again.")
     try:
         #notify answer to the user id
-        await client.send_message(int(user_id), f"{await translate_async("Support: ", user_lang)} {answer}")
+        await client.send_message(int(user_id), f"📨 Support: {answer}")
         await callback_query.message.reply("Answer sent successfully!")
     except (RPCError, Exception) as e:
         await callback_query.message.reply(f"Error while sending answer: {e}")
+
+# callback of ignore button
+@cbot.on_callback_query(filters.regex("ignore_support"))
+async def ignore_support(client: Client, callback_query: CallbackQuery):
+    #check if clicker is admin or not
+    if callback_query.from_user.id not in ADMIN_IDS:
+        await callback_query.answer("You are not authorized to ignore support queries.", show_alert=True)
+        return
+    #delete t message and sw alert
+    await callback_query.answer("Ignored successfully!", show_alert=True)
+    await callback_query.message.delete()
