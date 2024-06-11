@@ -21,48 +21,58 @@ from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 #     caption, buttons = await gift_premium_msg(friend_id, user_lang)
 #     await query.message.reply(caption, reply_markup=buttons)
 
-
 @cbot.on_callback_query(filters.regex(r"frgt_"))
 async def premium_callback(client, callback_query: CallbackQuery):
-    user_id = callback_query.from_user.id
-    friend_id = int(callback_query.data.split("_")[1])
-    language = find_language(user_id)
     data = callback_query.data
-    if data == f"frgt_{friend_id}_1_day":
-        tex = await translate_async("1 day", language)
-        amount = 1.08
-        extend_hrs = 24
-    elif data == f"frgt_{friend_id}_3_days":
-        tex = await translate_async("3 days", language)
-        amount = 2.15
-        extend_hrs = 72
-    elif data == f"frgt_{friend_id}_1_week":
-        tex =await translate_async("1 week", language)
-        amount = 8.61
-        extend_hrs = 168
-    elif data == f"frgt_{friend_id}_1_month":
-        tex =await translate_async("1 month", language)
-        amount = 12.98
-        extend_hrs = 720
+    try:
+        user_id = callback_query.from_user.id
+        friend_id = int(callback_query.data.split("_")[1])
+        language = find_language(user_id)
+        if data == f"frgt_{friend_id}_1_day":
+            tex = await translate_async("1 day", language)
+            amount = 1.08
+            extend_hrs = 24
+        elif data == f"frgt_{friend_id}_3_days":
+            tex = await translate_async("3 days", language)
+            amount = 2.15
+            extend_hrs = 72
+        elif data == f"frgt_{friend_id}_1_week":
+            tex = await translate_async("1 week", language)
+            amount = 8.61
+            extend_hrs = 168
+        elif data == f"frgt_{friend_id}_1_month":
+            tex = await translate_async("1 month", language)
+            amount = 12.98
+            extend_hrs = 720
+        else:
+            await callback_query.message.edit_caption(await translate_async(f"Invalid option selected.: {data}", language))
+            return
 
-    # Generate random order ID using UUID
-    order_id = str(uuid1())
-    if language == "Azerbejani":
-        lang = "au"
-    elif language == "Russian":
-        lang = "ru"
-    else:
-        lang = "en"
-    currency = "USD"  # You can get the user's currency here
-    desc = f"Gift of Premium subscription for {extend_hrs} hrs. to {friend_id} by {user_id}"  # You can get the description here
+        # Generate random order ID using UUID
+        order_id = str(uuid1())
+        if language == "Azerbejani":
+            lang = "au"
+        elif language == "Russian":
+            lang = "ru"
+        else:
+            lang = "en"
+        currency = "USD"  # You can get the user's currency here
+        desc = f"Gift of Premium subscription for {extend_hrs} hrs. to {friend_id} by {user_id}"  # You can get the description here
 
-    URL = await aaio.create_payment(order_id, amount, lang, currency, desc)
-    markup = InlineKeyboardMarkup([
-    [InlineKeyboardButton(await translate_async("💰 Proceed to payment", language), url = URL)],
-    [InlineKeyboardButton(await translate_async("🔄️ Check payment", language), callback_data=f"gift_payement_{order_id}_{extend_hrs}_{friend_id}")]])
-    await callback_query.message.edit_caption(await translate_async(f"Order details:\n\nDuration: {tex}\nAmount: ${amount}\n\nPlease pay for gifting premium subscription to your friend!", language), reply_markup = markup)
+        URL = await aaio.create_payment(order_id, amount, lang, currency, desc)
+        if not URL:
+            await callback_query.message.edit_caption(await translate_async("Failed to create payment URL.", language))
+            return
 
+        markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton(await translate_async("💰 Proceed to payment", language), url=URL)],
+            [InlineKeyboardButton(await translate_async("🔄️ Check payment", language), callback_data=f"gift_payement_{order_id}_{extend_hrs}_{friend_id}")]
+        ])
+        await callback_query.message.edit_caption(await translate_async(f"Order details:\n\nDuration: {tex}\nAmount: ${amount}\n\nPlease pay for gifting premium subscription to your friend!", language), reply_markup=markup)
 
+    except Exception as e:
+        await callback_query.message.edit_caption(await translate_async("An error occurred. Please try again later.", language))
+        print(f"Error: {e}", data)
 @cbot.on_callback_query(filters.regex(r'gift_payement_(.+)_(.+)_(.+)'))
 async def check_payment_callback(_, callback_query):
     try:
