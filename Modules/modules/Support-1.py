@@ -36,7 +36,7 @@ async def support_handler(client: Client, message: Message):
 **User:** {user_link}
 **Message:** {message}
 """, reply_markup= keyboard)
-    
+    await message.reply(await translate_async("Your message has been sent to our support team. They will reply shortly", lang))
 
 #callback code for answer button
 @cbot.on_callback_query(filters.regex("answer_support"))

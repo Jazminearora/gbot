@@ -1,6 +1,6 @@
 import random
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
 from uuid import uuid1
 
 from helpers.helper import find_language
@@ -11,10 +11,11 @@ from database.residuedb import get_roulhist, store_roulette_history
 
 from Modules import cbot , LOG_GROUP, ADMIN_IDS
 from Modules.modules.buy_vip import aaio
+from config import ROULETTE_IMG
 
 
 @cbot.on_message(filters.command("roulette") & filters.private  & user_registered)
-async def roulette_control(client, message):
+async def roulette_control(client, message: Message):
     try:
         print("roulette")
         user_id = message.from_user.id
@@ -36,7 +37,7 @@ async def roulette_control(client, message):
         
         button_text = await translate_async("Pay for roulette", user_lang)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(button_text, callback_data="roulette_pay")]])
-        await message.reply_text(caption, reply_markup=markup)
+        await message.reply_photo(ROULETTE_IMG, caption=caption, reply_markup=markup)
     #handle except block
     except Exception as e:
         # log error

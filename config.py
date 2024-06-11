@@ -13,6 +13,9 @@ SUBSCRIPTION = []
 PROMO_STATUS = "True"
 BOT_IMG = "https://iili.io/JgY8Fls.jpg"
 PROFILE_IMG = "https://iili.io/JgY8Fls.jpg"
+PREMIUM_IMG = "https://iili.io/JgY8Fls.jpg"
+ADD_GRP_IMG = "https://iili.io/JgY8Fls.jpg"
+ROULETTE_IMG = "https://iili.io/JgY8Fls.jpg"
 key = "Sultruck"
 EXTEND_HRS_REFER = os.environ.get("EXTEND_HRS_REFER")
 

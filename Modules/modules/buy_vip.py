@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
 import re
 from uuid import uuid1
 import urllib.parse
@@ -14,15 +14,15 @@ from database.referdb import get_point
 from database.premiumdb import extend_premium_user_hrs
 
 from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
-
+from config import PREMIUM_IMG
 
 button_pattern = re.compile(r"^💎 (Premium|Премиум|Premium) 💎$")
 @cbot.on_message((filters.regex(button_pattern)|filters.command("vip")) & filters.private & subscribed & user_registered)
-async def premium_option(client, message):
+async def premium_option(client, message: Message):
     user_id = message.from_user.id
     user_lang = find_language(user_id)
     caption, buttons = await get_premium_msg(user_lang)
-    await message.reply_text(caption, reply_markup=buttons)
+    await message.reply_photo(PREMIUM_IMG, caption=caption, reply_markup=buttons)
 
 @cbot.on_callback_query(filters.regex("premium_callback"))
 async def premium_bsck(client, query: CallbackQuery):

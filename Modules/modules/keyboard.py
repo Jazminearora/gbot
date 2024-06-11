@@ -11,7 +11,7 @@ from helpers.filters import subscribed, user_registered
 from helpers.helper import find_language
 from langdb.get_msg import get_reply_markup 
 from helpers.translator import translate_async
-from config import BOT_IMG
+from config import BOT_IMG, ADD_GRP_IMG
 
 
 
@@ -47,4 +47,4 @@ async def handle_add_to_group_response(client, message: Message):
     bot = BOT_USERNAME
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("Add me to your group", url = f"https://t.me/{bot}?startgroup=true")]])
-    await message.reply_text("Adding to group...", reply_markup = markup)
+    await message.reply_photo( ADD_GRP_IMG, caption="Adding to group...", reply_markup = markup)
