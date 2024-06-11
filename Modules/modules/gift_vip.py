@@ -22,7 +22,7 @@ from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 #     await query.message.reply(caption, reply_markup=buttons)
 
 @cbot.on_callback_query(filters.regex(r"frx_"))
-async def premium_callback(client, callback_query: CallbackQuery):
+async def gift_premium_callback(client, callback_query: CallbackQuery):
     data = callback_query.data
     try:
         user_id = callback_query.from_user.id
