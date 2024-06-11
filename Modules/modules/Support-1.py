@@ -19,13 +19,13 @@ async def support_handler(client: Client, message: Message):
         incoming = await pyrostep.wait_for(user_id, timeout= 600)
         message = incoming.text
     except TimeoutError:
-        user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{user_id}'>{user_id}</a>"
         await message.reply(await translate_async("Timeout! Please use command again.", lang))
     #keyboard for answer and ignore buttons
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton(await translate_async("Answer 🧩", lang), callback_data=f"answer_support_{user_id}"),
          InlineKeyboardButton(await translate_async("Ignore 😏", lang), callback_data="ignore_support")]
     ])  
+    user_link = f"<a href='https://t.me/{BOT_USERNAME}?start=id{user_id}'>{user_id}</a>"
     await client.send_message(int(LOG_GROUP), text= f"""
 🆘SUPPORT🆘
 #support #question
