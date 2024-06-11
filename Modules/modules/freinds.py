@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
 import re
 import pyrostep
 
@@ -10,26 +10,27 @@ from helpers.helper import find_language
 from langdb.get_msg import gift_premium_msg
 from helpers.filters import subscribed, user_registered
 from helpers.translator import translate_async
+from config import FRENS_IMG
 
 pyrostep.listen(cbot)
 
 button_pattern = re.compile(r"^(👫 (Friends|Друзья|Dostlar) 👫)$")
 
 @cbot.on_message((filters.command("frens")| ((filters.regex(button_pattern))) & filters.private  & subscribed & user_registered))
-async def frens(_, message):
+async def frens(_, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
     frens_list = vip_users_details(user_id, "frens")
     if not frens_list:
         tr_txt = await translate_async("You don't have any friends yet! Make some friends during chats!", language)
-        await message.reply_text(tr_txt)
+        await message.reply_photo(FRENS_IMG, caption=tr_txt)
     else:
         tr_txt = await translate_async("Here are your friends:", language)
         keyboard = InlineKeyboardMarkup([
                     [InlineKeyboardButton(friend["nickname"], callback_data=f"fren_{friend['friend_id']}")]
                     for friend in frens_list
                 ])
-        await message.reply_text(tr_txt, reply_markup=keyboard)
+        await message.reply_photo(FRENS_IMG, caption = tr_txt, reply_markup=keyboard)
 
 
 @cbot.on_callback_query(filters.regex("accept_friend_"))
