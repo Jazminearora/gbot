@@ -111,7 +111,7 @@ async def register_user(client, message):
                             else:
                                 await save_id(referer_user_id, user_id)
                             refered_lang = find_language(message.from_user.id)
-                            message_text = f"{translate_async("You are successfully referred by", refered_lang)} {name}"
+                            message_text = f"{await translate_async("You are successfully referred by", refered_lang)} {name}"
                             await message.reply_text(message_text)
                             if not (111111 <= int(referer_user_id) <= 999999):
                                 extend_premium_user_hrs(referer_user_id, EXTEND_HRS_REFER)
