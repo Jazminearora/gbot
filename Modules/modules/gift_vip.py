@@ -24,9 +24,9 @@ from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 @cbot.on_callback_query(filters.regex(r"frx_"))
 async def gift_premium_callback(client, callback_query: CallbackQuery):
     data = callback_query.data
+    friend_id = int(callback_query.data.split("_")[1])
     try:
         user_id = callback_query.from_user.id
-        friend_id = int(callback_query.data.split("_")[1])
         language = find_language(user_id)
         if data == f"frx_{friend_id}_1_day":
             tex = await translate_async("1 day", language)
@@ -72,7 +72,7 @@ async def gift_premium_callback(client, callback_query: CallbackQuery):
 
     except Exception as e:
         await callback_query.message.edit_caption(await translate_async("An error occurred. Please try again later.", language))
-        print(f"Error: {e}", data)
+        print(f"Error: {e}", data, f"frx_{friend_id}_wek")
 @cbot.on_callback_query(filters.regex(r'gift_payement_(.+)_(.+)_(.+)'))
 async def check_payment_callback(_, callback_query):
     try:
