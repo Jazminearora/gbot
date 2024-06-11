@@ -63,17 +63,17 @@ async def gift_premium_callback(client, callback_query: CallbackQuery):
         if not URL:
             await callback_query.message.edit_caption(await translate_async("Failed to create payment URL.", language))
             return
-
+        print(f"gift_pay_{order_id}_{extend_hrs}_{friend_id}")
         markup = InlineKeyboardMarkup([
             [InlineKeyboardButton(await translate_async("💰 Proceed to payment", language), url=URL)],
-            [InlineKeyboardButton(await translate_async("🔄️ Check payment", language), callback_data=f"gift_payement_{order_id}_{extend_hrs}_{friend_id}")]
+            [InlineKeyboardButton(await translate_async("🔄️ Check payment", language), callback_data=f"gift_pay_{order_id}_{extend_hrs}_{friend_id}")]
         ])
         await callback_query.message.edit_caption(await translate_async(f"Order details:\n\nDuration: {tex}\nAmount: ${amount}\n\nPlease pay for gifting premium subscription to your friend!", language), reply_markup=markup)
 
     except Exception as e:
         await callback_query.message.edit_caption(await translate_async("An error occurred. Please try again later.", language))
         print(f"Error: {e}", data, f"frx_{friend_id}_wek")
-@cbot.on_callback_query(filters.regex(r'gift_payement_(.+)_(.+)_(.+)'))
+@cbot.on_callback_query(filters.regex(r'gift_pay_(.+)_(.+)_(.+)'))
 async def check_payment_callback(_, callback_query):
     try:
         user_id = callback_query.from_user.id
