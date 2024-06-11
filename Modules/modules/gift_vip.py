@@ -10,7 +10,7 @@ from helpers.translator import translate_async
 from langdb.get_msg import gift_premium_msg
 from database.premiumdb import extend_premium_user_hrs, vip_users_details
 
-from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
+from Modules import cbot , LOG_GROUP, aaio
 
 
 # @cbot.on_callback_query(filters.regex("^gift_fren_"))
@@ -73,6 +73,7 @@ async def gift_premium_callback(client, callback_query: CallbackQuery):
     except Exception as e:
         await callback_query.message.edit_caption(await translate_async("An error occurred. Please try again later.", language))
         print(f"Error: {e}", data, f"frx_{friend_id}_wek")
+
 @cbot.on_callback_query(filters.regex(r'gift_pay_(.+)_(.+)_(.+)'))
 async def check_payment_callback(_, callback_query):
     try:
@@ -97,4 +98,3 @@ async def check_payment_callback(_, callback_query):
     except Exception as e:
         await cbot.send_message(int(LOG_GROUP), f"⚠️ERROR!!⚠️\n\nAn error occured while checking the payment info!\nException:{e}\n\nUser ID:{user_id}\nOrder ID:{order_id}")
         await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
- 

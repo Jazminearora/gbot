@@ -13,7 +13,7 @@ os.environ['PROMO_STATUS'] = "True" # by default true
 async def subscriptions_handler(_, query):
     chat_ids = get_chat_ids()
     # split chat ids with (',') and make list so that we can add monospace markdown for each chat later
-    chat_ids_list = [f" ``{chat_id}`` " for chat_id in chat_ids.split(',')]
+    chat_ids_list = [f" `{chat_id}` " for chat_id in chat_ids.split(',')]
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("➕Add Chat", callback_data="add_chat"),
         InlineKeyboardButton("➖Delete Chat", callback_data="delete_chat")],
@@ -64,7 +64,7 @@ async def set_status_handler(_, query):
         InlineKeyboardButton(text="Close ❌", callback_data="st_close")]
     ])
     chat_ids = get_chat_ids()
-    chat_ids_list = [f" ``{chat_id}`` " for chat_id in chat_ids.split(',')]
+    chat_ids_list = [f" `{chat_id}` " for chat_id in chat_ids.split(',')]
     text = f"Current Chat IDs: {chat_ids_list}\nStatus: {promo_status}"
     await edit_message(query, text, markup)
 

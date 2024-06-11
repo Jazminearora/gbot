@@ -603,7 +603,7 @@ async def next_search(user_id, message: Message):
             await remove_user_from_searching_lists(user_id)
             await message.reply(await translate_async("No interlocutor found! Please try again in different list", language), reply_markup = await get_reply_markup(language))
 
-@cbot.on_message(filters.private & filters.regex("Add as Friend") & subscribed & user_registered)
+@cbot.on_message(filters.private & filters.regex("Add as Friend|Dost kimi əlavə et|Добавить в друзья") & subscribed & user_registered)
 async def add_as_friend(client, message: Message):
     user_id = message.from_user.id
     language = find_language(user_id)
