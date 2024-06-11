@@ -22,25 +22,25 @@ from Modules import cbot , BOT_USERNAME, LOG_GROUP, aaio
 #     await query.message.reply(caption, reply_markup=buttons)
 
 
-@cbot.on_callback_query(filters.regex(r"frgift_"))
+@cbot.on_callback_query(filters.regex(r"frgt_"))
 async def premium_callback(client, callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
     friend_id = int(callback_query.data.split("_")[1])
     language = find_language(user_id)
     data = callback_query.data
-    if data == f"frgift_{friend_id}_1_day":
+    if data == f"frgt_{friend_id}_1_day":
         tex = await translate_async("1 day", language)
         amount = 1.08
         extend_hrs = 24
-    elif data == f"frgift_{friend_id}_3_days":
+    elif data == f"frgt_{friend_id}_3_days":
         tex = await translate_async("3 days", language)
         amount = 2.15
         extend_hrs = 72
-    elif data == f"frgift_{friend_id}_1_week":
+    elif data == f"frgt_{friend_id}_1_week":
         tex =await translate_async("1 week", language)
         amount = 8.61
         extend_hrs = 168
-    elif data == f"frgift_{friend_id}_1_month":
+    elif data == f"frgt_{friend_id}_1_month":
         tex =await translate_async("1 month", language)
         amount = 12.98
         extend_hrs = 720

@@ -4,6 +4,8 @@ import re
 from uuid import uuid1
 import urllib.parse
 
+import random
+from database.residuedb import store_roulette_history
 from helpers.helper import find_language
 from helpers.filters import subscribed, user_registered
 from helpers.translator import translate_async
@@ -146,3 +148,42 @@ async def check_payment_callback(_, callback_query):
         await cbot.send_message(int(LOG_GROUP), f"⚠️ERROR!!⚠️\n\nAn error occured while checking the payment info!\nException:{e}\n\nUser ID:{user_id}\nOrder ID:{order_id}")
         await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
  
+
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+
+
+@cbot.on_callback_query(filters.regex("^test_rand_reciept_"))
+async def check_roulette_payment_callback(_, callback_query: CallbackQuery):
+    print("Check payment callback called")
+    try:
+        user_id = callback_query.from_user.id
+        langauge = find_language(user_id)
+        order_id = callback_query.data.split("_")[3]
+        # Check the payment status using the order ID
+        payment_info = await aaio.get_payment_info(order_id)
+        # If the payment is successful, generate a random premium duration and extend the user's premium subscription
+        if payment_info and payment_info.is_success():
+            durations = [6, 12, 24, 48, 72, 96, 120, 144, 168, 336, 504, 720, 1440, 2160, 2880, 3600 ]  # in hours
+            duration_hours = random.choice(durations)
+            extend_premium_user_hrs(user_id, duration_hours)
+            duration_text = await get_premium_duration_text(duration_hours, langauge)
+            await store_roulette_history(user_id, duration_text)
+            await callback_query.message.delete()
+            await callback_query.message.reply_text(await translate_async(f"Payment was successful. You got the premium for {duration_text} this time!", langauge))
+        else:
+            await callback_query.answer(await translate_async("Payment is still pending.", langauge), show_alert=True)
+    except Exception as e:
+        await cbot.send_message(int(LOG_GROUP), f"ERROR!!\n\nAn error occured while checking the payment info!\nException:{e}\n\nUser ID:{user_id}\nOrder ID:{order_id}")
+        await callback_query.message.reply_text(await translate_async("An error occured while validating the payment info. Reported successfully to my owner. If you have done payment, kindly visit to my owner and ask him to verify it manually and give your membership.", langauge))
+
+async def get_premium_duration_text(duration_hours, language):
+    if duration_hours < 24:
+        return await translate_async(f"{duration_hours} hours", language)
+    elif duration_hours < 168:
+        return await translate_async(f"{duration_hours // 24} days", language)
+    elif duration_hours < 720:
+        return await translate_async(f"{duration_hours // 168} weeks", language)
+    else:
+        return await translate_async(f"{duration_hours // 720} months", language)

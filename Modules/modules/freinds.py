@@ -86,7 +86,7 @@ async def friend_profile(client, callback_query):
             InlineKeyboardButton(await translate_async(" 💔 Unfriend", language), callback_data=f"unfriend_{user_id}"),
         ],
         [
-            InlineKeyboardButton(await translate_async("🪬 Gift premium", language), callback_data=f"gift_frens_{user_id}"),
+            InlineKeyboardButton(await translate_async("🪬 Gift premium", language), callback_data=f"gift_viprem_{user_id}"),
         ],
         [
             InlineKeyboardButton(await translate_async("🔙 Back", language), callback_data="back_frens"),
@@ -172,7 +172,7 @@ async def unfriend_cancel(client, query):
 The code for send chat request, accept chat request and start a dialoge is defined in new_search.py file from line 760 to 830
 """
 
-@cbot.on_callback_query(filters.regex("^gift_frens_"))
+@cbot.on_callback_query(filters.regex("^gift_viprem_"))
 async def premium_bsck(client, query: CallbackQuery):
     user_id = query.from_user.id
     friend_id = int(query.data.split("_")[2])
