@@ -36,7 +36,7 @@ async def check_registration_completed(user_id):
             return True  # User is registered
         await asyncio.sleep(5)  # Wait for 5 seconds before next attempt
 
-@cbot.on_message(filters.command(["start"]) & filters.private & subscribed & ~user_registered)
+@cbot.on_message(filters.command(["start"]) & filters.private & ~user_registered)
 async def register_user(client, message):
     # Extract the referer user id from the command message
     command_parts = message.text.split(" ")
