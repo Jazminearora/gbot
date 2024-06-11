@@ -12,19 +12,11 @@ async def process_friend_request(client, message, user_id, friend_id, language):
     frens_list = vip_users_details(user_id, "frens")
 
     if frens_list is not None:
-        for friend_id in frens_list:
-            if friend_id["friend_id"] == friend_id:
+        for friends in frens_list:
+            print(user_id, friend_id)
+            if friends["friend_id"] == friend_id:
                 await message.reply_text(await translate_async("This user is already your friend.", language))
                 return
-    try:
-        await client.get_users(friend_id)
-    except UserIdInvalid:
-        await message.reply_text(await translate_async("User ID invalid", language))
-        return
-    except:
-        await message.reply_text(await translate_async("User not found in my database! Tell him to register first!", language))
-        return
-    
     if friend_id != str(message.from_user.id):
         try:
             try:
@@ -35,7 +27,6 @@ async def process_friend_request(client, message, user_id, friend_id, language):
                 await message.reply_text(await translate_async("No nickname received!!", language))
                 return
             try:
-                detail: User = await client.get_users(user_id)
                 await cbot.send_message(friend_id, f"{await translate_async("Friend request from  your interlocutor.\n\n Do you want to add them as a friend?", language)}", reply_markup=InlineKeyboardMarkup([
                      [InlineKeyboardButton(await translate_async("Accept", language), callback_data=f"accept_friend_{user_id}_{nickname}"), InlineKeyboardButton(await translate_async("Decline", language), callback_data="decline_friend")]
                 ]))                

@@ -60,12 +60,12 @@ async def roulette_pay_callback(client, callback_query: CallbackQuery):
     URL = await aaio.create_payment(order_id, amount, lang, currency, desc)
     markup = InlineKeyboardMarkup([
         [InlineKeyboardButton(await translate_async("💰 Proceed to payment", user_lang), url=URL)],
-        [InlineKeyboardButton(await translate_async("🔄️ Check payment", user_lang), callback_data=f"check_roulette_payement_{order_id}")]
+        [InlineKeyboardButton(await translate_async("🔄️ Check payment", user_lang), callback_data=f"test_roulette_payement_{order_id}")]
     ])
     await callback_query.message.edit_text(await translate_async("🎰 **Service:** Subscription Roulette\n💲 **Cost:** Only $3", user_lang), reply_markup=markup)
 
-@cbot.on_callback_query(filters.regex("^check_roulette_payement_"))
-async def check_roulette_payment_callback(_, callback_query):
+@cbot.on_callback_query(filters.regex(r"test_roulette_payement_(.*)"))
+async def check_roulette_payment_callback(_, callback_query: CallbackQuery):
     print("Check payment callback called")
     try:
         user_id = callback_query.from_user.id
